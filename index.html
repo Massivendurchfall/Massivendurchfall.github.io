@@ -1,1 +1,378 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Python Basics – Kompakte Lernwebsite</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  html,body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial}
+  pre{white-space:pre-wrap;word-wrap:break-word}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+  .prose code{background:#0b1020;color:#cbd5e1;padding:.25rem .375rem;border-radius:.5rem}
+  .copy-btn{display:none}
+  pre:hover .copy-btn{display:inline-flex}
+  .chip{border:1px solid rgba(255,255,255,.15)}
+</style>
+</head>
+<body class="bg-slate-950 text-slate-100">
+<header class="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-slate-950/70 border-b border-white/10">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex items-center gap-3">
+    <div class="w-9 h-9 rounded-2xl bg-indigo-500/20 grid place-items-center">
+      <span class="text-indigo-300 font-black">Py</span>
+    </div>
+    <h1 class="text-lg sm:text-xl font-semibold">Python Basics – Visual Guide</h1>
+    <div class="ml-auto hidden md:flex items-center gap-2">
+      <a href="#start" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 transition">Start</a>
+      <a href="#lernplan" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 transition">Lernpfad</a>
+      <a href="#ressourcen" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 transition">Ressourcen</a>
+    </div>
+  </div>
+</header>
+<main class="max-w-7xl mx-auto px-4 lg:px-6 grid grid-cols-1 lg:grid-cols-[280px,1fr] gap-6 mt-6">
+  <aside class="lg:sticky lg:top-20 lg:h-[calc(100vh-6rem)] lg:overflow-y-auto">
+    <div class="p-3 rounded-2xl bg-white/5 border border-white/10">
+      <div class="flex items-center gap-2 p-2 rounded-xl bg-white/5">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 opacity-70"><path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 3.813 12.27l3.834 3.833a.75.75 0 1 0 1.06-1.06l-3.833-3.834A6.75 6.75 0 0 0 10.5 3.75Zm-5.25 6.75a5.25 5.25 0 1 1 10.5 0 5.25 5.25 0 0 1-10.5 0Z" clip-rule="evenodd"/></svg>
+        <input id="search" placeholder="Suche Themen, Begriffe, Beispiele…" class="bg-transparent outline-none w-full text-sm"/>
+      </div>
+      <nav id="toc" class="mt-3 space-y-1 text-sm"></nav>
+    </div>
+    <div class="mt-4 p-3 rounded-2xl bg-gradient-to-br from-indigo-500/10 via-fuchsia-500/10 to-cyan-500/10 border border-white/10">
+      <div class="text-xs uppercase tracking-wide text-slate-300">Schnellfilter</div>
+      <div id="chips" class="mt-2 flex flex-wrap gap-2"></div>
+    </div>
+  </aside>
+  <section id="content" class="space-y-8">
+    <div id="start" class="p-6 rounded-3xl bg-gradient-to-br from-indigo-600/20 via-violet-600/10 to-cyan-600/20 border border-white/10">
+      <h2 class="text-2xl font-bold">Willkommen</h2>
+      <p class="mt-2 text-slate-300">Diese Seite erklärt die wichtigsten Grundlagen von Python in klarem Deutsch und zeigt kompakte Beispiele. Nutze die Navigation links, die Suche oder die Filterchips, um schnell zu finden, was du brauchst.</p>
+      <div class="mt-4 flex flex-wrap gap-2">
+        <span class="chip px-3 py-1 rounded-full text-xs bg-white/5">Datentypen</span>
+        <span class="chip px-3 py-1 rounded-full text-xs bg-white/5">Variablen</span>
+        <span class="chip px-3 py-1 rounded-full text-xs bg-white/5">Operatoren</span>
+        <span class="chip px-3 py-1 rounded-full text-xs bg-white/5">Funktionen</span>
+        <span class="chip px-3 py-1 rounded-full text-xs bg-white/5">Kontrollfluss</span>
+        <span class="chip px-3 py-1 rounded-full text-xs bg-white/5">Pakete</span>
+        <span class="chip px-3 py-1 rounded-full text-xs bg-white/5">Umgebung</span>
+      </div>
+    </div>
+
+    <article id="grundlagen" class="p-6 rounded-3xl bg-white/5 border border-white/10">
+      <h2 class="text-xl font-semibold">1. Grundlagen</h2>
+      <p class="mt-2 text-slate-300">Ein schneller Überblick über Syntax, Einrückung, Ausführung und hilfreiche Tools.</p>
+      <div class="mt-4 grid md:grid-cols-2 gap-4">
+        <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+          <h3 class="font-semibold">Einrückung</h3>
+          <p class="text-slate-300 text-sm mt-1">Python strukturiert Blöcke über Leerzeichen. Üblich sind 4 Leerzeichen pro Ebene.</p>
+          <pre class="mt-3 relative p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute top-2 right-2 px-2 py-1 text-xs rounded bg-white/10" data-copy="def greet(name):\n    if name:\n        print(f'Hallo {name}')\n    else:\n        print('Hallo Welt')">Kopieren</button><code>def greet(name):
+    if name:
+        print(f"Hallo {name}")
+    else:
+        print("Hallo Welt")</code></pre>
+        </div>
+        <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+          <h3 class="font-semibold">Ausführen</h3>
+          <p class="text-slate-300 text-sm mt-1">Skripte mit <code>python datei.py</code> starten oder interaktiv im REPL.</p>
+          <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>python3 script.py
+python3 -i script.py
+python3</code></pre>
+        </div>
+      </div>
+    </article>
+
+    <article id="datentypen" class="p-6 rounded-3xl bg-white/5 border border-white/10">
+      <h2 class="text-xl font-semibold">2. Datentypen</h2>
+      <p class="mt-2 text-slate-300">Die wichtigsten eingebauten Typen und wie man sie verwendet.</p>
+      <div class="mt-4 grid lg:grid-cols-2 gap-4">
+        <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+          <h3 class="font-semibold">Zahlen, Text, Bool</h3>
+          <pre class="mt-3 relative p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute top-2 right-2 px-2 py-1 text-xs rounded bg-white/10" data-copy="x = 42\ny = 3.14\nz = 2+3j\ns = 'Python'\nb = True\nlen(s)">Kopieren</button><code>x = 42
+y = 3.14
+z = 2+3j
+s = "Python"
+b = True
+len(s)</code></pre>
+          <p class="text-slate-300 text-sm mt-2">Zahlen: <code>int</code>, <code>float</code>, <code>complex</code>; Text: <code>str</code>; Wahrheitswerte: <code>bool</code>.</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+          <h3 class="font-semibold">Sequenzen und Mapping</h3>
+          <pre class="mt-3 relative p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute top-2 right-2 px-2 py-1 text-xs rounded bg-white/10" data-copy="nums = [1,2,3]\ncoords = (10, 20)\nuser = {'name':'Ada','age':36}\nunique = {1,2,2,3}\nnums.append(4)\nuser['age'] += 1">Kopieren</button><code>nums = [1,2,3]
+coords = (10, 20)
+user = {"name":"Ada","age":36}
+unique = {1,2,2,3}
+nums.append(4)
+user["age"] += 1</code></pre>
+          <p class="text-slate-300 text-sm mt-2">Listen, Tupel, Dictionaries, Sets. Indizieren, Slicing, Mutabilität beachten.</p>
+        </div>
+      </div>
+      <div class="mt-4 grid lg:grid-cols-3 gap-4">
+        <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+          <h3 class="font-semibold">None und Bytes</h3>
+          <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>value = None
+raw = b"data"
+raw[0]</code></pre>
+        </div>
+        <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+          <h3 class="font-semibold">Konvertieren</h3>
+          <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>int("7")
+float("3.5")
+str(99)
+list("abc")</code></pre>
+        </div>
+        <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+          <h3 class="font-semibold">Unveränderlich vs. veränderlich</h3>
+          <p class="text-slate-300 text-sm mt-1">Z. B. <code>str</code>, <code>tuple</code> unveränderlich; <code>list</code>, <code>dict</code> veränderlich.</p>
+        </div>
+      </div>
+    </article>
+
+    <article id="variablen" class="p-6 rounded-3xl bg-white/5 border border-white/10">
+      <h2 class="text-xl font-semibold">3. Variablen</h2>
+      <p class="mt-2 text-slate-300">Zuweisung, Namensregeln, Mehrfachzuweisung.</p>
+      <pre class="mt-3 relative p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute top-2 right-2 px-2 py-1 text-xs rounded bg-white/10" data-copy="a = 1\nb = a\na, b = b, a\nfirst, *rest = [1,2,3,4]">Kopieren</button><code>a = 1
+b = a
+a, b = b, a
+first, *rest = [1,2,3,4]</code></pre>
+      <p class="text-slate-300 text-sm mt-2">Snake-Case verwenden, sprechende Namen wählen.</p>
+    </article>
+
+    <article id="operatoren" class="p-6 rounded-3xl bg-white/5 border border-white/10">
+      <h2 class="text-xl font-semibold">4. Operatoren</h2>
+      <div class="mt-3 grid md:grid-cols-2 gap-4">
+        <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+          <h3 class="font-semibold">Arithmetik, Vergleich, Logik</h3>
+          <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>5 + 2, 5 - 2, 5 * 2, 5 / 2, 5 // 2, 5 % 2, 2 ** 3
+7 > 3, 7 == 7, 7 != 8
+True and False, True or False, not True</code></pre>
+        </div>
+        <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+          <h3 class="font-semibold">Identität, Mitgliedschaft, Bitweise</h3>
+          <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>a = [1,2]
+b = a
+id(a) == id(b)
+3 in [1,2,3]
+5 & 3, 5 | 3, 5 ^ 3, 5 << 1, 5 >> 1</code></pre>
+        </div>
+      </div>
+    </article>
+
+    <article id="funktionen" class="p-6 rounded-3xl bg-white/5 border border-white/10">
+      <h2 class="text-xl font-semibold">5. Funktionen</h2>
+      <p class="mt-2 text-slate-300">Parameter, Rückgaben, Standardwerte, Lambda, *args/**kwargs.</p>
+      <pre class="mt-3 relative p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute top-2 right-2 px-2 py-1 text-xs rounded bg-white/10" data-copy="def area(w, h=1):\n    return w * h\n\narea(4, 2)\narea(5)\n\ndef total(*values, tax=0):\n    s = sum(values)\n    return s * (1 + tax)\n\nsquare = lambda x: x*x">Kopieren</button><code>def area(w, h=1):
+    return w * h
+
+area(4, 2)
+area(5)
+
+def total(*values, tax=0):
+    s = sum(values)
+    return s * (1 + tax)
+
+square = lambda x: x*x</code></pre>
+    </article>
+
+    <article id="kontrollfluss" class="p-6 rounded-3xl bg-white/5 border border-white/10">
+      <h2 class="text-xl font-semibold">6. Kontrollfluss</h2>
+      <div class="mt-3 grid lg:grid-cols-3 gap-4">
+        <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+          <h3 class="font-semibold">Bedingungen</h3>
+          <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>x = 10
+if x > 9:
+    msg = "groß"
+elif x == 9:
+    msg = "gleich"
+else:
+    msg = "klein"</code></pre>
+        </div>
+        <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+          <h3 class="font-semibold">Schleifen</h3>
+          <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>for i in range(3):
+    print(i)
+
+n = 3
+while n:
+    n -= 1</code></pre>
+        </div>
+        <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+          <h3 class="font-semibold">Listenabstraktion</h3>
+          <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>[i*i for i in range(5) if i%2==0]</code></pre>
+        </div>
+      </div>
+      <div class="mt-4 grid md:grid-cols-2 gap-4">
+        <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+          <h3 class="font-semibold">Fehlerbehandlung</h3>
+          <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>try:
+    10/0
+except ZeroDivisionError as e:
+    err = str(e)
+finally:
+    done = True</code></pre>
+        </div>
+        <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+          <h3 class="font-semibold">Mit Kontext arbeiten</h3>
+          <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>with open("data.txt","w") as f:
+    f.write("hi")</code></pre>
+        </div>
+      </div>
+    </article>
+
+    <article id="sammlungen" class="p-6 rounded-3xl bg-white/5 border border-white/10">
+      <h2 class="text-xl font-semibold">7. Arbeiten mit Sammlungen</h2>
+      <div class="mt-3 grid md:grid-cols-2 gap-4">
+        <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+          <h3 class="font-semibold">Wichtige Methoden</h3>
+          <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>nums = [3,1,2]
+nums.sort()
+nums.reverse()
+list(map(lambda x:x*2, nums))
+list(filter(lambda x:x%2==0, nums))</code></pre>
+        </div>
+        <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+          <h3 class="font-semibold">Unpacking und Zählen</h3>
+          <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>a,b,*c = [1,2,3,4]
+from collections import Counter
+Counter("banane").most_common(2)</code></pre>
+        </div>
+      </div>
+    </article>
+
+    <article id="module" class="p-6 rounded-3xl bg-white/5 border border-white/10">
+      <h2 class="text-xl font-semibold">8. Module und Pakete</h2>
+      <p class="mt-2 text-slate-300">Importe, nützliche Bibliotheken, virtuelle Umgebungen.</p>
+      <div class="mt-3 grid md:grid-cols-2 gap-4">
+        <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+          <h3 class="font-semibold">Import</h3>
+          <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>import math
+from pathlib import Path
+from datetime import datetime as dt
+math.sqrt(9)
+Path(".").resolve()</code></pre>
+        </div>
+        <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+          <h3 class="font-semibold">Virtuelle Umgebung & pip</h3>
+          <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>python3 -m venv .venv
+source .venv/bin/activate
+pip install requests pandas</code></pre>
+        </div>
+      </div>
+      <div class="mt-4 p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Nützliche Pakete</h3>
+        <ul class="mt-2 grid sm:grid-cols-2 gap-2 text-sm">
+          <li class="p-3 rounded-xl bg-white/5">requests – HTTP anfragen</li>
+          <li class="p-3 rounded-xl bg-white/5">pandas – Datenanalyse</li>
+          <li class="p-3 rounded-xl bg-white/5">numpy – numerisches Rechnen</li>
+          <li class="p-3 rounded-xl bg-white/5">matplotlib – Diagramme</li>
+          <li class="p-3 rounded-xl bg-white/5">pytest – Tests</li>
+          <li class="p-3 rounded-xl bg-white/5">fastapi – Web-APIs</li>
+        </ul>
+      </div>
+    </article>
+
+    <article id="io" class="p-6 rounded-3xl bg-white/5 border border-white/10">
+      <h2 class="text-xl font-semibold">9. Ein- und Ausgabe</h2>
+      <div class="mt-3 grid md:grid-cols-2 gap-4">
+        <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+          <h3 class="font-semibold">Konsole</h3>
+          <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>name = input("Dein Name: ")
+print("Hi", name)</code></pre>
+        </div>
+        <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+          <h3 class="font-semibold">Dateien</h3>
+          <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>with open("zahlen.txt","w") as f:
+    f.write("1,2,3")
+
+with open("zahlen.txt") as f:
+    data = f.read()</code></pre>
+        </div>
+      </div>
+    </article>
+
+    <article id="oop" class="p-6 rounded-3xl bg-white/5 border border-white/10">
+      <h2 class="text-xl font-semibold">10. Objektorientierung</h2>
+      <p class="mt-2 text-slate-300">Klassen, Instanzen, Methoden, Attribute.</p>
+      <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>class User:
+    def __init__(self, name):
+        self.name = name
+    def greet(self):
+        return f"Hallo {self.name}"
+
+u = User("Ada")
+u.greet()</code></pre>
+    </article>
+
+    <article id="lernplan" class="p-6 rounded-3xl bg-white/5 border border-white/10">
+      <h2 class="text-xl font-semibold">Lernpfad</h2>
+      <ol class="mt-3 list-decimal list-inside space-y-2 text-slate-300">
+        <li>Datentypen und Variablen üben</li>
+        <li>Operatoren und Kontrollfluss</li>
+        <li>Funktionen und Arbeiten mit Sammlungen</li>
+        <li>Dateien, Fehlerbehandlung, Module</li>
+        <li>Virtuelle Umgebung, pip, kleine Projekte</li>
+        <li>OOP und Tests</li>
+      </ol>
+    </article>
+
+    <article id="ressourcen" class="p-6 rounded-3xl bg-white/5 border border-white/10 mb-10">
+      <h2 class="text-xl font-semibold">Weiteres</h2>
+      <ul class="mt-2 space-y-2 text-slate-300">
+        <li>Übe täglich kleine Aufgaben und schreibe Notizen.</li>
+        <li>Baue Mini-Projekte: Taschenrechner, Text-Analyzer, Datei-Organizer.</li>
+        <li>Lies Code laut und erkläre, was er tut.</li>
+      </ul>
+    </article>
+  </section>
+</main>
+<footer class="border-t border-white/10 mt-10">
+  <div class="max-w-7xl mx-auto px-4 py-6 text-sm text-slate-400">© 2025 Python Basics – Lernseite</div>
+</footer>
+<script>
+  const search = document.querySelector('#search');
+  const content = document.querySelector('#content');
+  const toc = document.querySelector('#toc');
+  const chips = document.querySelector('#chips');
+  const sections = Array.from(content.querySelectorAll('article, #start'));
+  const topics = [
+    {id:'grundlagen',label:'Grundlagen'},
+    {id:'datentypen',label:'Datentypen'},
+    {id:'variablen',label:'Variablen'},
+    {id:'operatoren',label:'Operatoren'},
+    {id:'funktionen',label:'Funktionen'},
+    {id:'kontrollfluss',label:'Kontrollfluss'},
+    {id:'sammlungen',label:'Sammlungen'},
+    {id:'module',label:'Module & Pakete'},
+    {id:'io',label:'Ein- und Ausgabe'},
+    {id:'oop',label:'Objektorientierung'}
+  ];
+  topics.forEach(t=>{
+    const a=document.createElement('a');
+    a.href='#'+t.id; a.textContent=t.label; a.className='block px-3 py-2 rounded-lg hover:bg-white/10';
+    toc.appendChild(a);
+    const c=document.createElement('button');
+    c.textContent=t.label; c.className='px-3 py-1 rounded-full text-xs bg-white/5 hover:bg-white/10 border border-white/10';
+    c.addEventListener('click',()=>{
+      document.getElementById(t.id).scrollIntoView({behavior:'smooth',block:'start'});
+    });
+    chips.appendChild(c);
+  });
+  search.addEventListener('input',()=>{
+    const q=search.value.toLowerCase();
+    sections.forEach(sec=>{
+      const text=sec.innerText.toLowerCase();
+      sec.style.display=text.includes(q)?'block':'none';
+    });
+  });
+  document.querySelectorAll('[data-copy]').forEach(btn=>{
+    btn.addEventListener('click',async e=>{
+      const code=e.currentTarget.getAttribute('data-copy');
+      try{await navigator.clipboard.writeText(code); e.currentTarget.textContent='Kopiert'; setTimeout(()=>e.currentTarget.textContent='Kopieren',1200);}catch(err){e.currentTarget.textContent='Fehler'; setTimeout(()=>e.currentTarget.textContent='Kopieren',1200);}
+    });
+  });
+</script>
+</body>
+</html>
 
