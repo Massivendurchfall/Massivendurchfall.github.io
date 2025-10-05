@@ -128,6 +128,209 @@ for ding in einkauf:
 print(math.sqrt(16))</code></pre>
   </article>
 
+  <article id="strings" class="p-6 rounded-3xl bg-white/5 border border-white/10">
+    <h2 class="text-xl font-semibold">9. Texte (Strings)</h2>
+    <p class="mt-2 text-slate-300">Texte sind Zeichenketten. Man kann sie zusammenbauen und untersuchen.</p>
+    <div class="mt-3 grid md:grid-cols-2 gap-4">
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Zusammenbauen</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>first = "Hallo"
+last = "Welt"
+msg = first + " " + last
+print(msg)</code></pre>
+      </div>
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">f-Strings</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>name = "Mila"
+age = 9
+print(f"Ich bin {name} und {age} Jahre alt.")</code></pre>
+      </div>
+    </div>
+    <div class="mt-3 grid md:grid-cols-3 gap-4">
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Nützliche Methoden</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>text = "banana"
+text.upper()
+text.count("a")
+text.replace("na","no")</code></pre>
+      </div>
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Zerlegen</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>line = "Max;12;Berlin"
+parts = line.split(";")
+name, age, city = parts</code></pre>
+      </div>
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Slicing</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>w = "Python"
+w[0]
+w[1:4]
+w[-2:]</code></pre>
+      </div>
+    </div>
+  </article>
+
+  <article id="dicts" class="p-6 rounded-3xl bg-white/5 border border-white/10">
+    <h2 class="text-xl font-semibold">10. Wörterbücher (dict)</h2>
+    <p class="mt-2 text-slate-300">Ein Wörterbuch speichert Paare aus Schlüssel und Wert.</p>
+    <div class="mt-3 grid md:grid-cols-2 gap-4">
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Erstellen und Nutzen</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>user = {"name":"Lea","age":10}
+user["age"] = 11
+print(user["name"])</code></pre>
+      </div>
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Durchlaufen</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>for k, v in user.items():
+    print(k, v)</code></pre>
+      </div>
+    </div>
+  </article>
+
+  <article id="sets-tuples" class="p-6 rounded-3xl bg-white/5 border border-white/10">
+    <h2 class="text-xl font-semibold">11. Mengen und Tupel</h2>
+    <div class="mt-3 grid md:grid-cols-2 gap-4">
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Mengen (set)</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>a = {1,2,3}
+b = {3,4}
+a | b
+a & b
+list({1,1,2,3})</code></pre>
+      </div>
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Tupel (tuple)</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>pos = (10, 20)
+x, y = pos
+coords = (1, 2, 3)</code></pre>
+      </div>
+    </div>
+  </article>
+
+  <article id="bool" class="p-6 rounded-3xl bg-white/5 border border-white/10">
+    <h2 class="text-xl font-semibold">12. Wahr oder falsch (bool)</h2>
+    <p class="mt-2 text-slate-300">Programme treffen Entscheidungen mit Wahrheitswerten.</p>
+    <div class="mt-3 grid md:grid-cols-3 gap-4">
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Vergleiche</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>7 > 3
+5 == 5
+"a" != "b"</code></pre>
+      </div>
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Logik</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>True and False
+True or False
+not True</code></pre>
+      </div>
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Truthiness</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>bool(0)
+bool("")
+bool([1])</code></pre>
+      </div>
+    </div>
+  </article>
+
+  <article id="loops-weiter" class="p-6 rounded-3xl bg-white/5 border border-white/10">
+    <h2 class="text-xl font-semibold">13. Weitere Schleifenwerkzeuge</h2>
+    <div class="mt-3 grid md:grid-cols-3 gap-4">
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">while, break, continue</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>n = 3
+while n > 0:
+    n -= 1
+    if n == 1:
+        continue
+    if n == 0:
+        break</code></pre>
+      </div>
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">range und enumerate</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>for i in range(3):
+    print(i)
+
+items = ["a","b","c"]
+for idx, item in enumerate(items):
+    print(idx, item)</code></pre>
+      </div>
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">zip</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>names = ["Max","Lea"]
+ages = [9, 10]
+for n, a in zip(names, ages):
+    print(n, a)</code></pre>
+      </div>
+    </div>
+  </article>
+
+  <article id="ein-ausgabe" class="p-6 rounded-3xl bg-white/5 border border-white/10">
+    <h2 class="text-xl font-semibold">14. Eingabe und Umwandeln</h2>
+    <div class="mt-3 grid md:grid-cols-2 gap-4">
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">input</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>name = input("Dein Name: ")
+print("Hallo", name)</code></pre>
+      </div>
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Zahl aus Text</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>age_txt = "12"
+age = int(age_txt)
+print(age + 1)</code></pre>
+      </div>
+    </div>
+  </article>
+
+  <article id="dateien" class="p-6 rounded-3xl bg-white/5 border border-white/10">
+    <h2 class="text-xl font-semibold">15. Dateien lesen und schreiben</h2>
+    <div class="mt-3 grid md:grid-cols-2 gap-4">
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Schreiben</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>with open("notiz.txt","w") as f:
+    f.write("Hallo")</code></pre>
+      </div>
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Lesen</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>with open("notiz.txt") as f:
+    data = f.read()
+print(data)</code></pre>
+      </div>
+    </div>
+  </article>
+
+  <article id="mini-projekte" class="p-6 rounded-3xl bg-white/5 border border-white/10">
+    <h2 class="text-xl font-semibold">16. Mini-Projekte</h2>
+    <div class="mt-3 grid md:grid-cols-2 gap-4">
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Temperatur-Umrechner</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>c = float(input("Celsius: "))
+f = c * 9/5 + 32
+print(f"Fahrenheit: {f}")</code></pre>
+      </div>
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Zahlenraten</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>secret = 7
+guess = int(input("Rate: "))
+if guess == secret:
+    print("Treffer")
+else:
+    print("Daneben")</code></pre>
+      </div>
+    </div>
+  </article>
+
+  <article id="uebungen" class="p-6 rounded-3xl bg-white/5 border border-white/10 mb-10">
+    <h2 class="text-xl font-semibold">17. Übungen</h2>
+    <ul class="mt-3 space-y-2 text-slate-300">
+      <li>Erstelle eine Liste mit drei Lieblingsspeisen und gib jede in einer Zeile aus.</li>
+      <li>Frage den Nutzer nach zwei Zahlen und gib die Summe aus.</li>
+      <li>Baue aus Vor- und Nachnamen einen vollständigen Namen mit f-String.</li>
+      <li>Lies eine Datei ein und zähle, wie oft der Buchstabe a vorkommt.</li>
+      <li>Erzeuge ein Wörterbuch mit Name und Alter und gib beides formatiert aus.</li>
+    </ul>
+  </article>
+
 </main>
 <footer class="border-t border-white/10 mt-10">
   <div class="max-w-7xl mx-auto px-4 py-6 text-sm text-slate-400">© 2025 Python Basics – Lernseite</div>
