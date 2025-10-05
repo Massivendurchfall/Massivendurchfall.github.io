@@ -16,6 +16,7 @@
   .copy-btn{display:none}
   pre:hover .copy-btn{display:inline-flex}
   .chip{border:1px solid rgba(255,255,255,.15)}
+  .hidden-section{display:none}
 </style>
 </head>
 <body class="bg-slate-950 text-slate-100">
@@ -27,11 +28,42 @@
     <h1 class="text-lg sm:text-xl font-semibold">Python Basics – Visual Guide</h1>
   </div>
 </header>
+
 <main class="max-w-5xl mx-auto px-4 lg:px-6 space-y-10 mt-8">
 
   <section id="start" class="p-6 rounded-3xl bg-gradient-to-br from-indigo-600/20 via-violet-600/10 to-cyan-600/20 border border-white/10">
     <h2 class="text-2xl font-bold">Willkommen</h2>
     <p class="mt-2 text-slate-300">Diese Seite erklärt Python so, dass auch absolute Anfänger ohne Vorkenntnisse verstehen, wie es funktioniert. Jeder Abschnitt enthält einfache Beispiele aus dem Alltag.</p>
+    <div class="mt-4 grid gap-3 md:grid-cols-2">
+      <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
+        <label for="suchfeld" class="text-sm text-slate-300">Schnellsuche</label>
+        <input id="suchfeld" type="text" placeholder="Thema oder Stichwort eingeben..." class="mt-2 w-full rounded-xl bg-slate-900 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500"/>
+        <p class="text-xs text-slate-400 mt-2">Filtert die Abschnitte live nach deinem Text.</p>
+      </div>
+      <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
+        <div class="flex flex-wrap gap-2">
+          <a href="#grundlagen" class="chip px-3 py-1 rounded-full text-sm hover:bg-white/10">Erste Schritte</a>
+          <a href="#variablen" class="chip px-3 py-1 rounded-full text-sm hover:bg-white/10">Variablen</a>
+          <a href="#datentypen" class="chip px-3 py-1 rounded-full text-sm hover:bg-white/10">Datentypen</a>
+          <a href="#kontrollfluss" class="chip px-3 py-1 rounded-full text-sm hover:bg-white/10">Entscheidungen</a>
+          <a href="#schleifen" class="chip px-3 py-1 rounded-full text-sm hover:bg-white/10">Schleifen</a>
+          <a href="#funktionen" class="chip px-3 py-1 rounded-full text-sm hover:bg-white/10">Funktionen</a>
+          <a href="#listen" class="chip px-3 py-1 rounded-full text-sm hover:bg-white/10">Listen</a>
+          <a href="#module" class="chip px-3 py-1 rounded-full text-sm hover:bg-white/10">Module</a>
+          <a href="#strings" class="chip px-3 py-1 rounded-full text-sm hover:bg-white/10">Strings</a>
+          <a href="#dicts" class="chip px-3 py-1 rounded-full text-sm hover:bg-white/10">Dict</a>
+          <a href="#bool" class="chip px-3 py-1 rounded-full text-sm hover:bg-white/10">Bool</a>
+          <a href="#mini-projekte" class="chip px-3 py-1 rounded-full text-sm hover:bg-white/10">Mini-Projekte</a>
+          <a href="#quickstart" class="chip px-3 py-1 rounded-full text-sm hover:bg-white/10">Installation</a>
+          <a href="#fehler" class="chip px-3 py-1 rounded-full text-sm hover:bg-white/10">Fehler</a>
+          <a href="#methoden" class="chip px-3 py-1 rounded-full text-sm hover:bg-white/10">Methoden</a>
+          <a href="#ausnahmen" class="chip px-3 py-1 rounded-full text-sm hover:bg-white/10">Ausnahmen</a>
+          <a href="#quiz" class="chip px-3 py-1 rounded-full text-sm hover:bg-white/10">Quiz</a>
+          <a href="#playground" class="chip px-3 py-1 rounded-full text-sm hover:bg-white/10">Playground</a>
+          <a href="#cheatsheet" class="chip px-3 py-1 rounded-full text-sm hover:bg-white/10">Cheatsheet</a>
+        </div>
+      </div>
+    </div>
   </section>
 
   <article id="grundlagen" class="p-6 rounded-3xl bg-white/5 border border-white/10">
@@ -41,12 +73,12 @@
       <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
         <h3 class="font-semibold">Hallo Welt</h3>
         <p class="text-slate-300 text-sm mt-1">Das erste Programm gibt einfach Text auf dem Bildschirm aus.</p>
-        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>print("Hallo Welt")</code></pre>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>print("Hallo Welt")</code></pre>
       </div>
       <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
         <h3 class="font-semibold">Rechnen wie ein Taschenrechner</h3>
         <p class="text-slate-300 text-sm mt-1">Python kann direkt einfache Rechnungen lösen.</p>
-        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>5 + 3
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>5 + 3
 10 - 2
 4 * 5
 20 / 4</code></pre>
@@ -57,7 +89,7 @@
   <article id="variablen" class="p-6 rounded-3xl bg-white/5 border border-white/10">
     <h2 class="text-xl font-semibold">2. Variablen</h2>
     <p class="mt-2 text-slate-300">Eine Variable ist wie eine Box, in die man etwas legt und ihr einen Namen gibt.</p>
-    <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>name = "Lisa"
+    <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>name = "Lisa"
 alter = 12
 print("Ich heiße", name, "und bin", alter, "Jahre alt.")</code></pre>
     <p class="text-slate-300 text-sm mt-2">Hier legen wir den Text <code>"Lisa"</code> und die Zahl <code>12</code> in zwei Boxen ab und nutzen sie im Satz.</p>
@@ -69,14 +101,14 @@ print("Ich heiße", name, "und bin", alter, "Jahre alt.")</code></pre>
     <div class="mt-4 grid md:grid-cols-2 gap-4">
       <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
         <h3 class="font-semibold">Zahlen</h3>
-        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>apfel = 3
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>apfel = 3
 banane = 2
 obstkorb = apfel + banane
 print("Im Korb sind", obstkorb, "Früchte.")</code></pre>
       </div>
       <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
         <h3 class="font-semibold">Text</h3>
-        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>gruß = "Hallo"
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>gruß = "Hallo"
 name = "Tom"
 print(gruß + " " + name)</code></pre>
       </div>
@@ -86,7 +118,7 @@ print(gruß + " " + name)</code></pre>
   <article id="kontrollfluss" class="p-6 rounded-3xl bg-white/5 border border-white/10">
     <h2 class="text-xl font-semibold">4. Entscheidungen</h2>
     <p class="mt-2 text-slate-300">Manchmal soll das Programm nur etwas tun, wenn eine Bedingung erfüllt ist.</p>
-    <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>alter = 18
+    <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>alter = 18
 if alter >= 18:
     print("Du darfst Auto fahren.")
 else:
@@ -96,7 +128,7 @@ else:
   <article id="schleifen" class="p-6 rounded-3xl bg-white/5 border border-white/10">
     <h2 class="text-xl font-semibold">5. Schleifen</h2>
     <p class="mt-2 text-slate-300">Eine Schleife wiederholt etwas, bis es fertig ist.</p>
-    <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>for i in range(3):
+    <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>for i in range(3):
     print("Das ist Runde", i+1)</code></pre>
     <p class="text-slate-300 text-sm mt-2">Hier läuft die Schleife 3-mal und zeigt die aktuelle Runde an.</p>
   </article>
@@ -104,7 +136,7 @@ else:
   <article id="funktionen" class="p-6 rounded-3xl bg-white/5 border border-white/10">
     <h2 class="text-xl font-semibold">6. Funktionen</h2>
     <p class="mt-2 text-slate-300">Eine Funktion ist wie ein Rezept: Einmal aufschreiben, beliebig oft nutzen.</p>
-    <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>def hallo(name):
+    <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>def hallo(name):
     print("Hallo", name)
 
 hallo("Mia")
@@ -114,8 +146,8 @@ hallo("Ben")</code></pre>
   <article id="listen" class="p-6 rounded-3xl bg-white/5 border border-white/10">
     <h2 class="text-xl font-semibold">7. Listen</h2>
     <p class="mt-2 text-slate-300">Listen sind Sammlungen, zum Beispiel eine Einkaufsliste.</p>
-    <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>einkauf = ["Milch", "Brot", "Äpfel"]
-print(einkauf[0])  # Erstes Element
+    <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>einkauf = ["Milch", "Brot", "Äpfel"]
+print(einkauf[0])
 
 for ding in einkauf:
     print("Ich kaufe:", ding)</code></pre>
@@ -124,7 +156,7 @@ for ding in einkauf:
   <article id="module" class="p-6 rounded-3xl bg-white/5 border border-white/10">
     <h2 class="text-xl font-semibold">8. Module</h2>
     <p class="mt-2 text-slate-300">Module sind Zusatzpakete mit neuen Funktionen. Beispiel: Mathematik.</p>
-    <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>import math
+    <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>import math
 print(math.sqrt(16))</code></pre>
   </article>
 
@@ -134,14 +166,14 @@ print(math.sqrt(16))</code></pre>
     <div class="mt-3 grid md:grid-cols-2 gap-4">
       <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
         <h3 class="font-semibold">Zusammenbauen</h3>
-        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>first = "Hallo"
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>first = "Hallo"
 last = "Welt"
 msg = first + " " + last
 print(msg)</code></pre>
       </div>
       <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
         <h3 class="font-semibold">f-Strings</h3>
-        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>name = "Mila"
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>name = "Mila"
 age = 9
 print(f"Ich bin {name} und {age} Jahre alt.")</code></pre>
       </div>
@@ -149,20 +181,20 @@ print(f"Ich bin {name} und {age} Jahre alt.")</code></pre>
     <div class="mt-3 grid md:grid-cols-3 gap-4">
       <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
         <h3 class="font-semibold">Nützliche Methoden</h3>
-        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>text = "banana"
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>text = "banana"
 text.upper()
 text.count("a")
 text.replace("na","no")</code></pre>
       </div>
       <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
         <h3 class="font-semibold">Zerlegen</h3>
-        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>line = "Max;12;Berlin"
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>line = "Max;12;Berlin"
 parts = line.split(";")
 name, age, city = parts</code></pre>
       </div>
       <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
         <h3 class="font-semibold">Slicing</h3>
-        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>w = "Python"
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>w = "Python"
 w[0]
 w[1:4]
 w[-2:]</code></pre>
@@ -176,13 +208,13 @@ w[-2:]</code></pre>
     <div class="mt-3 grid md:grid-cols-2 gap-4">
       <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
         <h3 class="font-semibold">Erstellen und Nutzen</h3>
-        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>user = {"name":"Lea","age":10}
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>user = {"name":"Lea","age":10}
 user["age"] = 11
 print(user["name"])</code></pre>
       </div>
       <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
         <h3 class="font-semibold">Durchlaufen</h3>
-        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>for k, v in user.items():
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>for k, v in user.items():
     print(k, v)</code></pre>
       </div>
     </div>
@@ -193,7 +225,7 @@ print(user["name"])</code></pre>
     <div class="mt-3 grid md:grid-cols-2 gap-4">
       <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
         <h3 class="font-semibold">Mengen (set)</h3>
-        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>a = {1,2,3}
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>a = {1,2,3}
 b = {3,4}
 a | b
 a & b
@@ -201,7 +233,7 @@ list({1,1,2,3})</code></pre>
       </div>
       <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
         <h3 class="font-semibold">Tupel (tuple)</h3>
-        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>pos = (10, 20)
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>pos = (10, 20)
 x, y = pos
 coords = (1, 2, 3)</code></pre>
       </div>
@@ -214,19 +246,19 @@ coords = (1, 2, 3)</code></pre>
     <div class="mt-3 grid md:grid-cols-3 gap-4">
       <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
         <h3 class="font-semibold">Vergleiche</h3>
-        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>7 > 3
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>7 > 3
 5 == 5
 "a" != "b"</code></pre>
       </div>
       <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
         <h3 class="font-semibold">Logik</h3>
-        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>True and False
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>True and False
 True or False
 not True</code></pre>
       </div>
       <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
         <h3 class="font-semibold">Truthiness</h3>
-        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>bool(0)
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>bool(0)
 bool("")
 bool([1])</code></pre>
       </div>
@@ -238,7 +270,7 @@ bool([1])</code></pre>
     <div class="mt-3 grid md:grid-cols-3 gap-4">
       <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
         <h3 class="font-semibold">while, break, continue</h3>
-        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>n = 3
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>n = 3
 while n > 0:
     n -= 1
     if n == 1:
@@ -248,7 +280,7 @@ while n > 0:
       </div>
       <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
         <h3 class="font-semibold">range und enumerate</h3>
-        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>for i in range(3):
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>for i in range(3):
     print(i)
 
 items = ["a","b","c"]
@@ -257,7 +289,7 @@ for idx, item in enumerate(items):
       </div>
       <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
         <h3 class="font-semibold">zip</h3>
-        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>names = ["Max","Lea"]
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>names = ["Max","Lea"]
 ages = [9, 10]
 for n, a in zip(names, ages):
     print(n, a)</code></pre>
@@ -270,12 +302,12 @@ for n, a in zip(names, ages):
     <div class="mt-3 grid md:grid-cols-2 gap-4">
       <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
         <h3 class="font-semibold">input</h3>
-        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>name = input("Dein Name: ")
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>name = input("Dein Name: ")
 print("Hallo", name)</code></pre>
       </div>
       <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
         <h3 class="font-semibold">Zahl aus Text</h3>
-        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>age_txt = "12"
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>age_txt = "12"
 age = int(age_txt)
 print(age + 1)</code></pre>
       </div>
@@ -287,12 +319,12 @@ print(age + 1)</code></pre>
     <div class="mt-3 grid md:grid-cols-2 gap-4">
       <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
         <h3 class="font-semibold">Schreiben</h3>
-        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>with open("notiz.txt","w") as f:
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>with open("notiz.txt","w") as f:
     f.write("Hallo")</code></pre>
       </div>
       <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
         <h3 class="font-semibold">Lesen</h3>
-        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>with open("notiz.txt") as f:
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>with open("notiz.txt") as f:
     data = f.read()
 print(data)</code></pre>
       </div>
@@ -304,13 +336,13 @@ print(data)</code></pre>
     <div class="mt-3 grid md:grid-cols-2 gap-4">
       <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
         <h3 class="font-semibold">Temperatur-Umrechner</h3>
-        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>c = float(input("Celsius: "))
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>c = float(input("Celsius: "))
 f = c * 9/5 + 32
 print(f"Fahrenheit: {f}")</code></pre>
       </div>
       <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
         <h3 class="font-semibold">Zahlenraten</h3>
-        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><code>secret = 7
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>secret = 7
 guess = int(input("Rate: "))
 if guess == secret:
     print("Treffer")
@@ -320,7 +352,7 @@ else:
     </div>
   </article>
 
-  <article id="uebungen" class="p-6 rounded-3xl bg-white/5 border border-white/10 mb-10">
+  <article id="uebungen" class="p-6 rounded-3xl bg-white/5 border border-white/10">
     <h2 class="text-xl font-semibold">17. Übungen</h2>
     <ul class="mt-3 space-y-2 text-slate-300">
       <li>Erstelle eine Liste mit drei Lieblingsspeisen und gib jede in einer Zeile aus.</li>
@@ -331,9 +363,312 @@ else:
     </ul>
   </article>
 
+  <article id="quickstart" class="p-6 rounded-3xl bg-white/5 border border-white/10">
+    <h2 class="text-xl font-semibold">18. Installation und Start</h2>
+    <div class="grid md:grid-cols-2 gap-4 mt-3">
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Python prüfen</h3>
+        <p class="text-slate-300 text-sm mt-1">Öffne Terminal oder PowerShell.</p>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>python --version</code></pre>
+      </div>
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Virtuelle Umgebung</h3>
+        <p class="text-slate-300 text-sm mt-1">Eigenen Bereich für Pakete anlegen.</p>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>python -m venv venv
+source venv/bin/activate</code></pre>
+      </div>
+    </div>
+  </article>
+
+  <article id="operatoren" class="p-6 rounded-3xl bg-white/5 border border-white/10">
+    <h2 class="text-xl font-semibold">19. Operatoren und Reihenfolge</h2>
+    <p class="mt-2 text-slate-300">Punkt- vor Strichrechnung. Klammern steuern die Reihenfolge.</p>
+    <div class="grid md:grid-cols-3 gap-4 mt-3">
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Arithmetik</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>2 + 3 * 2
+(2 + 3) * 2
+7 % 3
+2 ** 3</code></pre>
+      </div>
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Vergleiche</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>3 == 3
+3 != 4
+2 < 5
+5 >= 5</code></pre>
+      </div>
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Logische Ketten</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>age = 12
+age > 10 and age < 18
+10 <= age <= 18</code></pre>
+      </div>
+    </div>
+  </article>
+
+  <article id="fehler" class="p-6 rounded-3xl bg-white/5 border border-white/10">
+    <h2 class="text-xl font-semibold">20. Häufige Fehler verstehen</h2>
+    <div class="grid md:grid-cols-3 gap-4 mt-3">
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">NameError</h3>
+        <p class="text-slate-300 text-sm mt-1">Ein Name wurde nie gesetzt.</p>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>print(result)</code></pre>
+      </div>
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">TypeError</h3>
+        <p class="text-slate-300 text-sm mt-1">Unpassende Arten zusammen gemischt.</p>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>"5" + 2</code></pre>
+      </div>
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">SyntaxError</h3>
+        <p class="text-slate-300 text-sm mt-1">Schreibfehler in der Sprache.</p>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>if True
+    print("ok")</code></pre>
+      </div>
+    </div>
+  </article>
+
+  <article id="methoden" class="p-6 rounded-3xl bg-white/5 border border-white/10">
+    <h2 class="text-xl font-semibold">21. Häufige Methoden</h2>
+    <div class="grid md:grid-cols-3 gap-4 mt-3">
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Liste</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>nums = [3,1,2]
+nums.append(4)
+nums.sort()
+len(nums)</code></pre>
+      </div>
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Dict</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>d = {"a":1}
+d.get("a")
+d.keys()
+d.values()</code></pre>
+      </div>
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Text</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>s = "  hi "
+s.strip()
+s.startswith("h")
+"-".join(["a","b"])</code></pre>
+      </div>
+    </div>
+  </article>
+
+  <article id="ausnahmen" class="p-6 rounded-3xl bg-white/5 border border-white/10">
+    <h2 class="text-xl font-semibold">22. Ausnahmen (try/except)</h2>
+    <p class="mt-2 text-slate-300">Fehler abfangen und freundlich reagieren.</p>
+    <div class="grid md:grid-cols-2 gap-4 mt-3">
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Grundform</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>try:
+    n = int(input("Zahl: "))
+    print(n + 1)
+except ValueError:
+    print("Bitte eine ganze Zahl eingeben")</code></pre>
+      </div>
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">finally</h3>
+        <pre class="mt-3 p-4 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>try:
+    f = open("x.txt")
+    data = f.read()
+    print(data)
+except FileNotFoundError:
+    print("Datei fehlt")
+finally:
+    print("Fertig")</code></pre>
+      </div>
+    </div>
+  </article>
+
+  <article id="quiz" class="p-6 rounded-3xl bg-white/5 border border-white/10">
+    <h2 class="text-xl font-semibold">23. Mini-Quiz</h2>
+    <div class="mt-4 space-y-6">
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <p class="font-semibold">1) Was ist das Ergebnis von <code>2 + 3 * 2</code>?</p>
+        <div class="mt-2 grid gap-2">
+          <label class="inline-flex items-center gap-2"><input type="radio" name="q1" value="10" class="accent-indigo-500">10</label>
+          <label class="inline-flex items-center gap-2"><input type="radio" name="q1" value="8" class="accent-indigo-500">8</label>
+          <label class="inline-flex items-center gap-2"><input type="radio" name="q1" value="12" class="accent-indigo-500">12</label>
+        </div>
+      </div>
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <p class="font-semibold">2) Welche Struktur speichert Schlüssel-Wert-Paare?</p>
+        <div class="mt-2 grid gap-2">
+          <label class="inline-flex items-center gap-2"><input type="radio" name="q2" value="list" class="accent-indigo-500">list</label>
+          <label class="inline-flex items-center gap-2"><input type="radio" name="q2" value="dict" class="accent-indigo-500">dict</label>
+          <label class="inline-flex items-center gap-2"><input type="radio" name="q2" value="set" class="accent-indigo-500">set</label>
+        </div>
+      </div>
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <p class="font-semibold">3) Welcher Operator prüft Gleichheit?</p>
+        <div class="mt-2 grid gap-2">
+          <label class="inline-flex items-center gap-2"><input type="radio" name="q3" value="=" class="accent-indigo-500">=</label>
+          <label class="inline-flex items-center gap-2"><input type="radio" name="q3" value="==" class="accent-indigo-500">==</label>
+          <label class="inline-flex items-center gap-2"><input type="radio" name="q3" value="!=" class="accent-indigo-500">!=</label>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button id="quiz-check" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500">Auswerten</button>
+        <span id="quiz-result" class="text-slate-300"></span>
+      </div>
+    </div>
+  </article>
+
+  <article id="playground" class="p-6 rounded-3xl bg-white/5 border border-white/10">
+    <h2 class="text-xl font-semibold">24. Python-Playground (im Browser)</h2>
+    <p class="mt-2 text-slate-300">Lade den Interpreter, schreibe Code und führe ihn hier aus.</p>
+    <div class="mt-3 space-y-3">
+      <div class="flex items-center gap-3">
+        <button id="load-py" class="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500">Interpreter laden</button>
+        <span id="py-status" class="text-slate-400 text-sm">Nicht geladen</span>
+      </div>
+      <textarea id="py-code" class="w-full min-h-[160px] rounded-2xl bg-slate-900 border border-white/10 p-3 outline-none focus:ring-2 focus:ring-cyan-500">print("Hallo Python")</textarea>
+      <div class="flex items-center gap-3">
+        <button id="run-code" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50" disabled>Ausführen</button>
+        <button id="clear-out" class="px-4 py-2 rounded-xl bg-white/10 border border-white/10">Ausgabe löschen</button>
+      </div>
+      <pre id="py-out" class="mt-2 p-4 rounded-xl bg-slate-900 text-sm"></pre>
+    </div>
+  </article>
+
+  <article id="cheatsheet" class="p-6 rounded-3xl bg-white/5 border border-white/10 mb-10">
+    <h2 class="text-xl font-semibold">25. Minis-Cheatsheet</h2>
+    <div class="grid md:grid-cols-3 gap-4 mt-3 text-sm">
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Datentypen</h3>
+        <ul class="mt-2 space-y-1 text-slate-300">
+          <li>int, float, bool, str</li>
+          <li>list, tuple, set, dict</li>
+        </ul>
+      </div>
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Konvertieren</h3>
+        <pre class="mt-2 p-3 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>int("3")
+float("3.5")
+str(5)
+list("hi")</code></pre>
+      </div>
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+        <h3 class="font-semibold">Ein- und Ausgabe</h3>
+        <pre class="mt-2 p-3 rounded-xl bg-slate-900 text-sm"><button class="copy-btn absolute right-3 top-3 text-xs px-2 py-1 rounded-lg bg-white/10 border border-white/10">Kopieren</button><code>name = input("Name: ")
+print("Hi", name)</code></pre>
+      </div>
+    </div>
+  </article>
+
 </main>
+
 <footer class="border-t border-white/10 mt-10">
   <div class="max-w-7xl mx-auto px-4 py-6 text-sm text-slate-400">© 2025 Python Basics – Lernseite</div>
 </footer>
+
+<button id="to-top" class="fixed bottom-4 right-4 z-50 px-3 py-2 rounded-xl bg-white/10 border border-white/10 backdrop-blur hidden">Nach oben</button>
+
+<script>
+  document.querySelectorAll("pre").forEach(function(pre){
+    pre.classList.add("relative");
+  });
+  document.querySelectorAll("pre .copy-btn").forEach(function(btn){
+    btn.addEventListener("click", function(e){
+      var code = e.target.parentElement.querySelector("code").innerText;
+      navigator.clipboard.writeText(code);
+      var old = e.target.innerText;
+      e.target.innerText = "Kopiert";
+      setTimeout(function(){ e.target.innerText = old; }, 1200);
+    });
+  });
+
+  var suchfeld = document.getElementById("suchfeld");
+  if(suchfeld){
+    suchfeld.addEventListener("input", function(){
+      var q = suchfeld.value.trim().toLowerCase();
+      document.querySelectorAll("main article, main section").forEach(function(sec){
+        if(sec.id === "start") return;
+        var text = sec.innerText.toLowerCase();
+        var match = text.indexOf(q) !== -1;
+        sec.style.display = q === "" ? "" : (match ? "" : "none");
+      });
+    });
+  }
+
+  var toTop = document.getElementById("to-top");
+  window.addEventListener("scroll", function(){
+    if(window.scrollY > 200){ toTop.classList.remove("hidden"); } else { toTop.classList.add("hidden"); }
+  });
+  toTop.addEventListener("click", function(){
+    window.scrollTo({top:0, behavior:"smooth"});
+  });
+
+  var quizKey = { q1:"8", q2:"dict", q3:"==" };
+  var quizBtn = document.getElementById("quiz-check");
+  var quizRes = document.getElementById("quiz-result");
+  if(quizBtn){
+    quizBtn.addEventListener("click", function(){
+      var score = 0;
+      Object.keys(quizKey).forEach(function(name){
+        var checked = document.querySelector('input[name="'+name+'"]:checked');
+        if(checked && checked.value === quizKey[name]) score += 1;
+      });
+      quizRes.textContent = score + " von 3 richtig";
+    });
+  }
+
+  var pyLoaded = false;
+  var pyodideRef = null;
+  var loadBtn = document.getElementById("load-py");
+  var runBtn = document.getElementById("run-code");
+  var clearBtn = document.getElementById("clear-out");
+  var statusEl = document.getElementById("py-status");
+  var codeEl = document.getElementById("py-code");
+  var outEl = document.getElementById("py-out");
+
+  function appendOut(text){
+    outEl.textContent += text + "\n";
+  }
+
+  if(clearBtn){
+    clearBtn.addEventListener("click", function(){ outEl.textContent = ""; });
+  }
+
+  if(loadBtn){
+    loadBtn.addEventListener("click", async function(){
+      if(pyLoaded) return;
+      statusEl.textContent = "Lade...";
+      var s = document.createElement("script");
+      s.src = "https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js";
+      s.onload = async function(){
+        try{
+          pyodideRef = await loadPyodide();
+          pyLoaded = true;
+          statusEl.textContent = "Geladen";
+          runBtn.disabled = false;
+        }catch(e){
+          statusEl.textContent = "Fehler beim Laden";
+        }
+      };
+      document.body.appendChild(s);
+    });
+  }
+
+  if(runBtn){
+    runBtn.addEventListener("click", async function(){
+      if(!pyLoaded || !pyodideRef) return;
+      runBtn.disabled = true;
+      try{
+        await pyodideRef.runPythonAsync("import sys,io\n_buffer=io.StringIO()\n_sys_stdout=sys.stdout\nsys.stdout=_buffer");
+        await pyodideRef.runPythonAsync(codeEl.value);
+        var output = await pyodideRef.runPythonAsync("sys.stdout.getvalue()");
+        await pyodideRef.runPythonAsync("sys.stdout=_sys_stdout");
+        appendOut(output.trim());
+      }catch(e){
+        appendOut(String(e));
+      }finally{
+        runBtn.disabled = false;
+      }
+    });
+  }
+</script>
 </body>
 </html>
