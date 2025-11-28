@@ -38,9 +38,34 @@
       box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7);
     }
 
+    .board-with-bar {
+      display: flex;
+      gap: 12px;
+      align-items: stretch;
+    }
+
     #board {
       width: 640px;
       max-width: 100%;
+    }
+
+    .eval-bar {
+      width: 26px;
+      border-radius: 999px;
+      background: #111111;
+      border: 1px solid #444444;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.7);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .eval-bar-white {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 50%;
+      background: #f9fafb;
     }
 
     .panel {
@@ -281,7 +306,16 @@
     }
 
     .highlight-square {
-      box-shadow: inset 0 0 0 3px rgba(234, 179, 8, 0.9);
+      position: relative;
+    }
+
+    .highlight-square::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(234, 179, 8, 0.55);
+      pointer-events: none;
+      z-index: 1;
     }
 
     .white-1e1d7 {
@@ -317,7 +351,12 @@
 <body>
   <div class="app">
     <div class="board-shell">
-      <div id="board"></div>
+      <div class="board-with-bar">
+        <div id="board"></div>
+        <div class="eval-bar">
+          <div id="evalBarWhite" class="eval-bar-white"></div>
+        </div>
+      </div>
     </div>
 
     <div class="panel">
@@ -350,6 +389,10 @@
           <label class="radio-line">
             <input type="radio" name="side" id="sideBlack" value="b">
             <span>Black to move</span>
+          </label>
+          <label class="radio-line">
+            <input type="checkbox" id="autoSwitch">
+            <span>Auto-switch side</span>
           </label>
         </div>
 
@@ -452,6 +495,10 @@
       return $("input[name='side']:checked").val() || "w";
     }
 
+    function isAutoSwitchEnabled() {
+      return $("#autoSwitch").is(":checked");
+    }
+
     function getCastlingFromControls() {
       var c = "";
       if ($("#castleWK").is(":checked")) c += "K";
@@ -546,6 +593,11 @@
       return true;
     }
 
+    function setEvalBar(whitePercent) {
+      var p = Math.max(0, Math.min(100, whitePercent));
+      $("#evalBarWhite").css("height", p + "%");
+    }
+
     function convertPvToSan(pvString, fen) {
       if (!pvString) return "";
       var moves = pvString.trim().split(/\s+/);
@@ -569,6 +621,20 @@
       return sanMoves.join(" ");
     }
 
+    function updateEvalBarFromScore(scoreType, whiteValue) {
+      if (scoreType === "cp") {
+        var pawns = whiteValue / 100;
+        var maxP = 5;
+        if (pawns > maxP) pawns = maxP;
+        if (pawns < -maxP) pawns = -maxP;
+        var whitePercent = 50 + (pawns / maxP) * 50;
+        setEvalBar(whitePercent);
+      } else {
+        var whitePercentMate = whiteValue > 0 ? 99 : 1;
+        setEvalBar(whitePercentMate);
+      }
+    }
+
     function handleInfoLine(line) {
       var depthMatch = line.match(/\bdepth\s+(\d+)/);
       if (depthMatch) {
@@ -578,14 +644,25 @@
       var scoreMatch = line.match(/\bscore\s+(cp|mate)\s+(-?\d+)/);
       if (scoreMatch) {
         var type = scoreMatch[1];
-        var value = parseInt(scoreMatch[2], 10);
+        var rawValue = parseInt(scoreMatch[2], 10);
+
+        var fenRef = lastSearchFen || getCurrentFen();
+        var parts = fenRef.trim().split(/\s+/);
+        var side = parts.length > 1 ? parts[1] : "w";
+
+        var whiteValue = rawValue;
+        if (side === "b") {
+          whiteValue = -rawValue;
+        }
+
         var text;
         if (type === "cp") {
-          text = (value / 100).toFixed(2);
+          text = (whiteValue / 100).toFixed(2);
         } else {
-          text = value > 0 ? "#" + value : "#-" + Math.abs(value);
+          text = whiteValue > 0 ? "#" + Math.abs(whiteValue) : "#-" + Math.abs(whiteValue);
         }
         $("#scoreValue").text(text);
+        updateEvalBarFromScore(type, whiteValue);
       }
 
       var pvIndex = line.indexOf(" pv ");
@@ -596,35 +673,34 @@
       }
     }
 
-    function applyBestMoveToBoard(best) {
+    function makeBestMoveWithGame(best) {
+      if (!best || best.length < 4 || best === "0000") {
+        $("#statusLine").text("No legal move found.");
+        return;
+      }
+
       var from = best.slice(0, 2);
       var to = best.slice(2, 4);
       var promo = best.length > 4 ? best.slice(4) : undefined;
 
-      var pos = board.position();
-      var moving = pos[from];
-      if (!moving) return;
-
-      delete pos[from];
-
-      if (promo) {
-        var color = moving.charAt(0);
-        var newType = promo.toUpperCase();
-        pos[to] = color + newType;
-      } else {
-        pos[to] = moving;
+      var startFen = lastSearchFen || getCurrentFen();
+      var gameTmp = new Chess(startFen);
+      var move = gameTmp.move({ from: from, to: to, promotion: promo || "q" });
+      if (!move) {
+        $("#statusLine").text("Engine move illegal in current position.");
+        return;
       }
 
-      board.position(pos);
+      var newFen = gameTmp.fen();
 
-      var side = getSideFromControls();
-      if (side === "w") {
-        $("#sideBlack").prop("checked", true);
-      } else {
-        $("#sideWhite").prop("checked", true);
+      if (!isAutoSwitchEnabled()) {
+        var parts = newFen.split(" ");
+        parts[1] = getSideFromControls();
+        newFen = parts.join(" ");
       }
 
-      syncFenInputFromBoard();
+      loadFenIntoBoardAndControls(newFen);
+      highlightMove(from, to);
     }
 
     function handleBestMoveLine(line) {
@@ -639,7 +715,7 @@
       }
 
       var best = parts[1];
-      if (best === "(none)") {
+      if (best === "(none)" || best === "0000") {
         $("#bestMoveValue").text("(none)");
         return;
       }
@@ -653,7 +729,7 @@
 
       if (mode === "make") {
         clearHighlights();
-        applyBestMoveToBoard(best);
+        makeBestMoveWithGame(best);
       } else {
         highlightMove(from, to);
       }
@@ -696,7 +772,9 @@
       $("#castleWQ").prop("checked", true);
       $("#castleBK").prop("checked", true);
       $("#castleBQ").prop("checked", true);
+      $("#autoSwitch").prop("checked", true);
       syncFenInputFromBoard();
+      setEvalBar(50);
     }
 
     $(function () {
@@ -712,6 +790,7 @@
         $("#castleBQ").prop("checked", true);
         clearHighlights();
         syncFenInputFromBoard();
+        setEvalBar(50);
         $("#statusLine").text("");
       });
 
@@ -724,6 +803,7 @@
         $("#castleBK").prop("checked", false);
         $("#castleBQ").prop("checked", false);
         syncFenInputFromBoard();
+        setEvalBar(50);
         $("#statusLine").text("");
       });
 
@@ -738,6 +818,7 @@
           $("#statusLine").text("Invalid FEN string.");
         } else {
           clearHighlights();
+          setEvalBar(50);
           $("#statusLine").text("");
         }
       });
