@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Stockfish Chess Calculator</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.12.1/chess.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      background: radial-gradient(circle at top, #2b2924 0, #141414 55%, #0b0b0b 100%);
+      color: #f9fafb;
+    }
+
+    .app {
+      max-width: 1320px;
+      margin: 0 auto;
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .board-shell {
+      background: #262421;
+      padding: 18px;
+      border-radius: 12px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7);
+    }
+
+    #board {
+      width: 640px;
+      max-width: 100%;
+    }
+
+    .panel {
+      width: 380px;
+      background: #14161a;
+      color: #f9fafb;
+      border-radius: 14px;
+      padding: 18px 18px 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.65);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .panel-title {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: #e5e7eb;
+    }
+
+    .panel-sub {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #9ca3af;
+    }
+
+    .top-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    button {
+      border: none;
+      border-radius: 7px;
+      padding: 7px 13px;
+      font-size: 13px;
+      cursor: pointer;
+      background: #1f2933;
+      color: #e5e7eb;
+      transition: transform 0.06s ease, box-shadow 0.06s ease, background 0.15s ease;
+    }
+
+    button.primary {
+      background: #1b7c3f;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    button:hover:not(:disabled) {
+      background: #25323f;
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    button.primary:hover:not(:disabled) {
+      background: #1f8f48;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .field-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #cbd5f5;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .fen-input {
+      width: 100%;
+      padding: 7px 9px;
+      border-radius: 7px;
+      border: 1px solid #374151;
+      font-size: 13px;
+      background: #030712;
+      color: #e5e7eb;
+    }
+
+    .fen-input:focus {
+      outline: none;
+      border-color: #22c55e;
+      box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.35);
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .radio-group,
+    .castle-group {
+      flex: 1;
+      background: #050816;
+      padding: 8px 9px;
+      border-radius: 9px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      font-size: 12px;
+      border: 1px solid #1f2937;
+    }
+
+    .section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: #9ca3af;
+      margin-bottom: 2px;
+    }
+
+    .radio-line,
+    .castle-line {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .radio-line input,
+    .castle-line input {
+      accent-color: #22c55e;
+    }
+
+    .calculate-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 2px;
+    }
+
+    .mode-group {
+      flex: 1;
+      background: #050816;
+      padding: 8px 9px;
+      border-radius: 9px;
+      display: flex;
+      justify-content: space-around;
+      font-size: 12px;
+      border: 1px solid #1f2937;
+    }
+
+    .output-row {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
+
+    .output-field {
+      flex: 1;
+      min-width: 100px;
+      background: #050816;
+      padding: 8px 9px;
+      border-radius: 9px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12px;
+      border: 1px solid #1f2937;
+    }
+
+    .output-value {
+      background: #020617;
+      border-radius: 6px;
+      padding: 5px 7px;
+      font-size: 14px;
+      min-height: 24px;
+      color: #e5e7eb;
+    }
+
+    .pv-box {
+      background: #050816;
+      padding: 8px 9px;
+      border-radius: 9px;
+      font-size: 12px;
+      border: 1px solid #1f2937;
+    }
+
+    .pv-value {
+      background: #020617;
+      border-radius: 6px;
+      padding: 5px 7px;
+      min-height: 34px;
+      font-size: 13px;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+      color: #e5e7eb;
+    }
+
+    .time-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .time-row input {
+      width: 64px;
+      padding: 5px 7px;
+      border-radius: 7px;
+      border: 1px solid #374151;
+      font-size: 13px;
+      background: #030712;
+      color: #e5e7eb;
+    }
+
+    .time-row input:focus {
+      outline: none;
+      border-color: #22c55e;
+      box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.35);
+    }
+
+    .status-line {
+      font-size: 11px;
+      color: #9ca3af;
+      min-height: 14px;
+      margin-top: 2px;
+    }
+
+    .highlight-square {
+      box-shadow: inset 0 0 0 3px rgba(234, 179, 8, 0.9);
+    }
+
+    .white-1e1d7 {
+      background-color: #f0d9b5;
+    }
+
+    .black-3c85d {
+      background-color: #b58863;
+    }
+
+    @media (max-width: 1100px) {
+      .app {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .panel {
+        width: 100%;
+        max-width: 460px;
+      }
+
+      .board-shell {
+        width: 100%;
+        max-width: 640px;
+      }
+
+      #board {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="board-shell">
+      <div id="board"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">ENGINE PANEL</div>
+          <div class="panel-sub">STOCKFISH ANALYSIS</div>
+        </div>
+      </div>
+
+      <div class="top-buttons">
+        <button id="btnStart">Start Pos</button>
+        <button id="btnSetFen">Set FEN</button>
+        <button id="btnClear">Clear</button>
+        <button id="btnFlip">Flip</button>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">FEN</div>
+        <input id="fenInput" class="fen-input" type="text" spellcheck="false">
+      </div>
+
+      <div class="row">
+        <div class="radio-group">
+          <div class="section-title">Side to move</div>
+          <label class="radio-line">
+            <input type="radio" name="side" id="sideWhite" value="w">
+            <span>White to move</span>
+          </label>
+          <label class="radio-line">
+            <input type="radio" name="side" id="sideBlack" value="b">
+            <span>Black to move</span>
+          </label>
+        </div>
+
+        <div class="castle-group">
+          <div class="section-title">Castling rights</div>
+          <label class="castle-line">
+            <input type="checkbox" id="castleWK">
+            <span>White O-O</span>
+          </label>
+          <label class="castle-line">
+            <input type="checkbox" id="castleWQ">
+            <span>White O-O-O</span>
+          </label>
+          <label class="castle-line">
+            <input type="checkbox" id="castleBK">
+            <span>Black O-O</span>
+          </label>
+          <label class="castle-line">
+            <input type="checkbox" id="castleBQ">
+            <span>Black O-O-O</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="calculate-row">
+        <button id="btnCalculate" class="primary">Calculate position</button>
+        <div class="mode-group">
+          <label class="radio-line">
+            <input type="radio" name="mode" id="modeShow" value="show" checked>
+            <span>Show move</span>
+          </label>
+          <label class="radio-line">
+            <input type="radio" name="mode" id="modeMake" value="make">
+            <span>Make move</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="output-row">
+        <div class="output-field">
+          <div class="section-title">Best move</div>
+          <div id="bestMoveValue" class="output-value"></div>
+        </div>
+        <div class="output-field">
+          <div class="section-title">Score</div>
+          <div id="scoreValue" class="output-value"></div>
+        </div>
+        <div class="output-field">
+          <div class="section-title">Depth</div>
+          <div id="depthValue" class="output-value"></div>
+        </div>
+      </div>
+
+      <div class="pv-box">
+        <div class="section-title">PV</div>
+        <div id="pvValue" class="pv-value"></div>
+      </div>
+
+      <div class="time-row">
+        <span>Time to think (seconds):</span>
+        <input id="timeInput" type="number" min="0.1" step="0.1" value="1">
+      </div>
+
+      <div id="statusLine" class="status-line"></div>
+    </div>
+  </div>
+
+  <script>
+    var board;
+    var engine;
+    var isCalculating = false;
+    var lastSearchFen = "";
+
+    var pieceImages = {
+      wP: "https://chess-bot.com/online_calculator/img/chesspieces/wikipedia/wP.png",
+      wR: "https://chess-bot.com/online_calculator/img/chesspieces/wikipedia/wR.png",
+      wN: "https://chess-bot.com/online_calculator/img/chesspieces/wikipedia/wN.png",
+      wB: "https://chess-bot.com/online_calculator/img/chesspieces/wikipedia/wB.png",
+      wQ: "https://chess-bot.com/online_calculator/img/chesspieces/wikipedia/wQ.png",
+      wK: "https://chess-bot.com/online_calculator/img/chesspieces/wikipedia/wK.png",
+      bP: "https://chess-bot.com/online_calculator/img/chesspieces/wikipedia/bP.png",
+      bR: "https://chess-bot.com/online_calculator/img/chesspieces/wikipedia/bR.png",
+      bN: "https://chess-bot.com/online_calculator/img/chesspieces/wikipedia/bN.png",
+      bB: "https://chess-bot.com/online_calculator/img/chesspieces/wikipedia/bB.png",
+      bQ: "https://chess-bot.com/online_calculator/img/chesspieces/wikipedia/bQ.png",
+      bK: "https://chess-bot.com/online_calculator/img/chesspieces/wikipedia/bK.png"
+    };
+
+    function clearHighlights() {
+      $("#board .square-55d63").removeClass("highlight-square");
+    }
+
+    function highlightMove(from, to) {
+      clearHighlights();
+      $("#board .square-" + from).addClass("highlight-square");
+      $("#board .square-" + to).addClass("highlight-square");
+    }
+
+    function getSideFromControls() {
+      return $("input[name='side']:checked").val() || "w";
+    }
+
+    function getCastlingFromControls() {
+      var c = "";
+      if ($("#castleWK").is(":checked")) c += "K";
+      if ($("#castleWQ").is(":checked")) c += "Q";
+      if ($("#castleBK").is(":checked")) c += "k";
+      if ($("#castleBQ").is(":checked")) c += "q";
+      return c === "" ? "-" : c;
+    }
+
+    function setControlsFromFen(fen) {
+      var parts = fen.trim().split(/\s+/);
+      if (parts.length < 3) return;
+      var side = parts[1];
+      var castling = parts[2];
+
+      $("#sideWhite").prop("checked", side === "w");
+      $("#sideBlack").prop("checked", side === "b");
+
+      $("#castleWK").prop("checked", castling.indexOf("K") !== -1);
+      $("#castleWQ").prop("checked", castling.indexOf("Q") !== -1);
+      $("#castleBK").prop("checked", castling.indexOf("k") !== -1);
+      $("#castleBQ").prop("checked", castling.indexOf("q") !== -1);
+    }
+
+    function boardPositionToFenPieces(pos) {
+      var files = "abcdefgh";
+      var rows = [];
+      for (var rank = 8; rank >= 1; rank--) {
+        var empty = 0;
+        var row = "";
+        for (var fi = 0; fi < 8; fi++) {
+          var square = files[fi] + rank;
+          var piece = pos[square];
+          if (!piece) {
+            empty++;
+          } else {
+            if (empty > 0) {
+              row += empty;
+              empty = 0;
+            }
+            var color = piece.charAt(0);
+            var type = piece.charAt(1);
+            row += color === "w" ? type : type.toLowerCase();
+          }
+        }
+        if (empty > 0) row += empty;
+        rows.push(row);
+      }
+      return rows.join("/");
+    }
+
+    function getCurrentFen() {
+      var pos = board.position();
+      var pieces = boardPositionToFenPieces(pos);
+      var side = getSideFromControls();
+      var castling = getCastlingFromControls();
+      var ep = "-";
+      var hm = "0";
+      var fm = "1";
+      return pieces + " " + side + " " + castling + " " + ep + " " + hm + " " + fm;
+    }
+
+    function syncFenInputFromBoard() {
+      var fen = getCurrentFen();
+      $("#fenInput").val(fen);
+    }
+
+    function loadFenIntoBoardAndControls(fen) {
+      var gameTmp = new Chess();
+      try {
+        if (!gameTmp.load(fen)) return false;
+      } catch (e) {
+        return false;
+      }
+
+      var boardArr = gameTmp.board();
+      var pos = {};
+      var files = "abcdefgh";
+      for (var rank = 0; rank < 8; rank++) {
+        for (var file = 0; file < 8; file++) {
+          var piece = boardArr[rank][file];
+          if (!piece) continue;
+          var square = files[file] + (8 - rank);
+          var code = (piece.color === "w" ? "w" : "b") + piece.type.toUpperCase();
+          pos[square] = code;
+        }
+      }
+      board.position(pos);
+      var normalizedFen = gameTmp.fen();
+      $("#fenInput").val(normalizedFen);
+      setControlsFromFen(normalizedFen);
+      return true;
+    }
+
+    function convertPvToSan(pvString, fen) {
+      if (!pvString) return "";
+      var moves = pvString.trim().split(/\s+/);
+      var temp;
+      try {
+        temp = new Chess(fen);
+      } catch (e) {
+        return pvString;
+      }
+      var sanMoves = [];
+      for (var i = 0; i < moves.length; i++) {
+        var uci = moves[i];
+        if (uci.length < 4) continue;
+        var from = uci.slice(0, 2);
+        var to = uci.slice(2, 4);
+        var promo = uci.length > 4 ? uci.slice(4) : undefined;
+        var move = temp.move({ from: from, to: to, promotion: promo });
+        if (!move) break;
+        sanMoves.push(move.san);
+      }
+      return sanMoves.join(" ");
+    }
+
+    function handleInfoLine(line) {
+      var depthMatch = line.match(/\bdepth\s+(\d+)/);
+      if (depthMatch) {
+        $("#depthValue").text(depthMatch[1]);
+      }
+
+      var scoreMatch = line.match(/\bscore\s+(cp|mate)\s+(-?\d+)/);
+      if (scoreMatch) {
+        var type = scoreMatch[1];
+        var value = parseInt(scoreMatch[2], 10);
+        var text;
+        if (type === "cp") {
+          text = (value / 100).toFixed(2);
+        } else {
+          text = value > 0 ? "#" + value : "#-" + Math.abs(value);
+        }
+        $("#scoreValue").text(text);
+      }
+
+      var pvIndex = line.indexOf(" pv ");
+      if (pvIndex !== -1) {
+        var pvMoves = line.substring(pvIndex + 4).trim();
+        var sanPv = convertPvToSan(pvMoves, lastSearchFen || getCurrentFen());
+        $("#pvValue").text(sanPv || pvMoves);
+      }
+    }
+
+    function applyBestMoveToBoard(best) {
+      var from = best.slice(0, 2);
+      var to = best.slice(2, 4);
+      var promo = best.length > 4 ? best.slice(4) : undefined;
+
+      var pos = board.position();
+      var moving = pos[from];
+      if (!moving) return;
+
+      delete pos[from];
+
+      if (promo) {
+        var color = moving.charAt(0);
+        var newType = promo.toUpperCase();
+        pos[to] = color + newType;
+      } else {
+        pos[to] = moving;
+      }
+
+      board.position(pos);
+
+      var side = getSideFromControls();
+      if (side === "w") {
+        $("#sideBlack").prop("checked", true);
+      } else {
+        $("#sideWhite").prop("checked", true);
+      }
+
+      syncFenInputFromBoard();
+    }
+
+    function handleBestMoveLine(line) {
+      isCalculating = false;
+      $("#btnCalculate").prop("disabled", false);
+      $("#statusLine").text("");
+
+      var parts = line.split(" ");
+      if (parts.length < 2) {
+        $("#bestMoveValue").text("(none)");
+        return;
+      }
+
+      var best = parts[1];
+      if (best === "(none)") {
+        $("#bestMoveValue").text("(none)");
+        return;
+      }
+
+      $("#bestMoveValue").text(best);
+
+      var from = best.slice(0, 2);
+      var to = best.slice(2, 4);
+
+      var mode = $("input[name='mode']:checked").val() || "show";
+
+      if (mode === "make") {
+        clearHighlights();
+        applyBestMoveToBoard(best);
+      } else {
+        highlightMove(from, to);
+      }
+    }
+
+    function initEngine() {
+      engine = new Worker("stockfish.js");
+      engine.onmessage = function (event) {
+        var line = typeof event.data === "string" ? event.data : event;
+        if (!line) return;
+
+        if (line.startsWith("info ")) {
+          handleInfoLine(line);
+        } else if (line.startsWith("bestmove")) {
+          handleBestMoveLine(line);
+        }
+      };
+      engine.postMessage("uci");
+    }
+
+    function initBoard() {
+      board = Chessboard("board", {
+        draggable: true,
+        position: "start",
+        sparePieces: true,
+        dropOffBoard: "trash",
+        moveSpeed: "fast",
+        snapSpeed: "fast",
+        snapbackSpeed: "fast",
+        pieceTheme: function (piece) {
+          return pieceImages[piece] || "";
+        },
+        onSnapEnd: function () {
+          syncFenInputFromBoard();
+        }
+      });
+
+      $("#sideWhite").prop("checked", true);
+      $("#castleWK").prop("checked", true);
+      $("#castleWQ").prop("checked", true);
+      $("#castleBK").prop("checked", true);
+      $("#castleBQ").prop("checked", true);
+      syncFenInputFromBoard();
+    }
+
+    $(function () {
+      initBoard();
+      initEngine();
+
+      $("#btnStart").on("click", function () {
+        board.start();
+        $("#sideWhite").prop("checked", true);
+        $("#castleWK").prop("checked", true);
+        $("#castleWQ").prop("checked", true);
+        $("#castleBK").prop("checked", true);
+        $("#castleBQ").prop("checked", true);
+        clearHighlights();
+        syncFenInputFromBoard();
+        $("#statusLine").text("");
+      });
+
+      $("#btnClear").on("click", function () {
+        board.position({});
+        clearHighlights();
+        $("#sideWhite").prop("checked", true);
+        $("#castleWK").prop("checked", false);
+        $("#castleWQ").prop("checked", false);
+        $("#castleBK").prop("checked", false);
+        $("#castleBQ").prop("checked", false);
+        syncFenInputFromBoard();
+        $("#statusLine").text("");
+      });
+
+      $("#btnFlip").on("click", function () {
+        board.flip();
+      });
+
+      $("#btnSetFen").on("click", function () {
+        var fen = $("#fenInput").val().trim();
+        if (!fen) return;
+        if (!loadFenIntoBoardAndControls(fen)) {
+          $("#statusLine").text("Invalid FEN string.");
+        } else {
+          clearHighlights();
+          $("#statusLine").text("");
+        }
+      });
+
+      $("#sideWhite, #sideBlack").on("change", function () {
+        syncFenInputFromBoard();
+      });
+
+      $("#castleWK, #castleWQ, #castleBK, #castleBQ").on("change", function () {
+        syncFenInputFromBoard();
+      });
+
+      $("#btnCalculate").on("click", function () {
+        if (isCalculating) return;
+
+        var fen = $("#fenInput").val().trim();
+        if (!fen) fen = getCurrentFen();
+
+        var tmp = new Chess();
+        if (!tmp.load(fen)) {
+          $("#statusLine").text("Invalid FEN, cannot calculate.");
+          return;
+        }
+
+        var canonicalFen = tmp.fen();
+        $("#fenInput").val(canonicalFen);
+        setControlsFromFen(canonicalFen);
+        lastSearchFen = canonicalFen;
+
+        var timeSec = parseFloat($("#timeInput").val());
+        if (!timeSec || timeSec <= 0) timeSec = 1;
+        var timeMs = Math.round(timeSec * 1000);
+
+        isCalculating = true;
+        $("#btnCalculate").prop("disabled", true);
+        $("#statusLine").text("Engine thinking...");
+        $("#scoreValue").text("");
+        $("#depthValue").text("");
+        $("#pvValue").text("");
+        $("#bestMoveValue").text("");
+        clearHighlights();
+
+        engine.postMessage("stop");
+        engine.postMessage("ucinewgame");
+        engine.postMessage("position fen " + canonicalFen);
+        engine.postMessage("go movetime " + timeMs);
+      });
+    });
+  </script>
+</body>
+</html>
