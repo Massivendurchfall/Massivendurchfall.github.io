@@ -169,8 +169,8 @@
       </div>
 
       <div class="pv-box">
-        <div class="section-title">Comment</div>
-        <div id="commentValue" class="pv-value"></div>
+        <div class="section-title">Description</div>
+        <div id="descriptionValue" class="pv-value"></div>
       </div>
 
       <div class="time-row">
@@ -361,6 +361,48 @@
       }
     }
 
+    function pieceNameDe(type){
+      if(type==="q")return"Dame";
+      if(type==="r")return"Turm";
+      if(type==="b")return"Läufer";
+      if(type==="n")return"Springer";
+      if(type==="k")return"König";
+      if(type==="p")return"Bauer";
+      return"type";
+    }
+
+    function describePv(pvString,fen){
+      if(!pvString)return"";
+      var temp;
+      try{ temp=new Chess(fen); }catch(e){ return""; }
+      var moves=pvString.trim().split(/\s+/);
+      var parts=[];
+      for(var i=0;i<moves.length;i++){
+        var uci=moves[i];
+        if(uci.length<4)continue;
+        var from=uci.slice(0,2);
+        var to=uci.slice(2,4);
+        var promo=uci.length>4?uci.slice(4):undefined;
+        var move=temp.move({from:from,to:to,promotion:promo});
+        if(!move)break;
+        var colorName=move.color==="w"?"Weiß":"Schwarz";
+        var pieceName=pieceNameDe(move.piece);
+        var s="Zug "+(i+1)+": "+colorName+" spielt "+pieceName+" von "+move.from+" nach "+move.to;
+        if(move.san.indexOf("#")!==-1){
+          s+=" und setzt matt";
+        }else if(move.san.indexOf("+")!==-1){
+          s+=" und gibt Schach";
+        }
+        if(move.promotion){
+          var promName=pieceNameDe(move.promotion);
+          s+=" und verwandelt den Bauern in eine "+promName;
+        }
+        s+=".";
+        parts.push(s);
+      }
+      return parts.join(" ");
+    }
+
     function handleInfoLine(line){
       var depthMatch=line.match(/\bdepth\s+(\d+)/);
       if(depthMatch)$("#depthValue").text(depthMatch[1]);
@@ -383,8 +425,11 @@
       var pvIndex=line.indexOf(" pv ");
       if(pvIndex!==-1){
         var pvMoves=line.substring(pvIndex+4).trim();
-        var sanPv=convertPvToSan(pvMoves,lastSearchFen||getCurrentFen());
+        var fenRef2=lastSearchFen||getCurrentFen();
+        var sanPv=convertPvToSan(pvMoves,fenRef2);
         $("#pvValue").text(sanPv||pvMoves);
+        var desc=describePv(pvMoves,fenRef2);
+        $("#descriptionValue").text(desc);
       }
     }
 
@@ -468,148 +513,6 @@
       $("#statusLine").text("Move applied directly on board.");
     }
 
-    function pieceName(type){
-      if(!type)return"piece";
-      if(type==="q")return"queen";
-      if(type==="r")return"rook";
-      if(type==="b")return"bishop";
-      if(type==="n")return"knight";
-      if(type==="k")return"king";
-      if(type==="p")return"pawn";
-      return type;
-    }
-
-    function getAttackedEnemyPieces(game,square,piece){
-      var result=[];
-      var file=square.charCodeAt(0)-97;
-      var rank=parseInt(square[1],10)-1;
-
-      function inBounds(f,r){
-        return f>=0&&f<8&&r>=0&&r<8;
-      }
-
-      function squareAt(f,r){
-        return String.fromCharCode(97+f)+(r+1);
-      }
-
-      if(piece.type==="n"){
-        var jumps=[[1,2],[2,1],[2,-1],[1,-2],[-1,-2],[-2,-1],[-2,1],[-1,2]];
-        for(var i=0;i<jumps.length;i++){
-          var jf=file+jumps[i][0];
-          var jr=rank+jumps[i][1];
-          if(!inBounds(jf,jr))continue;
-          var sq=squareAt(jf,jr);
-          var p=game.get(sq);
-          if(p&&p.color!==piece.color)result.push({type:p.type,square:sq});
-        }
-      }else if(piece.type==="b"||piece.type==="r"||piece.type==="q"){
-        var dirs=[];
-        if(piece.type==="b"||piece.type==="q"){
-          dirs.push([1,1],[1,-1],[-1,1],[-1,-1]);
-        }
-        if(piece.type==="r"||piece.type==="q"){
-          dirs.push([1,0],[-1,0],[0,1],[0,-1]);
-        }
-        for(var d=0;d<dirs.length;d++){
-          var df=dirs[d][0];
-          var dr=dirs[d][1];
-          var f=file+df;
-          var r=rank+dr;
-          while(inBounds(f,r)){
-            var sq2=squareAt(f,r);
-            var p2=game.get(sq2);
-            if(p2){
-              if(p2.color!==piece.color)result.push({type:p2.type,square:sq2});
-              break;
-            }
-            f+=df;
-            r+=dr;
-          }
-        }
-      }else if(piece.type==="k"){
-        for(var df=-1;df<=1;df++){
-          for(var dr=-1;dr<=1;dr++){
-            if(df===0&&dr===0)continue;
-            var kf=file+df;
-            var kr=rank+dr;
-            if(!inBounds(kf,kr))continue;
-            var sqk=squareAt(kf,kr);
-            var pk=game.get(sqk);
-            if(pk&&pk.color!==piece.color)result.push({type:pk.type,square:sqk});
-          }
-        }
-      }else if(piece.type==="p"){
-        var dir=piece.color==="w"?1:-1;
-        var pawnTargets=[[1,dir],[-1,dir]];
-        for(var pi=0;pi<pawnTargets.length;pi++){
-          var pf=file+pawnTargets[pi][0];
-          var pr=rank+pawnTargets[pi][1];
-          if(!inBounds(pf,pr))continue;
-          var sqp=squareAt(pf,pr);
-          var pp=game.get(sqp);
-          if(pp&&pp.color!==piece.color)result.push({type:pp.type,square:sqp});
-        }
-      }
-
-      return result;
-    }
-
-    function detectFork(fenAfter,move){
-      var g=new Chess();
-      try{ if(!g.load(fenAfter))return""; }catch(e){ return""; }
-      var sq=move.to;
-      var piece=g.get(sq);
-      if(!piece)return"";
-      var attacked=getAttackedEnemyPieces(g,sq,piece);
-      if(attacked.length<2)return"";
-      var values={k:1000,q:9,r:5,b:3,n:3,p:1};
-      attacked.sort(function(a,b){return(values[b.type]||0)-(values[a.type]||0);});
-      var names=[];
-      for(var i=0;i<attacked.length;i++){
-        var n=pieceName(attacked[i].type);
-        if(names.indexOf(n)===-1)names.push(n);
-      }
-      var targetText;
-      if(names.length===2)targetText=names[0]+" and "+names[1];
-      else targetText=names.slice(0,3).join(", ");
-      var attacker=pieceName(move.piece);
-      var start=attacker.charAt(0).toUpperCase()+attacker.slice(1);
-      return start+" fork on "+targetText;
-    }
-
-    function getMoveComment(fen,uci){
-      if(!fen||!uci||uci.length<4)return"";
-      var g=new Chess();
-      try{ if(!g.load(fen))return""; }catch(e){ return""; }
-      var from=uci.slice(0,2);
-      var to=uci.slice(2,4);
-      var promo=uci.length>4?uci.slice(4):undefined;
-      var move=g.move({from:from,to:to,promotion:promo||"q"});
-      if(!move)return"";
-      var commentParts=[];
-      if(move.san.indexOf("#")!==-1){
-        commentParts.push("Checkmate");
-      }else if(move.san.indexOf("+")!==-1){
-        commentParts.push("Check");
-      }
-      if(move.flags.indexOf("c")!==-1||move.flags.indexOf("e")!==-1){
-        if(move.captured){
-          var capName=pieceName(move.captured);
-          commentParts.push("captures the "+capName);
-        }else{
-          commentParts.push("captures material");
-        }
-      }
-      if(move.flags.indexOf("p")!==-1){
-        commentParts.push("promotes a pawn");
-      }
-      var fenAfter=g.fen();
-      var forkText=detectFork(fenAfter,move);
-      if(forkText)commentParts.push(forkText);
-      if(commentParts.length===0)return"";
-      return commentParts.join(". ")+".";
-    }
-
     function handleBestMoveLine(line){
       isCalculating=false;
       $("#btnCalculate").prop("disabled",false);
@@ -618,22 +521,16 @@
       var parts=line.split(" ");
       if(parts.length<2){
         $("#bestMoveValue").text("(none)");
-        $("#commentValue").text("");
         return;
       }
 
       var best=parts[1];
       if(best==="(none)"||best==="0000"){
         $("#bestMoveValue").text("(none)");
-        $("#commentValue").text("");
         return;
       }
 
       $("#bestMoveValue").text(best);
-
-      var fenRef=lastSearchFen||getCurrentFen();
-      var comment=getMoveComment(fenRef,best);
-      $("#commentValue").text(comment);
 
       var from=best.slice(0,2),to=best.slice(2,4);
       var mode=$("input[name='mode']:checked").val()||"show";
@@ -716,7 +613,7 @@
         syncFenInputFromBoard();
         setEvalBar(50);
         $("#statusLine").text("");
-        $("#commentValue").text("");
+        $("#descriptionValue").text("");
       });
 
       $("#btnClear").on("click",function(){
@@ -730,7 +627,7 @@
         syncFenInputFromBoard();
         setEvalBar(50);
         $("#statusLine").text("");
-        $("#commentValue").text("");
+        $("#descriptionValue").text("");
       });
 
       $("#btnFlip").on("click",function(){board.flip();});
@@ -744,7 +641,7 @@
           clearHighlights();
           setEvalBar(50);
           $("#statusLine").text("");
-          $("#commentValue").text("");
+          $("#descriptionValue").text("");
         }
       });
 
@@ -784,7 +681,7 @@
         $("#depthValue").text("");
         $("#pvValue").text("");
         $("#bestMoveValue").text("");
-        $("#commentValue").text("");
+        $("#descriptionValue").text("");
         clearHighlights();
 
         engine.postMessage("stop");
