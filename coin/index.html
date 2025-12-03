@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Euro-Münzwurf - Fancy Edition</title>
+    <!-- Lade Tailwind CSS für das Design -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lade die Inter-Schriftart -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Grundlegendes 3D-Setup und Schrifteinstellungen */
+        body {
+            font-family: 'Inter', sans-serif;
+            perspective: 1500px; /* Tieferer 3D-Effekt */
+            background: radial-gradient(circle at center, #1f2937 0%, #000000 100%); /* Radialer Verlauf für fancy Look */
+        }
+
+        /* Container für die 3D-Münze */
+        .coin-container {
+            width: 180px; /* Münze etwas größer */
+            height: 180px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 3.5s cubic-bezier(0.3, 0.9, 0.5, 1.2);
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.5); /* Leuchtender Schatten */
+            border-radius: 50%;
+        }
+
+        /* Die beiden Münzseiten (Vorder- und Rückseite) */
+        .coin-face {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            backface-visibility: hidden;
+            border-radius: 50%;
+            overflow: hidden; /* Hält das Bild innerhalb des Kreises */
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 0, 0, 0.3);
+            display: flex; /* Für die Zentrierung des Falls eines Bild-Fehlers */
+            align-items: center;
+            justify-content: center;
+        }
+
+        .coin-face img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Stellt sicher, dass das Bild den Kreis füllt */
+            pointer-events: none; /* Bild soll keine Events abfangen */
+        }
+
+        /* Kopf-Seite (Startposition) */
+        .coin-head {
+            transform: rotateY(0deg);
+            z-index: 2;
+        }
+
+        /* Zahl-Seite (180 Grad gedreht) */
+        .coin-tail {
+            transform: rotateY(180deg);
+            z-index: 1;
+        }
+
+        /* NEU: Korrektur für das "Zahl"-Bild */
+        /* Die gesamte Rückseite ist um 180 Grad gedreht, also drehen wir das Bild auf dieser Seite um 180 Grad zurück. */
+        .coin-tail img, .coin-tail .fallback-text {
+            transform: rotate(180deg);
+        }
+
+        /* Münzwurf-Keyframes (verändert, um den Aufprall sanfter zu machen) */
+        @keyframes flip-to-head {
+            0% { transform: rotateX(0deg); }
+            100% { transform: rotateX(3600deg) scale(1); }
+        }
+
+        @keyframes flip-to-tail {
+            0% { transform: rotateX(0deg); }
+            100% { transform: rotateX(3780deg) scale(1); }
+        }
+
+        /* Klassen, die durch JS zur Laufzeit hinzugefügt werden */
+        .flipping-head {
+            animation: flip-to-head 3s cubic-bezier(0.5, 0.0, 0.5, 1) forwards;
+        }
+
+        .flipping-tail {
+            animation: flip-to-tail 3s cubic-bezier(0.5, 0.0, 0.5, 1) forwards;
+        }
+
+        /* Verbesserter Button-Stil */
+        #flipButton {
+            background-image: linear-gradient(to right, #f59e0b, #facc15);
+            box-shadow: 0 5px 15px rgba(245, 158, 11, 0.6);
+            border: none;
+        }
+
+        #flipButton:hover {
+            background-image: linear-gradient(to right, #facc15, #f59e0b);
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(251, 191, 36, 0.8);
+        }
+
+        #flipButton:disabled {
+            background-image: none;
+            background-color: #4b5563; /* Grau bei Deaktivierung */
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        /* Fallback-Text-Stil für den onerror-Fall */
+        .fallback-text {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #333;
+        }
+    </style>
+</head>
+<body class="text-white min-h-screen flex items-center justify-center p-4">
+
+    <div id="app" class="w-full max-w-sm md:max-w-md bg-gray-900 bg-opacity-90 p-8 rounded-2xl shadow-3xl flex flex-col items-center border border-yellow-500/30">
+
+        <h1 class="text-4xl font-black mb-10 tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-600">
+            MÜNZ WURF SIMULATOR
+        </h1>
+
+        <!-- Münz-Anzeigebereich -->
+        <div class="h-48 flex items-center justify-center mb-10">
+            <div id="coinContainer" class="coin-container">
+                <!-- KOPF Seite (Gemeinsame Seite) -->
+                <div class="coin-face coin-head">
+                    <img src="https://placehold.co/180x180/d4af37/333?text=KOPF" alt="Kopfseite der Euro-Münze" 
+                         onerror="this.style.backgroundColor='#d4af37'; this.alt='KOPF'; this.classList.add('fallback-text'); this.removeAttribute('src'); this.style.fontSize='3rem';">
+                </div>
+                <!-- ZAHL Seite (Nationale Seite - Hier als Beispiel der Adler) -->
+                <div class="coin-face coin-tail">
+                    <img src="https://placehold.co/180x180/c0c0c0/333?text=ZAHL" alt="Zahlseite der Euro-Münze" 
+                         onerror="this.style.backgroundColor='#c0c0c0'; this.alt='ZAHL'; this.classList.add('fallback-text'); this.removeAttribute('src'); this.style.fontSize='3rem';">
+                </div>
+            </div>
+        </div>
+
+        <!-- Ergebnis- und Statusbereich -->
+        <p id="message" class="text-2xl font-bold mb-8 h-8 text-center text-yellow-300">
+            Klicke auf den Knopf!
+        </p>
+
+        <!-- Wurf-Knopf (Jetzt in Gold-Gradient) -->
+        <button id="flipButton" class="w-full py-4 px-6 text-gray-900 font-extrabold rounded-xl transition duration-300 shadow-xl transform hover:scale-[1.05] active:scale-95 text-lg">
+            Münze Werfen!
+        </button>
+
+        <!-- Zählerstand -->
+        <div class="mt-10 w-full flex justify-around p-5 bg-gray-700/50 backdrop-blur-sm rounded-xl border border-gray-600">
+            <div class="text-center">
+                <p class="text-sm text-gray-300 font-semibold mb-1">KOPF</p>
+                <p id="headCount" class="text-3xl font-black text-yellow-400">0</p>
+            </div>
+            <div class="text-center">
+                <p class="text-sm text-gray-300 font-semibold mb-1">ZAHL</p>
+                <p id="tailCount" class="text-3xl font-black text-yellow-400">0</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Holen der DOM-Elemente
+        const coinContainer = document.getElementById('coinContainer');
+        const flipButton = document.getElementById('flipButton');
+        const messageDisplay = document.getElementById('message');
+        const headCountDisplay = document.getElementById('headCount');
+        const tailCountDisplay = document.getElementById('tailCount');
+
+        // Zähler für Kopf und Zahl
+        let headWins = 0;
+        let tailWins = 0;
+        let isFlipping = false;
+
+        /**
+         * Führt den Münzwurf durch.
+         */
+        function flipCoin() {
+            if (isFlipping) return;
+
+            isFlipping = true;
+            flipButton.disabled = true;
+            messageDisplay.textContent = 'Die Münze dreht sich...';
+            messageDisplay.classList.remove('text-green-500', 'text-red-500'); // Ergebnis-Farben zurücksetzen
+
+            // 1. Animation zurücksetzen
+            coinContainer.classList.remove('flipping-head', 'flipping-tail');
+            coinContainer.style.boxShadow = '0 10px 30px rgba(245, 158, 11, 0.5)'; // Schatten zurücksetzen
+            
+            // Timeout ist notwendig, damit der Browser das Entfernen der Klasse rendert, bevor die neue Animation startet
+            setTimeout(() => {
+                // 2. 50/50 Zufallsentscheidung
+                const resultIsHead = Math.random() < 0.5;
+
+                // 3. Animation starten
+                if (resultIsHead) {
+                    coinContainer.classList.add('flipping-head');
+                } else {
+                    coinContainer.classList.add('flipping-tail');
+                }
+
+                // 4. Auf das Ende der Animation warten, um das Ergebnis anzuzeigen
+                coinContainer.addEventListener('animationend', handleAnimationEnd, { once: true });
+
+                // Hilfsfunktion, die nach Ende der Animation ausgeführt wird
+                function handleAnimationEnd() {
+                    isFlipping = false;
+                    flipButton.disabled = false;
+
+                    if (resultIsHead) {
+                        messageDisplay.textContent = 'GEWONNEN: KOPF!';
+                        messageDisplay.classList.add('text-green-500');
+                        headWins++;
+                    } else {
+                        messageDisplay.textContent = 'GEWONNEN: ZAHL!';
+                        messageDisplay.classList.add('text-red-500');
+                        tailWins++;
+                    }
+                    
+                    // Den resultierenden Schatten hinzufügen, der das Ergebnis widerspiegelt
+                    coinContainer.style.boxShadow = `0 10px 40px ${resultIsHead ? 'rgba(52, 211, 153, 0.8)' : 'rgba(239, 68, 68, 0.8)'}`;
+                    
+                    // Zähler aktualisieren
+                    headCountDisplay.textContent = headWins;
+                    tailCountDisplay.textContent = tailWins;
+                }
+
+            }, 50); 
+        }
+
+        // Event-Listener für den Button
+        flipButton.addEventListener('click', flipCoin);
+
+    </script>
+
+</body>
+</html>
