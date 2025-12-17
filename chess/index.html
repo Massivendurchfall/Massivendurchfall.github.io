@@ -164,11 +164,6 @@
       </div>
 
       <div class="pv-box">
-        <div class="section-title">Opening</div>
-        <div id="openingValue" class="pv-value"></div>
-      </div>
-
-      <div class="pv-box">
         <div class="section-title">Description</div>
         <div id="descriptionValue" class="pv-value"></div>
       </div>
@@ -273,36 +268,9 @@
       return pieces+" "+side+" "+castling+" - 0 1";
     }
 
-    function normalizeFenForOpening(fen){
-      var parts=fen.trim().split(/\s+/);
-      if(parts.length<2)return fen.trim();
-      return parts[0]+" "+parts[1];
-    }
-
-    var openingBook={
-      "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w":"Starting position",
-      "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b":"King's Pawn Opening",
-      "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b":"Queen's Pawn Opening",
-      "rnbqkbnr/pppppppp/8/8/2P5/8/PP1PPPPP/RNBQKBNR b":"English Opening",
-      "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w":"Sicilian Defence",
-      "rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR w":"French Defence"
-    };
-
-    function getOpeningNameFromFen(fen){
-      if(!fen)return"";
-      var key=normalizeFenForOpening(fen);
-      return openingBook[key]||"";
-    }
-
-    function updateOpeningLabelFromFen(fen){
-      var name=getOpeningNameFromFen(fen);
-      $("#openingValue").text(name);
-    }
-
     function syncFenInputFromBoard(){
       var fen=getCurrentFen();
       $("#fenInput").val(fen);
-      updateOpeningLabelFromFen(fen);
     }
 
     function loadFenIntoBoardAndControls(fen){
@@ -323,7 +291,6 @@
       var normalizedFen=gameTmp.fen();
       $("#fenInput").val(normalizedFen);
       setControlsFromFen(normalizedFen);
-      updateOpeningLabelFromFen(normalizedFen);
       return true;
     }
 
@@ -371,36 +338,168 @@
       return"type";
     }
 
-    function describePv(pvString,fen){
+    function pieceValue(type){
+      if(type==="p")return 1;
+      if(type==="n")return 3;
+      if(type==="b")return 3;
+      if(type==="r")return 5;
+      if(type==="q")return 9;
+      if(type==="k")return 0;
+      return 0;
+    }
+
+    function materialSnapshot(game){
+      var b=game.board();
+      var w=0,bk=0;
+      for(var r=0;r<8;r++){
+        for(var f=0;f<8;f++){
+          var p=b[r][f];
+          if(!p)continue;
+          var v=pieceValue(p.type);
+          if(p.color==="w")w+=v; else bk+=v;
+        }
+      }
+      return {w:w,b:bk};
+    }
+
+    function isCenterSquare(sq){
+      return sq==="d4"||sq==="e4"||sq==="d5"||sq==="e5"||sq==="c4"||sq==="c5"||sq==="f4"||sq==="f5";
+    }
+
+    function isDevelopmentMove(move){
+      if(!move||!move.piece)return false;
+      if(move.piece!=="n" && move.piece!=="b")return false;
+      var fromRank=move.from.charAt(1);
+      var color=move.color;
+      if(color==="w" && fromRank!=="1")return false;
+      if(color==="b" && fromRank!=="8")return false;
+      return true;
+    }
+
+    function isCentralPawnPush(move){
+      if(!move||move.piece!=="p")return false;
+      return move.to==="e4"||move.to==="d4"||move.to==="e5"||move.to==="d5";
+    }
+
+    function attackedHighValueTarget(gameAfter,move){
+      try{
+        var list=gameAfter.moves({square:move.to,verbose:true});
+        var best=null;
+        var bestV=0;
+        for(var i=0;i<list.length;i++){
+          var m=list[i];
+          if(!m.captured)continue;
+          var v=pieceValue(m.captured);
+          if(v>bestV){
+            bestV=v;
+            best=m;
+          }
+        }
+        if(best && bestV>0){
+          return {captured:best.captured,to:best.to,value:bestV};
+        }
+      }catch(e){}
+      return null;
+    }
+
+    function describeOneMoveWhy(gameBefore,uci){
+      if(!uci||uci.length<4)return null;
+      var from=uci.slice(0,2),to=uci.slice(2,4),promo=uci.length>4?uci.slice(4):undefined;
+
+      var inCheckBefore=false;
+      try{ inCheckBefore=gameBefore.in_check(); }catch(e){ inCheckBefore=false; }
+
+      var matBefore=materialSnapshot(gameBefore);
+      var moveObj=gameBefore.move({from:from,to:to,promotion:promo});
+      if(!moveObj)return null;
+
+      var colorName=moveObj.color==="w"?"Weiß":"Schwarz";
+      var reasons=[];
+
+      if(inCheckBefore)reasons.push("pariert das Schach und stabilisiert den König");
+
+      if(moveObj.flags && (moveObj.flags.indexOf("k")!==-1 || moveObj.flags.indexOf("q")!==-1)){
+        reasons.push("rochiert, um den König zu sichern und den Turm ins Spiel zu bringen");
+      }
+
+      if(moveObj.flags && (moveObj.flags.indexOf("c")!==-1 || moveObj.flags.indexOf("e")!==-1)){
+        var cap=moveObj.captured?pieceNameDe(moveObj.captured):"Figur";
+        reasons.push("schlägt eine "+cap+", um Material zu gewinnen oder eine Drohung zu entfernen");
+      }
+
+      if(moveObj.promotion){
+        reasons.push("verwandelt, um eine starke Figur zu bekommen und den Vorteil zu erhöhen");
+      }
+
+      var givesMate=false,givesCheck=false;
+      try{
+        givesMate=gameBefore.in_checkmate();
+        givesCheck=gameBefore.in_check();
+      }catch(e){
+        givesMate=false;givesCheck=false;
+      }
+
+      if(givesMate){
+        reasons.unshift("setzt matt, weil der gegnerische König keine sinnvolle Verteidigung mehr hat");
+      }else if(givesCheck){
+        reasons.unshift("gibt Schach, um Tempo zu gewinnen und den Gegner zu einer Reaktion zu zwingen");
+      }
+
+      if(isCentralPawnPush(moveObj)){
+        reasons.push("besetzt das Zentrum, gewinnt Raum und erleichtert die Figurenentwicklung");
+      }
+
+      if(isDevelopmentMove(moveObj)){
+        reasons.push("entwickelt eine Figur und verbessert die Aktivität");
+      }
+
+      if(isCenterSquare(moveObj.to) && moveObj.piece!=="p"){
+        reasons.push("nimmt Einfluss im Zentrum und erhöht den Druck");
+      }
+
+      var matAfter=materialSnapshot(gameBefore);
+      var side=moveObj.color;
+      var beforeDiff=(side==="w"?(matBefore.w-matBefore.b):(matBefore.b-matBefore.w));
+      var afterDiff=(side==="w"?(matAfter.w-matAfter.b):(matAfter.b-matAfter.w));
+      if(afterDiff>beforeDiff)reasons.push("verbessert die Materialbilanz");
+      if(afterDiff<beforeDiff){
+        if(givesCheck || reasons.indexOf("rochiert, um den König zu sichern und den Turm ins Spiel zu bringen")!==-1){
+          reasons.push("nimmt dafür bewusst Material in Kauf, um Initiative/Angriff zu bekommen");
+        }else{
+          reasons.push("nimmt Material in Kauf, um langfristige Kompensation zu erhalten");
+        }
+      }
+
+      var target=attackedHighValueTarget(gameBefore,moveObj);
+      if(target && !(moveObj.flags && (moveObj.flags.indexOf("c")!==-1 || moveObj.flags.indexOf("e")!==-1))){
+        reasons.push("setzt Druck auf eine "+pieceNameDe(target.captured)+" und kann Material gewinnen");
+      }
+
+      if(reasons.length===0){
+        reasons.push("verbessert die Stellung (Aktivität/Koordination)");
+      }
+
+      var piece=pieceNameDe(moveObj.piece);
+      var core=reasons[0];
+      var extra=reasons.slice(1,3);
+      var tail=extra.length?(" ("+extra.join(", ")+")"):"";
+      return colorName+" spielt "+piece+" von "+moveObj.from+" nach "+moveObj.to+", weil "+core+tail+".";
+    }
+
+    function describePvWhy(pvString,fen){
       if(!pvString)return"";
+      var moves=pvString.trim().split(/\s+/);
       var temp;
       try{ temp=new Chess(fen); }catch(e){ return""; }
-      var moves=pvString.trim().split(/\s+/);
-      var parts=[];
+      var out=[];
       for(var i=0;i<moves.length;i++){
         var uci=moves[i];
-        if(uci.length<4)continue;
-        var from=uci.slice(0,2);
-        var to=uci.slice(2,4);
-        var promo=uci.length>4?uci.slice(4):undefined;
-        var move=temp.move({from:from,to:to,promotion:promo});
-        if(!move)break;
-        var colorName=move.color==="w"?"Weiß":"Schwarz";
-        var pieceName=pieceNameDe(move.piece);
-        var s="Zug "+(i+1)+": "+colorName+" spielt "+pieceName+" von "+move.from+" nach "+move.to;
-        if(move.san.indexOf("#")!==-1){
-          s+=" und setzt matt";
-        }else if(move.san.indexOf("+")!==-1){
-          s+=" und gibt Schach";
-        }
-        if(move.promotion){
-          var promName=pieceNameDe(move.promotion);
-          s+=" und verwandelt den Bauern in eine "+promName;
-        }
-        s+=".";
-        parts.push(s);
+        var s=describeOneMoveWhy(temp,uci);
+        if(!s)break;
+        out.push(s);
+        if(out.length>=6)break;
       }
-      return parts.join(" ");
+      return out.join(" ");
     }
 
     function handleInfoLine(line){
@@ -428,7 +527,7 @@
         var fenRef2=lastSearchFen||getCurrentFen();
         var sanPv=convertPvToSan(pvMoves,fenRef2);
         $("#pvValue").text(sanPv||pvMoves);
-        var desc=describePv(pvMoves,fenRef2);
+        var desc=describePvWhy(pvMoves,fenRef2);
         $("#descriptionValue").text(desc);
       }
     }
@@ -614,6 +713,10 @@
         setEvalBar(50);
         $("#statusLine").text("");
         $("#descriptionValue").text("");
+        $("#pvValue").text("");
+        $("#bestMoveValue").text("");
+        $("#scoreValue").text("");
+        $("#depthValue").text("");
       });
 
       $("#btnClear").on("click",function(){
@@ -628,6 +731,10 @@
         setEvalBar(50);
         $("#statusLine").text("");
         $("#descriptionValue").text("");
+        $("#pvValue").text("");
+        $("#bestMoveValue").text("");
+        $("#scoreValue").text("");
+        $("#depthValue").text("");
       });
 
       $("#btnFlip").on("click",function(){board.flip();});
@@ -642,6 +749,10 @@
           setEvalBar(50);
           $("#statusLine").text("");
           $("#descriptionValue").text("");
+          $("#pvValue").text("");
+          $("#bestMoveValue").text("");
+          $("#scoreValue").text("");
+          $("#depthValue").text("");
         }
       });
 
@@ -667,7 +778,6 @@
         var canonicalFen=tmp.fen();
         $("#fenInput").val(canonicalFen);
         setControlsFromFen(canonicalFen);
-        updateOpeningLabelFromFen(canonicalFen);
         lastSearchFen=canonicalFen;
 
         var timeSec=parseFloat($("#timeInput").val());
