@@ -1,1 +1,931 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TARKOV: DU BIST TOT 💀</title>
+  <meta name="theme-color" content="#ff00aa" />
+  <style>
+    :root{
+      --bg1:#ff00aa;
+      --bg2:#00ffd5;
+      --bg3:#ffe600;
+      --bg4:#7c3aed;
+      --ink:#0b0b0b;
+      --paper:#fff8d6;
+      --panel:#ffffff;
+      --panel2:#f3f3ff;
+      --edge:#000;
+      --shadow: 8px 8px 0 rgba(0,0,0,0.85);
+      --shadowSmall: 4px 4px 0 rgba(0,0,0,0.85);
+      --radius: 18px;
+    }
 
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      color: var(--ink);
+      background:
+        repeating-linear-gradient(135deg,
+          rgba(255,0,170,.35) 0 18px,
+          rgba(0,255,213,.35) 18px 36px,
+          rgba(255,230,0,.35) 36px 54px,
+          rgba(124,58,237,.35) 54px 72px
+        ),
+        radial-gradient(1200px 800px at 20% 20%, rgba(255,255,255,.55), rgba(255,255,255,0)),
+        #fff;
+      overflow-x:hidden;
+      font-family: "Comic Sans MS", "Comic Neue", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      animation: bgWobble 6s ease-in-out infinite;
+    }
+
+    @keyframes bgWobble{
+      0%{ filter:hue-rotate(0deg) saturate(1.05); }
+      50%{ filter:hue-rotate(18deg) saturate(1.2); }
+      100%{ filter:hue-rotate(0deg) saturate(1.05); }
+    }
+
+    .wrap{
+      max-width: 1050px;
+      margin: 0 auto;
+      padding: 26px 16px 70px;
+      position:relative;
+    }
+
+    .topBar{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom: 14px;
+      flex-wrap:wrap;
+    }
+
+    .logo{
+      background: linear-gradient(90deg, var(--bg1), var(--bg2), var(--bg3), var(--bg4));
+      color:#fff;
+      border: 4px solid var(--edge);
+      border-radius: 999px;
+      padding: 10px 14px;
+      box-shadow: var(--shadowSmall);
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      transform-origin:center;
+      animation: wobble 2.6s ease-in-out infinite;
+      user-select:none;
+      text-shadow: 2px 2px 0 rgba(0,0,0,.65);
+      letter-spacing: .4px;
+    }
+
+    @keyframes wobble{
+      0%{ transform: rotate(-1.5deg) translateY(0); }
+      50%{ transform: rotate(1.5deg) translateY(1px); }
+      100%{ transform: rotate(-1.5deg) translateY(0); }
+    }
+
+    .logo .skull{
+      width: 34px;
+      height: 34px;
+      display:grid;
+      place-items:center;
+      border-radius: 10px;
+      background: rgba(0,0,0,.25);
+      border: 2px solid rgba(255,255,255,.6);
+    }
+
+    .titleBlock{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      min-width: 260px;
+    }
+
+    .headline{
+      margin:0;
+      font-size: 22px;
+      line-height:1.1;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow:
+        2px 2px 0 #000,
+        -2px 2px 0 #000,
+        2px -2px 0 #000,
+        -2px -2px 0 #000;
+      background: linear-gradient(90deg, #ff00aa, #00ffd5, #ffe600, #7c3aed);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: glitchHue 3.5s linear infinite;
+    }
+
+    @keyframes glitchHue{
+      0%{ filter:hue-rotate(0deg); }
+      100%{ filter:hue-rotate(360deg); }
+    }
+
+    .sub{
+      margin:0;
+      font-size: 13px;
+      background: var(--paper);
+      border: 3px dashed var(--edge);
+      border-radius: 14px;
+      padding: 8px 10px;
+      box-shadow: var(--shadowSmall);
+      transform: rotate(-.4deg);
+    }
+
+    .statsPill{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 4px solid var(--edge);
+      background: var(--panel);
+      box-shadow: var(--shadowSmall);
+      font-size: 13px;
+      transform: rotate(.6deg);
+      user-select:none;
+      min-width: 220px;
+      justify-content:space-between;
+    }
+
+    .statsPill b{
+      font-size: 16px;
+      padding: 2px 10px;
+      border-radius: 999px;
+      border: 3px solid var(--edge);
+      background: linear-gradient(90deg, #ffe600, #00ffd5);
+      box-shadow: 3px 3px 0 rgba(0,0,0,.85);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 920px){
+      .grid{ grid-template-columns: 1fr; }
+      .statsPill{ width:100%; }
+    }
+
+    .card{
+      background: linear-gradient(180deg, var(--panel), var(--panel2));
+      border: 4px solid var(--edge);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+
+    .cardHead{
+      padding: 12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border-bottom: 4px solid var(--edge);
+      background:
+        repeating-linear-gradient(90deg,
+          rgba(255,0,170,.22) 0 10px,
+          rgba(0,255,213,.22) 10px 20px,
+          rgba(255,230,0,.22) 20px 30px,
+          rgba(124,58,237,.22) 30px 40px
+        );
+    }
+
+    .cardHead h2{
+      margin:0;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .cardBody{ padding: 14px; }
+
+    .form{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 520px){
+      .form{ grid-template-columns: 1fr; }
+    }
+
+    label{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .3px;
+      text-transform: uppercase;
+    }
+
+    input, select, textarea{
+      width:100%;
+      padding: 10px 11px;
+      border-radius: 14px;
+      border: 4px solid var(--edge);
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+      box-shadow: var(--shadowSmall);
+      font-family: inherit;
+      font-size: 14px;
+      transition: transform .12s ease, filter .12s ease;
+    }
+
+    input:focus, select:focus, textarea:focus{
+      transform: translate(-1px,-1px);
+      filter: saturate(1.1);
+    }
+
+    textarea{
+      min-height: 90px;
+      resize: vertical;
+      grid-column: 1 / -1;
+    }
+
+    .primary{
+      margin-top: 10px;
+      width:100%;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 4px solid var(--edge);
+      background: linear-gradient(90deg, #ff00aa, #00ffd5, #ffe600);
+      color:#000;
+      font-weight: 1000;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor:pointer;
+      box-shadow: var(--shadow);
+      transform-origin:center;
+      transition: transform .12s ease, filter .12s ease;
+    }
+
+    .primary:hover{ transform: translate(-2px,-2px) rotate(-.2deg); filter: contrast(1.05) saturate(1.2); }
+    .primary:active{ transform: translate(1px,1px) rotate(.4deg); }
+
+    .tools{
+      display:flex;
+      gap: 10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .btn{
+      border: 4px solid var(--edge);
+      background: #fff;
+      padding: 8px 10px;
+      border-radius: 14px;
+      cursor:pointer;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      box-shadow: var(--shadowSmall);
+      transition: transform .12s ease, filter .12s ease;
+      font-family: inherit;
+      font-size: 12px;
+    }
+    .btn:hover{ transform: translate(-1px,-1px) rotate(-.25deg); filter:saturate(1.1); }
+    .btn:active{ transform: translate(1px,1px) rotate(.25deg); }
+    .btnDanger{ background: #ffe1e1; }
+
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+    }
+
+    .listScroll{
+      max-height: 62vh;
+      overflow:auto;
+      padding-right: 6px;
+      overscroll-behavior: contain;
+    }
+
+    @media (max-width: 920px){
+      .listScroll{ max-height: 52vh; }
+    }
+
+    @media (max-width: 520px){
+      .listScroll{ max-height: 46vh; }
+    }
+
+    .listScroll::-webkit-scrollbar{ width: 12px; }
+    .listScroll::-webkit-scrollbar-track{
+      background: rgba(255,255,255,.55);
+      border-left: 4px solid var(--edge);
+    }
+    .listScroll::-webkit-scrollbar-thumb{
+      background: linear-gradient(180deg, var(--bg1), var(--bg2), var(--bg3));
+      border: 3px solid var(--edge);
+      border-radius: 999px;
+      box-shadow: 2px 2px 0 rgba(0,0,0,.85);
+    }
+
+    .empty{
+      border: 4px dashed var(--edge);
+      border-radius: 16px;
+      padding: 16px;
+      background: var(--paper);
+      box-shadow: var(--shadowSmall);
+      font-size: 14px;
+      font-weight: 800;
+      transform: rotate(.2deg);
+    }
+
+    .item{
+      border: 4px solid var(--edge);
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: var(--shadowSmall);
+      padding: 12px;
+      display:flex;
+      gap: 12px;
+      align-items:flex-start;
+      justify-content:space-between;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .item::before{
+      content:"";
+      position:absolute;
+      inset:-40px -60px auto auto;
+      width: 180px;
+      height: 80px;
+      transform: rotate(12deg);
+      background: radial-gradient(circle at 20% 30%, rgba(255,0,170,.22), transparent 60%),
+                  radial-gradient(circle at 70% 60%, rgba(0,255,213,.22), transparent 60%),
+                  radial-gradient(circle at 50% 50%, rgba(255,230,0,.18), transparent 60%);
+      pointer-events:none;
+    }
+
+    .left{
+      min-width: 0;
+      display:flex;
+      flex-direction:column;
+      gap: 6px;
+      z-index:1;
+    }
+
+    .causeLine{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:baseline;
+      min-width: 0;
+    }
+
+    .cause{
+      font-weight: 1000;
+      letter-spacing: .4px;
+      font-size: 16px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      max-width: 100%;
+      text-shadow: 1px 1px 0 rgba(0,0,0,.15);
+    }
+
+    .meta{
+      display:flex;
+      gap: 8px;
+      flex-wrap:wrap;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .badge{
+      border: 3px solid var(--edge);
+      border-radius: 999px;
+      padding: 4px 8px;
+      background: #fff;
+      box-shadow: 3px 3px 0 rgba(0,0,0,.85);
+      max-width: 100%;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .note{
+      font-size: 13px;
+      font-weight: 700;
+      background: var(--paper);
+      border: 3px dashed var(--edge);
+      border-radius: 14px;
+      padding: 8px 10px;
+      box-shadow: var(--shadowSmall);
+      white-space: pre-wrap;
+      overflow-wrap:anywhere;
+      transform: rotate(-.15deg);
+    }
+
+    .actions{
+      display:flex;
+      align-items:flex-start;
+      gap: 8px;
+      z-index:1;
+      flex-shrink:0;
+    }
+
+    .iconBtn{
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      border: 4px solid var(--edge);
+      background: #fff;
+      cursor:pointer;
+      box-shadow: var(--shadowSmall);
+      font-weight: 1000;
+      transition: transform .12s ease;
+      font-family: inherit;
+    }
+    .iconBtn:hover{ transform: translate(-1px,-1px) rotate(-.2deg); }
+    .iconBtn:active{ transform: translate(1px,1px) rotate(.2deg); }
+    .iconBtnDanger{ background: #ffe1e1; }
+
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%) translateY(20px) rotate(-1deg);
+      opacity: 0;
+      pointer-events:none;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 4px solid var(--edge);
+      background: linear-gradient(90deg, #00ffd5, #ffe600, #ff00aa);
+      box-shadow: var(--shadow);
+      font-weight: 1000;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      z-index: 9999;
+      transition: opacity .18s ease, transform .18s ease;
+      white-space:nowrap;
+    }
+    .toast.show{
+      opacity: 1;
+      transform: translateX(-50%) translateY(0) rotate(1deg);
+    }
+
+    .confetti{
+      position: fixed;
+      inset: 0;
+      pointer-events:none;
+      z-index: 9998;
+      overflow:hidden;
+    }
+    .confetti i{
+      position:absolute;
+      top:-20px;
+      width: 10px;
+      height: 16px;
+      border: 3px solid #000;
+      border-radius: 6px;
+      box-shadow: 2px 2px 0 rgba(0,0,0,.85);
+      animation: fall 900ms linear forwards, spin 900ms ease-in-out forwards;
+      will-change: transform, top, left;
+    }
+    @keyframes fall{ to { top: 110vh; } }
+    @keyframes spin{
+      0%{ transform: rotate(0deg) translateY(0); }
+      100%{ transform: rotate(520deg) translateY(30px); }
+    }
+
+    .srOnly{
+      position:absolute;
+      width:1px;
+      height:1px;
+      padding:0;
+      margin:-1px;
+      overflow:hidden;
+      clip:rect(0,0,0,0);
+      white-space:nowrap;
+      border:0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topBar">
+      <div class="titleBlock">
+        <div class="logo" aria-label="Logo">
+          <div class="skull">💀</div>
+          <div>
+            <div style="font-weight:1000; letter-spacing:.8px; text-transform:uppercase;">Tarkov Death-Log</div>
+            <div style="font-size:12px; opacity:.95;">schreib auf, bevor du tilt-queue gehst 🤡</div>
+          </div>
+        </div>
+        <h1 class="headline">DU BIST TOT. (schon wieder)</h1>
+        <p class="sub">Speichert lokal im Browser (localStorage). Offline-Cache per Service Worker (wenn über http(s) geladen).</p>
+      </div>
+
+      <div class="statsPill" aria-live="polite">
+        <span>Einträge:</span>
+        <b id="countLabel">0</b>
+      </div>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <div class="cardHead">
+          <h2>📝 Neuer Eintrag</h2>
+        </div>
+        <div class="cardBody">
+          <form id="entryForm">
+            <div class="form">
+              <label>
+                Map
+                <select id="mapInput" required>
+                  <option value="Customs">Customs</option>
+                  <option value="Woods">Woods</option>
+                  <option value="Interchange">Interchange</option>
+                  <option value="Shoreline">Shoreline</option>
+                  <option value="Reserve">Reserve</option>
+                  <option value="Factory">Factory</option>
+                  <option value="Lighthouse">Lighthouse</option>
+                  <option value="Streets of Tarkov">Streets of Tarkov</option>
+                  <option value="The Lab">The Lab</option>
+                  <option value="Ground Zero">Ground Zero</option>
+                </select>
+              </label>
+
+              <label>
+                Wer (PMC/Scav/Boss/Name)
+                <input id="whoInput" type="text" placeholder="z.B. PMC, Scav, Tagilla, 'xXTimmyXx'" required maxlength="60" />
+              </label>
+
+              <label>
+                Wie (Todesursache)
+                <input id="howInput" type="text" placeholder="z.B. Headshot, Grenade, Bleed, Sniper Scav" required maxlength="80" />
+              </label>
+
+              <label>
+                Notizen (optional)
+                <textarea id="notesInput" placeholder="z.B. rechts an Dorms, peeker's advantage, ich war dumm"></textarea>
+              </label>
+            </div>
+
+            <button class="primary" type="submit">💾 SPEICHERN ODER COPIUM</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="cardHead">
+          <h2>📜 Liste der Schande</h2>
+          <div class="tools">
+            <button class="btn" id="exportBtn" type="button">Export</button>
+            <button class="btn" id="importBtn" type="button">Import</button>
+            <button class="btn btnDanger" id="clearBtn" type="button">Alles löschen</button>
+            <input class="srOnly" id="importFile" type="file" accept="application/json" />
+          </div>
+        </div>
+        <div class="cardBody">
+          <div class="listScroll">
+            <div class="list" id="list"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">SAVED!! 💀✨</div>
+  <div class="confetti" id="confetti" aria-hidden="true"></div>
+
+  <script>
+    const storageKey = "tarkov_deathlog_v2";
+
+    const entryForm = document.getElementById("entryForm");
+    const mapInput = document.getElementById("mapInput");
+    const whoInput = document.getElementById("whoInput");
+    const howInput = document.getElementById("howInput");
+    const notesInput = document.getElementById("notesInput");
+
+    const listEl = document.getElementById("list");
+    const countLabel = document.getElementById("countLabel");
+
+    const exportBtn = document.getElementById("exportBtn");
+    const importBtn = document.getElementById("importBtn");
+    const importFile = document.getElementById("importFile");
+    const clearBtn = document.getElementById("clearBtn");
+
+    const toastEl = document.getElementById("toast");
+    const confettiEl = document.getElementById("confetti");
+
+    function safeParseJson(value) {
+      try { return JSON.parse(value); } catch { return null; }
+    }
+
+    function loadEntries() {
+      const raw = localStorage.getItem(storageKey);
+      const parsed = raw ? safeParseJson(raw) : null;
+      if (!Array.isArray(parsed)) return [];
+      return parsed.filter(e => e && typeof e === "object");
+    }
+
+    function saveEntries(entries) {
+      localStorage.setItem(storageKey, JSON.stringify(entries));
+    }
+
+    function normalizeText(value) {
+      return String(value ?? "").trim();
+    }
+
+    function formatDateTime(iso) {
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return iso;
+      return new Intl.DateTimeFormat("de-DE", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+      }).format(d);
+    }
+
+    let toastTimer = null;
+    function showToast(text) {
+      toastEl.textContent = text;
+      toastEl.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toastEl.classList.remove("show"), 900);
+    }
+
+    function popConfetti() {
+      confettiEl.innerHTML = "";
+      const pieces = 18;
+      for (let i = 0; i < pieces; i++) {
+        const p = document.createElement("i");
+        const left = Math.random() * 100;
+        const delay = Math.random() * 120;
+        const hue = Math.floor(Math.random() * 360);
+        const sizeW = 8 + Math.floor(Math.random() * 10);
+        const sizeH = 10 + Math.floor(Math.random() * 14);
+        p.style.left = left + "vw";
+        p.style.animationDelay = delay + "ms";
+        p.style.background = `hsl(${hue} 95% 60%)`;
+        p.style.width = sizeW + "px";
+        p.style.height = sizeH + "px";
+        confettiEl.appendChild(p);
+      }
+      setTimeout(() => { confettiEl.innerHTML = ""; }, 1100);
+    }
+
+    function render() {
+      const entries = loadEntries().sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+      countLabel.textContent = String(entries.length);
+
+      listEl.innerHTML = "";
+      if (entries.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "Noch nix drin. Wie… du bist noch nicht gestorben? 🤨";
+        listEl.appendChild(empty);
+        return;
+      }
+
+      for (const entry of entries) {
+        const item = document.createElement("div");
+        item.className = "item";
+
+        const left = document.createElement("div");
+        left.className = "left";
+
+        const causeLine = document.createElement("div");
+        causeLine.className = "causeLine";
+
+        const how = document.createElement("div");
+        how.className = "cause";
+        how.title = normalizeText(entry.how);
+        how.textContent = normalizeText(entry.how) || "–";
+
+        const meta = document.createElement("div");
+        meta.className = "meta";
+
+        const createdAt = document.createElement("span");
+        createdAt.className = "badge";
+        createdAt.textContent = formatDateTime(entry.createdAt);
+
+        const map = document.createElement("span");
+        map.className = "badge";
+        map.textContent = normalizeText(entry.map) || "–";
+
+        const who = document.createElement("span");
+        who.className = "badge";
+        who.textContent = "Wer: " + (normalizeText(entry.who) || "–");
+
+        meta.appendChild(createdAt);
+        meta.appendChild(map);
+        meta.appendChild(who);
+
+        const notes = normalizeText(entry.notes);
+        let noteEl = null;
+        if (notes) {
+          noteEl = document.createElement("div");
+          noteEl.className = "note";
+          noteEl.textContent = notes;
+        }
+
+        causeLine.appendChild(how);
+        left.appendChild(causeLine);
+        left.appendChild(meta);
+        if (noteEl) left.appendChild(noteEl);
+
+        const actions = document.createElement("div");
+        actions.className = "actions";
+
+        const del = document.createElement("button");
+        del.className = "iconBtn iconBtnDanger";
+        del.type = "button";
+        del.setAttribute("aria-label", "Eintrag löschen");
+        del.textContent = "✕";
+        del.addEventListener("click", () => {
+          const current = loadEntries();
+          const next = current.filter(e => e.id !== entry.id);
+          saveEntries(next);
+          render();
+          showToast("DELETED!! 😈");
+        });
+
+        actions.appendChild(del);
+
+        item.appendChild(left);
+        item.appendChild(actions);
+
+        listEl.appendChild(item);
+      }
+    }
+
+    entryForm.addEventListener("submit", (ev) => {
+      ev.preventDefault();
+
+      const who = normalizeText(whoInput.value);
+      const how = normalizeText(howInput.value);
+      if (!who || !how) return;
+
+      const entry = {
+        id: crypto.randomUUID(),
+        createdAt: new Date().toISOString(),
+        map: normalizeText(mapInput.value),
+        who,
+        how,
+        notes: normalizeText(notesInput.value)
+      };
+
+      const entries = loadEntries();
+      entries.push(entry);
+      saveEntries(entries);
+
+      entryForm.reset();
+      mapInput.value = "Customs";
+      whoInput.focus();
+
+      render();
+      showToast("SAVED!! 💀✨");
+      popConfetti();
+    });
+
+    exportBtn.addEventListener("click", () => {
+      const entries = loadEntries();
+      const blob = new Blob([JSON.stringify(entries, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "tarkov-todes-export.json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast("EXPORTED!! 📦");
+    });
+
+    importBtn.addEventListener("click", () => {
+      importFile.value = "";
+      importFile.click();
+    });
+
+    importFile.addEventListener("change", async () => {
+      const file = importFile.files && importFile.files[0];
+      if (!file) return;
+
+      const text = await file.text();
+      const parsed = safeParseJson(text);
+      if (!Array.isArray(parsed)) {
+        alert("Import fehlgeschlagen: Datei ist kein gültiges JSON-Array.");
+        return;
+      }
+
+      const normalized = parsed
+        .filter(e => e && typeof e === "object")
+        .map(e => ({
+          id: typeof e.id === "string" && e.id ? e.id : crypto.randomUUID(),
+          createdAt: typeof e.createdAt === "string" && e.createdAt ? e.createdAt : new Date().toISOString(),
+          map: normalizeText(e.map),
+          who: normalizeText(e.who),
+          how: normalizeText(e.how),
+          notes: normalizeText(e.notes)
+        }))
+        .filter(e => e.who && e.how);
+
+      saveEntries(normalized);
+      render();
+      showToast("IMPORTED!! 🧪");
+      popConfetti();
+    });
+
+    clearBtn.addEventListener("click", () => {
+      const entries = loadEntries();
+      if (entries.length === 0) return;
+      const ok = confirm("Wirklich ALLES löschen? (lokal) 😭");
+      if (!ok) return;
+      localStorage.removeItem(storageKey);
+      render();
+      showToast("NUKED!! ☢️");
+    });
+
+    function registerInlineServiceWorker() {
+      if (!("serviceWorker" in navigator)) return;
+
+      const swCode = `
+        const cacheName = "tarkov-deathlog-cache-v1";
+        const precache = ["./"];
+
+        self.addEventListener("install", (event) => {
+          event.waitUntil(caches.open(cacheName).then((cache) => cache.addAll(precache)));
+          self.skipWaiting();
+        });
+
+        self.addEventListener("activate", (event) => {
+          event.waitUntil(
+            caches.keys().then((keys) =>
+              Promise.all(keys.map((k) => (k === cacheName ? null : caches.delete(k))))
+            )
+          );
+          self.clients.claim();
+        });
+
+        self.addEventListener("fetch", (event) => {
+          const req = event.request;
+          if (req.method !== "GET") return;
+
+          if (req.mode === "navigate") {
+            event.respondWith(
+              caches.match("./").then((cached) => {
+                const fetchPromise = fetch(req)
+                  .then((res) => {
+                    const copy = res.clone();
+                    caches.open(cacheName).then((cache) => cache.put("./", copy));
+                    return res;
+                  })
+                  .catch(() => cached || Response.error());
+                return cached || fetchPromise;
+              })
+            );
+            return;
+          }
+
+          event.respondWith(
+            caches.match(req).then((cached) => {
+              const fetchPromise = fetch(req)
+                .then((res) => {
+                  const copy = res.clone();
+                  caches.open(cacheName).then((cache) => cache.put(req, copy));
+                  return res;
+                })
+                .catch(() => cached || Response.error());
+              return cached || fetchPromise;
+            })
+          );
+        });
+      `;
+
+      const blob = new Blob([swCode], { type: "text/javascript" });
+      const swUrl = URL.createObjectURL(blob);
+
+      navigator.serviceWorker.register(swUrl, { scope: "./" })
+        .catch(() => {})
+        .finally(() => { setTimeout(() => URL.revokeObjectURL(swUrl), 5000); });
+    }
+
+    registerInlineServiceWorker();
+    render();
+  </script>
+</body>
+</html>
