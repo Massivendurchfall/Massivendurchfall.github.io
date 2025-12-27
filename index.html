@@ -185,7 +185,7 @@
 
         .pricing-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 15px;
             margin-bottom: 25px;
         }
@@ -464,35 +464,36 @@
                             <h4>Free Key</h4>
                             <div class="duration">6 Hours</div>
                             <div class="price free">Free</div>
-                            <div class="note">Access via ads</div>
                         </div>
 
                         <div class="pricing-card">
                             <h4>48-Hour Key</h4>
                             <div class="duration">2 Days</div>
                             <div class="price">€2.49</div>
-                            <div class="note">Instant access</div>
                         </div>
 
                         <div class="pricing-card">
                             <h4>3-Day Key</h4>
                             <div class="duration">3 Days</div>
                             <div class="price">€6.49</div>
-                            <div class="note">Instant access</div>
                         </div>
 
                         <div class="pricing-card">
                             <h4>7-Day Key</h4>
                             <div class="duration">1 Week</div>
                             <div class="price">€14.99</div>
-                            <div class="note">Instant access</div>
+                        </div>
+
+                        <div class="pricing-card">
+                            <h4>1-Month Key</h4>
+                            <div class="duration">30 Days</div>
+                            <div class="price">€29.99</div>
                         </div>
 
                         <div class="pricing-card featured">
                             <h4>Lifetime Key</h4>
                             <div class="duration">Forever</div>
-                            <div class="price">€29.99</div>
-                            <div class="note">All future updates</div>
+                            <div class="price">€39.99</div>
                         </div>
                     </div>
 
@@ -912,6 +913,17 @@
                 </div>
             </div>
         </div>
+        <!-- Evade Tab -->
+        <div id="evade" class="tab-content">
+            <div class="script-container">
+                <div class="coming-soon">
+                    <h2>Evade</h2>
+                    <p>Coming Soon...</p>
+                    <p style="margin-top: 20px;">Join our Discord for updates!</p>
+                    <a href="https://discord.gg/7jwPmqPYQb" target="_blank" class="discord-link" style="margin-top: 20px;">Join Discord</a>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -934,17 +946,29 @@
         function copyCode(scriptType) {
             const codeElement = document.getElementById(scriptType + '-code');
             const code = codeElement.textContent;
+            const btn = event.target;
             
             navigator.clipboard.writeText(code).then(() => {
-                const btn = event.target;
                 const originalText = btn.textContent;
-                btn.textContent = '✓ COPIED!';
+                const originalBg = btn.style.background;
+                
+                btn.textContent = 'COPIED!';
                 btn.style.background = '#10b981';
+                btn.style.transform = 'scale(0.95)';
                 
                 setTimeout(() => {
                     btn.textContent = originalText;
+                    btn.style.background = originalBg || '#6366f1';
+                    btn.style.transform = 'scale(1)';
+                }, 1500);
+            }).catch(err => {
+                btn.textContent = 'FAILED';
+                btn.style.background = '#ef4444';
+                
+                setTimeout(() => {
+                    btn.textContent = 'COPY';
                     btn.style.background = '#6366f1';
-                }, 2000);
+                }, 1500);
             });
         }
     </script>
