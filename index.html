@@ -1,320 +1,774 @@
-<!doctype html>
-<html lang="de">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Massivendurchfall</title>
-  <meta name="description" content="Hub page to open sub-sites." />
-  <meta name="color-scheme" content="dark light" />
-  <style>
-    :root{
-      --bg:#0b0f16;
-      --card:#0f1623;
-      --text:#e8edf6;
-      --muted:#a9b4c7;
-      --line:rgba(255,255,255,.10);
-      --shadow:0 18px 70px rgba(0,0,0,.45);
-      --radius:22px;
-      --focus:rgba(140,170,255,.35);
-      --btn:#ffffff;
-      --btnText:#0b0f16;
-      --btnShadow:0 14px 40px rgba(255,255,255,.10);
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblox Scripts Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    @media (prefers-color-scheme: light){
-      :root{
-        --bg:#f6f8fc;
-        --card:#ffffff;
-        --text:#0b0f16;
-        --muted:#5a667c;
-        --line:rgba(0,0,0,.08);
-        --shadow:0 18px 60px rgba(10,15,22,.10);
-        --btn:#0b0f16;
-        --btnText:#ffffff;
-        --btnShadow:0 14px 40px rgba(10,15,22,.15);
-      }
-    }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0f;
+            min-height: 100vh;
+            color: #e5e7eb;
+        }
 
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      background: radial-gradient(1200px 800px at 15% 10%, rgba(120,140,255,.18), transparent 55%),
-                  radial-gradient(900px 700px at 85% 30%, rgba(120,255,215,.14), transparent 55%),
-                  radial-gradient(900px 800px at 55% 90%, rgba(255,170,120,.10), transparent 55%),
-                  var(--bg);
-      color:var(--text);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:24px;
-    }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
 
-    .shell{
-      width: min(720px, 100%);
-    }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+        }
 
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0)) , var(--card);
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            color: #fff;
+            font-weight: 700;
+        }
 
-    .top{
-      padding:28px 26px 18px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
+        .subtitle {
+            font-size: 1.1em;
+            color: #9ca3af;
+        }
 
-    h1{
-      margin:0;
-      font-size: clamp(26px, 4vw, 34px);
-      letter-spacing:-0.02em;
-      line-height:1.1;
-    }
+        .discord-banner {
+            background: #1a1a24;
+            border: 1px solid #2d2d3d;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
 
-    p{
-      margin:0;
-      color:var(--muted);
-      line-height:1.5;
-      font-size:14.5px;
-      max-width: 58ch;
-    }
+        .discord-banner h3 {
+            font-size: 1.4em;
+            margin-bottom: 8px;
+            color: #fff;
+        }
 
-    .form{
-      padding:0 26px 26px;
-      display:flex;
-      flex-direction:column;
-      gap:14px;
-    }
+        .discord-banner p {
+            color: #9ca3af;
+            margin-bottom: 15px;
+        }
 
-    .row{
-      display:flex;
-      gap:12px;
-      align-items:stretch;
-      flex-wrap:wrap;
-    }
+        .discord-link {
+            display: inline-block;
+            background: #5865f2;
+            color: white;
+            padding: 12px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
 
-    .select{
-      flex:1 1 260px;
-      min-width: 220px;
-      position:relative;
-    }
+        .discord-link:hover {
+            background: #4752c4;
+            transform: translateY(-2px);
+        }
 
-    select{
-      width:100%;
-      appearance:none;
-      border-radius: 16px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.04);
-      color: var(--text);
-      padding: 14px 44px 14px 14px;
-      font-size: 15px;
-      outline:none;
-      transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
-    }
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            border-bottom: 1px solid #2d2d3d;
+            padding-bottom: 15px;
+        }
 
-    select:focus{
-      border-color: rgba(140,170,255,.55);
-      box-shadow: 0 0 0 6px var(--focus);
-    }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: #9ca3af;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
 
-    .chev{
-      position:absolute;
-      right:14px;
-      top:50%;
-      transform: translateY(-50%);
-      pointer-events:none;
-      opacity:.75;
-      font-size: 12px;
-      letter-spacing:.08em;
-      color: var(--muted);
-    }
+        .tab-btn:hover {
+            color: #fff;
+            background: #1a1a24;
+        }
 
-    button{
-      flex: 0 0 auto;
-      border:0;
-      border-radius: 16px;
-      padding: 14px 18px;
-      font-size: 15px;
-      font-weight: 650;
-      background: var(--btn);
-      color: var(--btnText);
-      box-shadow: var(--btnShadow);
-      cursor:pointer;
-      transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
-    }
+        .tab-btn.active {
+            color: #fff;
+            background: #6366f1;
+        }
 
-    button:hover{ transform: translateY(-1px); }
-    button:active{ transform: translateY(0px) scale(.99); opacity:.95; }
-    button:focus{ outline:none; box-shadow: var(--btnShadow), 0 0 0 6px var(--focus); }
+        .tab-content {
+            display: none;
+        }
 
-    .meta{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      justify-content:space-between;
-      flex-wrap:wrap;
-      border-top:1px solid var(--line);
-      padding: 14px 26px 16px;
-      color: var(--muted);
-      font-size: 13px;
-    }
+        .tab-content.active {
+            display: block;
+        }
 
-    .links{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:flex-end;
-    }
+        .script-container {
+            background: #12121a;
+            border-radius: 12px;
+            padding: 40px;
+            border: 1px solid #2d2d3d;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-    .links a{
-      color: var(--muted);
-      text-decoration:none;
-      border-bottom: 1px solid transparent;
-      transition: color .15s ease, border-color .15s ease;
-      font-size: 13px;
-    }
+        .script-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #2d2d3d;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
 
-    .links a:hover{
-      color: var(--text);
-      border-color: rgba(140,170,255,.45);
-    }
+        .script-title {
+            font-size: 2.2em;
+            font-weight: 700;
+            color: #fff;
+        }
 
-    .dot{
-      opacity:.55;
-      user-select:none;
-    }
+        .header-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
 
-    .toast{
-      position: fixed;
-      left: 50%;
-      bottom: 18px;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,.55);
-      color: #fff;
-      padding: 10px 12px;
-      border-radius: 14px;
-      font-size: 13px;
-      border: 1px solid rgba(255,255,255,.12);
-      box-shadow: 0 12px 40px rgba(0,0,0,.35);
-      opacity:0;
-      pointer-events:none;
-      transition: opacity .18s ease, transform .18s ease;
-      backdrop-filter: blur(10px);
-    }
+        .status-badge {
+            background: #10b981;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #fff;
+        }
 
-    .toast.show{
-      opacity:1;
-      transform: translateX(-50%) translateY(-2px);
-    }
+        .price-badge {
+            background: #6366f1;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #fff;
+        }
 
-    @media (max-width: 520px){
-      .top{ padding:22px 18px 14px; }
-      .form{ padding:0 18px 18px; }
-      .meta{ padding:12px 18px 14px; }
-      button{ width:100%; }
-      .row{ gap:10px; }
-    }
-  </style>
+        .key-pricing-section {
+            background: #1a1a24;
+            border: 1px solid #2d2d3d;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .key-pricing-section h3 {
+            font-size: 1.6em;
+            margin-bottom: 20px;
+            color: #fff;
+            text-align: center;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .pricing-card {
+            background: #0a0a0f;
+            border: 1px solid #2d2d3d;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .pricing-card:hover {
+            border-color: #6366f1;
+            transform: translateY(-2px);
+        }
+
+        .pricing-card.featured {
+            border-color: #6366f1;
+            background: #12121a;
+        }
+
+        .pricing-card h4 {
+            font-size: 1.2em;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .pricing-card .duration {
+            color: #9ca3af;
+            font-size: 0.9em;
+            margin-bottom: 12px;
+        }
+
+        .pricing-card .price {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #6366f1;
+            margin-bottom: 8px;
+        }
+
+        .pricing-card .price.free {
+            color: #10b981;
+        }
+
+        .pricing-card .note {
+            font-size: 0.85em;
+            color: #6b7280;
+        }
+
+        .payment-info {
+            background: #0a0a0f;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .payment-info h4 {
+            color: #fff;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+        }
+
+        .payment-info p {
+            color: #9ca3af;
+            line-height: 1.6;
+            margin: 5px 0;
+        }
+
+        .buy-btn {
+            display: inline-block;
+            background: #6366f1;
+            color: white;
+            padding: 14px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-top: 20px;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .buy-btn:hover {
+            background: #5558e3;
+            transform: translateY(-2px);
+        }
+
+        .video-container {
+            margin-bottom: 30px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #2d2d3d;
+        }
+
+        .video-container iframe {
+            width: 100%;
+            height: 500px;
+            border: none;
+        }
+
+        .features {
+            margin-bottom: 30px;
+        }
+
+        .features h3 {
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .feature-category {
+            background: #1a1a24;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #2d2d3d;
+        }
+
+        .feature-category-title {
+            font-weight: 600;
+            color: #6366f1;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 6px 0;
+            position: relative;
+            padding-left: 20px;
+            color: #d1d5db;
+            font-size: 0.95em;
+        }
+
+        .feature-list li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #6366f1;
+            font-weight: bold;
+        }
+
+        .code-box {
+            background: #0a0a0f;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 30px;
+            border: 1px solid #2d2d3d;
+            position: relative;
+        }
+
+        .code-box h4 {
+            margin-bottom: 15px;
+            color: #fff;
+            font-size: 1.1em;
+        }
+
+        .code-box code {
+            color: #a5f3fc;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            word-break: break-all;
+            display: block;
+            line-height: 1.8;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #6366f1;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background: #5558e3;
+        }
+
+        .coming-soon {
+            text-align: center;
+            padding: 80px 30px;
+            background: #12121a;
+            border-radius: 12px;
+            border: 1px dashed #2d2d3d;
+        }
+
+        .coming-soon h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .coming-soon p {
+            color: #9ca3af;
+            font-size: 1.1em;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2em;
+            }
+
+            .script-title {
+                font-size: 1.8em;
+            }
+
+            .video-container iframe {
+                height: 250px;
+            }
+
+            .features-grid, .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .script-container {
+                padding: 25px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <main class="shell">
-    <section class="card" role="region" aria-label="Hub">
-      <div class="top">
-        <h1>Massivendurchfall</h1>
-        <p>Select a site and open it. Your last choice is remembered.</p>
-      </div>
+    <div class="container">
+        <header>
+            <h1>🎮 Roblox Scripts Hub</h1>
+            <p class="subtitle">Premium Scripts for Your Favorite Games</p>
+        </header>
 
-      <div class="form">
-        <div class="row">
-          <div class="select">
-            <select id="siteSelect" aria-label="Select site">
-              <option value="/chess">Chess</option>
-              <option value="/coin">Coin</option>
-              <option value="/eft">EFT</option>
-              <option value="/pvz">PVZ</option>
-              <option value="/shooter">Shooter</option>
-            </select>
-            <div class="chev">▼</div>
-          </div>
-          <button id="openBtn" type="button">Open</button>
+        <div class="discord-banner">
+            <h3>Get Your Keys & Support</h3>
+            <p>Join our Discord server to get keys and support</p>
+            <a href="https://discord.gg/7jwPmqPYQb" target="_blank" class="discord-link">Join Discord Server</a>
         </div>
-      </div>
 
-      <div class="meta">
-        <div id="hint">Tip: use <strong>?to=chess</strong> to auto-open.</div>
-        <div class="links" aria-label="Quick links">
-          <a href="./chess/">chess</a><span class="dot">•</span>
-          <a href="./coin/">coin</a><span class="dot">•</span>
-          <a href="./eft/">eft</a><span class="dot">•</span>
-          <a href="./pvz/">pvz</a><span class="dot">•</span>
-          <a href="./shooter/">shooter</a>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab('violent')">🔪 Violent District</button>
+            <button class="tab-btn" onclick="openTab('banana')">🍌 Banana Eats</button>
+            <button class="tab-btn" onclick="openTab('universal')">🌐 Universal Script</button>
+            <button class="tab-btn" onclick="openTab('indo')">🎤 Indo Voice</button>
         </div>
-      </div>
-    </section>
-  </main>
 
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+        <!-- Violent District Tab -->
+        <div id="violent" class="tab-content active">
+            <div class="script-container">
+                <div class="script-header">
+                    <h2 class="script-title">🔪 Violent District</h2>
+                    <div class="header-badges">
+                        <span class="status-badge">✓ ACTIVE</span>
+                        <span class="price-badge">🆓 FREE + PREMIUM</span>
+                    </div>
+                </div>
 
-  <script>
-    const siteSelect = document.getElementById("siteSelect");
-    const openBtn = document.getElementById("openBtn");
-    const toast = document.getElementById("toast");
+                <div class="key-pricing-section">
+                    <h3>🔑 Key Pricing</h3>
+                    
+                    <div class="pricing-grid">
+                        <div class="pricing-card">
+                            <h4>Free Key</h4>
+                            <div class="duration">6 Hours</div>
+                            <div class="price free">Free</div>
+                            <div class="note">Access via ads</div>
+                        </div>
 
-    const sites = {
-      chess: "/chess",
-      coin: "/coin",
-      eft: "/eft",
-      pvz: "/pvz",
-      shooter: "/shooter"
-    };
+                        <div class="pricing-card">
+                            <h4>48-Hour Key</h4>
+                            <div class="duration">2 Days</div>
+                            <div class="price">€2.49</div>
+                            <div class="note">Instant access</div>
+                        </div>
 
-    function showToast(text) {
-      toast.textContent = text;
-      toast.classList.add("show");
-      window.clearTimeout(showToast._t);
-      showToast._t = window.setTimeout(() => toast.classList.remove("show"), 1400);
-    }
+                        <div class="pricing-card">
+                            <h4>3-Day Key</h4>
+                            <div class="duration">3 Days</div>
+                            <div class="price">€6.49</div>
+                            <div class="note">Instant access</div>
+                        </div>
 
-    function normalizeToPath(value) {
-      if (!value) return null;
-      const v = String(value).trim().toLowerCase();
-      if (sites[v]) return sites[v];
-      if (v.startsWith("/")) return v.replace(/\/+$/, "");
-      return "/" + v.replace(/\/+$/, "");
-    }
+                        <div class="pricing-card">
+                            <h4>7-Day Key</h4>
+                            <div class="duration">1 Week</div>
+                            <div class="price">€14.99</div>
+                            <div class="note">Instant access</div>
+                        </div>
 
-    function openSelected() {
-      const path = siteSelect.value;
-      localStorage.setItem("hub:lastPath", path);
-      showToast("Opening…");
-      window.location.href = "." + path + "/";
-    }
+                        <div class="pricing-card featured">
+                            <h4>Lifetime Key</h4>
+                            <div class="duration">Forever</div>
+                            <div class="price">€29.99</div>
+                            <div class="note">All future updates</div>
+                        </div>
+                    </div>
 
-    const saved = localStorage.getItem("hub:lastPath");
-    if (saved) {
-      const option = Array.from(siteSelect.options).find(o => o.value === saved);
-      if (option) siteSelect.value = saved;
-    }
+                    <div class="payment-info">
+                        <h4>Payment Methods</h4>
+                        <p>💳 Crypto (BTC only) | PayPal</p>
+                        <p style="margin-top: 12px; color: #6b7280;">✓ Free keys require ads | ⚡ Paid keys provide instant access | ♾️ Lifetime includes all future updates</p>
+                    </div>
 
-    openBtn.addEventListener("click", openSelected);
-    siteSelect.addEventListener("change", () => localStorage.setItem("hub:lastPath", siteSelect.value));
+                    <center><a href="https://discord.gg/7jwPmqPYQb" target="_blank" class="buy-btn">Open Ticket to Purchase</a></center>
+                </div>
 
-    const params = new URLSearchParams(window.location.search);
-    const to = params.get("to");
-    if (to) {
-      const path = normalizeToPath(to);
-      const matched = Array.from(siteSelect.options).find(o => o.value === path);
-      if (matched) siteSelect.value = path;
-      localStorage.setItem("hub:lastPath", path || siteSelect.value);
-      window.location.replace("." + (path || siteSelect.value) + "/");
-    }
-  </script>
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/3quwNmShWQE" allowfullscreen></iframe>
+                </div>
+
+                <div class="features">
+                    <h3>✨ Features</h3>
+                    <div class="features-grid">
+                        <div class="feature-category">
+                            <div class="feature-category-title">👤 Player</div>
+                            <ul class="feature-list">
+                                <li>Custom Sprint (LeftShift) + Sprint Speed Slider</li>
+                                <li>Warning System for Killer</li>
+                                <li>Noclip Mode</li>
+                                <li>Teleport to Killer / Teammate</li>
+                                <li>Anti AFK System</li>
+                            </ul>
+                        </div>
+
+                        <div class="feature-category">
+                            <div class="feature-category-title">👁️ ESP</div>
+                            <ul class="feature-list">
+                                <li>Player Chams</li>
+                                <li>Nametags Display</li>
+                                <li>Color Picker for Survivors</li>
+                                <li>Color Picker for Killers</li>
+                            </ul>
+                        </div>
+
+                        <div class="feature-category">
+                            <div class="feature-category-title">🌍 World</div>
+                            <ul class="feature-list">
+                                <li>ESP: Generators, Hooks, Gates</li>
+                                <li>ESP: Windows, Pallets</li>
+                                <li>ESP: Pumpkins & Gifts</li>
+                                <li>Instant-Escape Feature</li>
+                            </ul>
+                        </div>
+
+                        <div class="feature-category">
+                            <div class="feature-category-title">🎨 Visual</div>
+                            <ul class="feature-list">
+                                <li>Fullbright Mode</li>
+                                <li>Time of Day Slider</li>
+                                <li>No Fog</li>
+                                <li>No Shadows</li>
+                                <li>FOV Slider</li>
+                            </ul>
+                        </div>
+
+                        <div class="feature-category">
+                            <div class="feature-category-title">⚙️ Misc</div>
+                            <ul class="feature-list">
+                                <li>Hard Skillcheck Remover</li>
+                                <li>Crosshair Toggle</li>
+                                <li>Config Saving via Rayfield</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-box">
+                    <button class="copy-btn" onclick="copyCode('violent')">COPY</button>
+                    <h4>Loadstring:</h4>
+                    <code id="violent-code">loadstring(game:HttpGet("https://raw.githubusercontent.com/Massivendurchfall/cuddly-enigma/refs/heads/main/ViolenceDistrict"))()</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Banana Eats Tab -->
+        <div id="banana" class="tab-content">
+            <div class="script-container">
+                <div class="script-header">
+                    <h2 class="script-title">🍌 Banana Eats</h2>
+                    <div class="header-badges">
+                        <span class="status-badge">✓ ACTIVE</span>
+                        <span class="price-badge">🆓 FREE + PREMIUM</span>
+                    </div>
+                </div>
+
+                <div class="key-pricing-section">
+                    <h3>🔑 Key Pricing</h3>
+                    
+                    <div class="pricing-grid">
+                        <div class="pricing-card">
+                            <h4>Free Key</h4>
+                            <div class="duration">6 Hours</div>
+                            <div class="price free">Free</div>
+                            <div class="note">Access via ads</div>
+                        </div>
+
+                        <div class="pricing-card">
+                            <h4>48-Hour Key</h4>
+                            <div class="duration">2 Days</div>
+                            <div class="price">€2.49</div>
+                            <div class="note">Instant access</div>
+                        </div>
+
+                        <div class="pricing-card">
+                            <h4>3-Day Key</h4>
+                            <div class="duration">3 Days</div>
+                            <div class="price">€6.49</div>
+                            <div class="note">Instant access</div>
+                        </div>
+
+                        <div class="pricing-card">
+                            <h4>7-Day Key</h4>
+                            <div class="duration">1 Week</div>
+                            <div class="price">€14.99</div>
+                            <div class="note">Instant access</div>
+                        </div>
+
+                        <div class="pricing-card featured">
+                            <h4>Lifetime Key</h4>
+                            <div class="duration">Forever</div>
+                            <div class="price">€29.99</div>
+                            <div class="note">All future updates</div>
+                        </div>
+                    </div>
+
+                    <div class="payment-info">
+                        <h4>Payment Methods</h4>
+                        <p>💳 Crypto (BTC only) | PayPal</p>
+                        <p style="margin-top: 12px; color: #6b7280;">✓ Free keys require ads | ⚡ Paid keys provide instant access | ♾️ Lifetime includes all future updates</p>
+                    </div>
+
+                    <center><a href="https://discord.gg/7jwPmqPYQb" target="_blank" class="buy-btn">Open Ticket to Purchase</a></center>
+                </div>
+
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/L4Teyf_-eYk" allowfullscreen></iframe>
+                </div>
+
+                <div class="features">
+                    <h3>✨ Features</h3>
+                    <div class="features-grid">
+                        <div class="feature-category">
+                            <div class="feature-category-title">🎮 Controls</div>
+                            <ul class="feature-list">
+                                <li>WindUI Menu with Tabs</li>
+                                <li>Hotkey Toggle (LeftControl)</li>
+                                <li>Mobile GUI Toggle Button</li>
+                                <li>Chat Commands (/gui, /help)</li>
+                            </ul>
+                        </div>
+
+                        <div class="feature-category">
+                            <div class="feature-category-title">👁️ ESP</div>
+                            <ul class="feature-list">
+                                <li>Cake ESP</li>
+                                <li>Coins ESP</li>
+                                <li>Valves ESP</li>
+                                <li>Cube Puzzle ESP</li>
+                                <li>Live Combination Code</li>
+                            </ul>
+                        </div>
+
+                        <div class="feature-category">
+                            <div class="feature-category-title">👤 Player</div>
+                            <ul class="feature-list">
+                                <li>WalkSpeed Modifier</li>
+                                <li>Fly Mode (WASD + Space/Shift)</li>
+                                <li>Noclip Mode</li>
+                            </ul>
+                        </div>
+
+                        <div class="feature-category">
+                            <div class="feature-category-title">🤖 Auto Features</div>
+                            <ul class="feature-list">
+                                <li>Auto Kill (Banana)</li>
+                                <li>Delete Lockers/Peels</li>
+                                <li>Auto Collect Coins</li>
+                                <li>Auto Bonus Barrel</li>
+                                <li>Auto Exit Touch</li>
+                            </ul>
+                        </div>
+
+                        <div class="feature-category">
+                            <div class="feature-category-title">🎨 Visuals</div>
+                            <ul class="feature-list">
+                                <li>Fullbright Mode</li>
+                                <li>No Fog</li>
+                                <li>Color Correction</li>
+                                <li>Sun Rays Control</li>
+                                <li>Time/Exposure Controls</li>
+                            </ul>
+                        </div>
+
+                        <div class="feature-category">
+                            <div class="feature-category-title">💾 Config</div>
+                            <ul class="feature-list">
+                                <li>Theme Saving</li>
+                                <li>Toggle State Memory</li>
+                                <li>JSON Config Support</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-box">
+                    <button class="copy-btn" onclick="copyCode('banana')">COPY</button>
+                    <h4>Loadstring:</h4>
+                    <code id="banana-code">loadstring(game:HttpGet("https://raw.githubusercontent.com/Massivendurchfall/cuddly-enigma/refs/heads/main/BananaEats"))()</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Universal Script Tab -->
+        <div id="universal" class="tab-content">
+            <div class="script-container">
+                <div class="coming-soon">
+                    <h2>🌐 Universal Script</h2>
+                    <p>Coming Soon...</p>
+                    <p style="margin-top: 20px;">Join our Discord for updates!</p>
+                    <a href="https://discord.gg/7jwPmqPYQb" target="_blank" class="discord-link" style="margin-top: 20px;">Join Discord</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Indo Voice Tab -->
+        <div id="indo" class="tab-content">
+            <div class="script-container">
+                <div class="coming-soon">
+                    <h2>🎤 Indo Voice</h2>
+                    <p>Coming Soon...</p>
+                    <p style="margin-top: 20px;">Join our Discord for updates!</p>
+                    <a href="https://discord.gg/7jwPmqPYQb" target="_blank" class="discord-link" style="margin-top: 20px;">Join Discord</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openTab(tabName) {
+            const tabContents = document.getElementsByClassName('tab-content');
+            const tabBtns = document.getElementsByClassName('tab-btn');
+            
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+            
+            for (let i = 0; i < tabBtns.length; i++) {
+                tabBtns[i].classList.remove('active');
+            }
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function copyCode(scriptType) {
+            const codeElement = document.getElementById(scriptType + '-code');
+            const code = codeElement.textContent;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✓ COPIED!';
+                btn.style.background = '#10b981';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '#6366f1';
+                }, 2000);
+            });
+        }
+    </script>
 </body>
 </html>
