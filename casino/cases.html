@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Velora Cases</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <a class="brand" href="index.html">
+        <div class="logo">◆</div>
+        <div>
+          <div class="brand-kicker">Arcade Casino</div>
+          <div class="brand-title">Velora</div>
+        </div>
+      </a>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">💰 Coins</div>
+          <div class="stat-value js-coins">15.000</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">👑 Letzter Gewinn</div>
+          <div class="stat-value js-lastwin">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">🎮 Spiele</div>
+          <div class="stat-value">4</div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn js-sound">🔊 Sound</button>
+        <button class="btn btn-primary js-bonus" id="bonusBtn">Bonus Coins</button>
+      </div>
+    </header>
+
+    <nav class="nav">
+      <a class="nav-btn" href="index.html">✨ Start</a>
+      <a class="nav-btn" href="roulette.html">🎡 Roulette</a>
+      <a class="nav-btn" href="blackjack.html">🃏 Blackjack</a>
+      <a class="nav-btn" href="slots.html">⭐ Slots</a>
+      <a class="nav-btn active" href="cases.html">💎 Case Opening</a>
+    </nav>
+
+    <section style="display:grid; gap:18px;">
+      <div class="panel" style="overflow:hidden;">
+        <div class="case-view-head" style="padding:30px 30px 24px;">
+          <div class="case-view-bg" id="caseViewBg"></div>
+          <div class="case-view-overlay"></div>
+
+          <div class="case-view-head-content" style="position:relative; z-index:1; display:grid; grid-template-columns:1fr auto; gap:18px; align-items:end;">
+            <div>
+              <div class="section-kicker">Case Opening</div>
+              <h1 class="section-title" id="caseTitle" style="font-size:52px;">Street Case</h1>
+              <div class="muted" id="caseSubline" style="margin-top:10px; max-width:760px; line-height:1.8; font-size:15px;">
+                Schlechte Pulls lohnen sich kaum. Gute Pulls zahlen richtig aus.
+              </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:10px; min-width:240px;">
+              <div class="badge" id="caseBalanceBadge">Balance 15.000</div>
+              <button class="btn btn-primary" id="openBtn" style="height:56px; font-size:18px;">Open für 250</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="case-view-body" style="padding:24px 30px 30px;">
+          <div class="panel" style="background:rgba(0,0,0,0.18); border-radius:28px; padding:20px; margin-bottom:18px; box-shadow:none;">
+            <div class="section-kicker" style="margin-bottom:12px;">Top Drops</div>
+            <div id="caseHighlights" style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px;"></div>
+          </div>
+
+          <div class="case-roll-wrap" id="caseRollWrap" style="padding:18px 0; border-radius:30px; background:rgba(0,0,0,0.24);">
+            <div id="caseViewport" style="overflow:hidden; width:100%;">
+              <div class="case-roll" id="caseRoll"></div>
+            </div>
+          </div>
+
+          <div class="case-win" id="caseWin" style="margin-top:18px;"></div>
+        </div>
+      </div>
+
+      <div class="panel" style="padding:24px 26px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:14px;">
+          <div>
+            <div class="section-kicker">Cases</div>
+            <h2 class="section-title" style="font-size:34px;">Wähle dein Case</h2>
+          </div>
+          <div class="badge" id="selectedCaseBadge">Aktiv Street Case</div>
+        </div>
+
+        <div id="caseChooser" style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;"></div>
+      </div>
+
+      <div class="panel" style="padding:24px 26px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:14px;">
+          <div>
+            <div class="section-kicker" style="margin-bottom:6px;">Inventory</div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <div class="badge" id="inventoryCountBadge">0 Items</div>
+              <div class="badge" id="inventoryValueBadge">Verkauf 0</div>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn" id="sortValueBtn">Nach Wert</button>
+            <button class="btn" id="sortRecentBtn">Neueste</button>
+            <button class="btn btn-primary" id="sellAllBtn">Alles verkaufen</button>
+          </div>
+        </div>
+
+        <div class="inventory-grid" id="inventoryGrid" style="grid-template-columns:repeat(4,1fr);"></div>
+      </div>
+    </section>
+
+    <div class="footer-note">Nur Spielcoins. Kein Echtgeld. Alles lokal im Browser.</div>
+  </div>
+
+  <script>
+    const stateKey = "velora_state_v1";
+
+    const cases = [
+      {
+        id: "street",
+        name: "Street Case",
+        price: 250,
+        image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80",
+        subtitle: "Günstige Runde mit eher kleinen Verkäufen und einzelnen guten Hits.",
+        items: [
+          { name: "Smoke Fade", value: 120, rarity: "common" },
+          { name: "Ghost Carbon", value: 180, rarity: "common" },
+          { name: "Neon Burst", value: 340, rarity: "rare" },
+          { name: "Crimson Web", value: 700, rarity: "epic" },
+          { name: "Ice Fang", value: 1400, rarity: "legendary" }
+        ]
+      },
+      {
+        id: "night",
+        name: "Night Case",
+        price: 800,
+        image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
+        subtitle: "Teurer und riskanter. Schlechte Pulls tun weh. Gute Pulls zahlen deutlich besser.",
+        items: [
+          { name: "Blue Matrix", value: 300, rarity: "common" },
+          { name: "Purple Core", value: 650, rarity: "rare" },
+          { name: "Violet Edge", value: 1200, rarity: "epic" },
+          { name: "Solar Prism", value: 2600, rarity: "legendary" },
+          { name: "Royal Dragon", value: 6000, rarity: "mythic" }
+        ]
+      },
+      {
+        id: "royal",
+        name: "Royal Case",
+        price: 1800,
+        image: "https://images.unsplash.com/photo-1511882150382-421056c89033?auto=format&fit=crop&w=1200&q=80",
+        subtitle: "Die teure Variante. Wirklich lohnend wird es hier erst bei dicken Pulls.",
+        items: [
+          { name: "Gold Dust", value: 900, rarity: "common" },
+          { name: "Ember King", value: 2200, rarity: "rare" },
+          { name: "Phoenix Core", value: 4800, rarity: "epic" },
+          { name: "Sun Empire", value: 9500, rarity: "legendary" },
+          { name: "Crown Eclipse", value: 18000, rarity: "mythic" }
+        ]
+      }
+    ];
+
+    let selectedCase = cases[0];
+    let opening = false;
+    let rollTimeout = null;
+    let inventorySort = "recent";
+
+    const rollDuration = 6200;
+    const stripLength = 96;
+    const targetIndex = 72;
+
+    function createItemId() {
+      return `item_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+    }
+
+    function getDefaultState() {
+      return {
+        coins: 15000,
+        lastWin: 0,
+        soundOn: true,
+        history: [{ text: "Willkommen", amount: 0 }],
+        inventory: []
+      };
+    }
+
+    function normalizeInventory(inventory) {
+      if (!Array.isArray(inventory)) return [];
+      return inventory.map((item, index) => ({
+        id: item.id || `${createItemId()}_${index}`,
+        name: item.name,
+        value: Math.max(0, Number(item.value) || 0),
+        rarity: item.rarity || "common",
+        sourceCase: item.sourceCase || "",
+        createdAt: item.createdAt || Date.now() + index
+      }));
+    }
+
+    function getState() {
+      const raw = localStorage.getItem(stateKey);
+      if (!raw) return getDefaultState();
+
+      try {
+        const parsed = JSON.parse(raw);
+        parsed.coins = Math.max(0, Number(parsed.coins) || 0);
+        parsed.lastWin = Math.max(0, Number(parsed.lastWin) || 0);
+        parsed.soundOn = typeof parsed.soundOn === "boolean" ? parsed.soundOn : true;
+        parsed.history = Array.isArray(parsed.history) ? parsed.history : [{ text: "Willkommen", amount: 0 }];
+        parsed.inventory = normalizeInventory(parsed.inventory);
+        return parsed;
+      } catch {
+        return getDefaultState();
+      }
+    }
+
+    function setState(next) {
+      next.coins = Math.max(0, Number(next.coins) || 0);
+      next.lastWin = Math.max(0, Number(next.lastWin) || 0);
+      next.inventory = normalizeInventory(next.inventory);
+      localStorage.setItem(stateKey, JSON.stringify(next));
+    }
+
+    function formatCoins(value) {
+      return new Intl.NumberFormat("de-DE").format(value);
+    }
+
+    function getSellMultiplier(rarity) {
+      if (rarity === "common") return 0.12;
+      if (rarity === "rare") return 0.22;
+      if (rarity === "epic") return 0.4;
+      if (rarity === "legendary") return 0.68;
+      if (rarity === "mythic") return 0.9;
+      return 0.15;
+    }
+
+    function getSellValue(item) {
+      return Math.max(1, Math.floor(item.value * getSellMultiplier(item.rarity)));
+    }
+
+    function getInventoryTotalSellValue(inventory) {
+      return inventory.reduce((sum, item) => sum + getSellValue(item), 0);
+    }
+
+    function syncHeader() {
+      const state = getState();
+
+      if (state.coins < 0) {
+        state.coins = 0;
+        setState(state);
+      }
+
+      document.querySelectorAll(".js-coins").forEach(el => el.textContent = formatCoins(state.coins));
+      document.querySelectorAll(".js-lastwin").forEach(el => el.textContent = formatCoins(state.lastWin));
+      document.querySelectorAll(".js-sound").forEach(el => el.textContent = state.soundOn ? "🔊 Sound" : "🔇 Sound");
+      document.getElementById("caseBalanceBadge").textContent = `Balance ${formatCoins(state.coins)}`;
+      document.getElementById("inventoryCountBadge").textContent = `${state.inventory.length} ${state.inventory.length === 1 ? "Item" : "Items"}`;
+      document.getElementById("inventoryValueBadge").textContent = `Verkauf ${formatCoins(getInventoryTotalSellValue(state.inventory))}`;
+      document.getElementById("selectedCaseBadge").textContent = `Aktiv ${selectedCase.name}`;
+
+      const bonusBtn = document.getElementById("bonusBtn");
+      if (state.coins <= 0) {
+        bonusBtn.disabled = false;
+        bonusBtn.textContent = "5.000 retten";
+      } else {
+        bonusBtn.disabled = true;
+        bonusBtn.textContent = "Nur bei 0 Coins";
+      }
+
+      updateOpenButton();
+    }
+
+    function beep(frequency = 500, duration = 0.08, type = "sine", volume = 0.018) {
+      const state = getState();
+      if (!state.soundOn) return;
+
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+      if (!window.veloraAudio) window.veloraAudio = new AudioContextClass();
+
+      const ctx = window.veloraAudio;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = type;
+      osc.frequency.value = frequency;
+      gain.gain.value = volume;
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      const start = ctx.currentTime;
+      osc.start(start);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+      osc.stop(start + duration);
+    }
+
+    function soundClick() {
+      beep(520, 0.05, "sine", 0.012);
+    }
+
+    function soundSpin() {
+      beep(420, 0.05, "sine", 0.01);
+      setTimeout(() => beep(520, 0.05, "sine", 0.01), 70);
+      setTimeout(() => beep(620, 0.06, "sine", 0.01), 140);
+    }
+
+    function soundWin() {
+      beep(660, 0.07, "triangle", 0.014);
+      setTimeout(() => beep(840, 0.08, "triangle", 0.014), 90);
+      setTimeout(() => beep(1040, 0.1, "triangle", 0.014), 180);
+    }
+
+    document.querySelectorAll(".js-sound").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const state = getState();
+        state.soundOn = !state.soundOn;
+        setState(state);
+        syncHeader();
+      });
+    });
+
+    document.getElementById("bonusBtn").addEventListener("click", () => {
+      const state = getState();
+      if (state.coins > 0) return;
+
+      state.coins = 5000;
+      state.lastWin = 5000;
+      state.history.unshift({ text: "Notfall Bonus", amount: 5000 });
+      state.history = state.history.slice(0, 10);
+
+      setState(state);
+      syncHeader();
+      soundWin();
+    });
+
+    function rarityLabel(rarity) {
+      return rarity.toUpperCase();
+    }
+
+    function pickWeighted(items) {
+      const weighted = [];
+      const weights = { common: 55, rare: 25, epic: 12, legendary: 6, mythic: 2 };
+
+      items.forEach(item => {
+        const count = weights[item.rarity] || 10;
+        for (let i = 0; i < count; i++) weighted.push(item);
+      });
+
+      return weighted[Math.floor(Math.random() * weighted.length)];
+    }
+
+    function buildCaseItem(item) {
+      return `
+        <div class="case-item ${item.rarity}" style="width:190px; min-width:190px; height:190px; border-radius:28px;">
+          <div class="rarity-badge rarity-${item.rarity}">${rarityLabel(item.rarity)}</div>
+          <div>
+            <div class="case-item-name" style="font-size:16px; margin-bottom:8px;">${item.name}</div>
+            <div class="case-item-value" style="font-size:24px;">${formatCoins(item.value)}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function updateOpenButton() {
+      const state = getState();
+      const btn = document.getElementById("openBtn");
+
+      if (opening) {
+        btn.disabled = true;
+        btn.textContent = "Opening";
+        return;
+      }
+
+      if (state.coins < selectedCase.price) {
+        btn.disabled = true;
+        btn.textContent = "Zu wenig Coins";
+        return;
+      }
+
+      btn.disabled = false;
+      btn.textContent = `Open für ${formatCoins(selectedCase.price)}`;
+    }
+
+    function renderCaseChooser() {
+      const root = document.getElementById("caseChooser");
+      root.innerHTML = "";
+
+      cases.forEach(item => {
+        const card = document.createElement("button");
+        card.className = `case-card ${selectedCase.id === item.id ? "active" : ""}`;
+        card.style.minHeight = "220px";
+        card.innerHTML = `
+          <div class="case-bg" style="background-image:url('${item.image}')"></div>
+          <div class="case-overlay"></div>
+          <div class="case-inner" style="padding:22px;">
+            <div class="badge">${formatCoins(item.price)}</div>
+            <div>
+              <div class="case-title" style="font-size:38px;">${item.name}</div>
+              <div class="case-sub">${item.subtitle}</div>
+            </div>
+          </div>
+        `;
+
+        card.addEventListener("click", () => {
+          if (opening) return;
+          selectedCase = item;
+          renderCaseChooser();
+          renderCaseView();
+          syncHeader();
+          soundClick();
+        });
+
+        root.appendChild(card);
+      });
+    }
+
+    function renderCaseHighlights() {
+      const root = document.getElementById("caseHighlights");
+      root.innerHTML = "";
+
+      const sorted = [...selectedCase.items].sort((a, b) => b.value - a.value).slice(0, 3);
+
+      sorted.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "inventory-card";
+        card.style.minHeight = "160px";
+        card.innerHTML = `
+          <div class="rarity-badge rarity-${item.rarity}">${rarityLabel(item.rarity)}</div>
+          <div class="inventory-name" style="font-size:18px; margin-top:18px;">${item.name}</div>
+          <div class="inventory-value" style="font-size:28px;">${formatCoins(item.value)}</div>
+        `;
+        root.appendChild(card);
+      });
+    }
+
+    function buildPreviewStrip() {
+      const preview = [];
+      for (let i = 0; i < 20; i++) {
+        preview.push(selectedCase.items[i % selectedCase.items.length]);
+      }
+      return preview;
+    }
+
+    function buildSpinStrip(prize) {
+      const strip = [];
+      for (let i = 0; i < stripLength; i++) {
+        strip.push(selectedCase.items[Math.floor(Math.random() * selectedCase.items.length)]);
+      }
+      strip[targetIndex] = prize;
+      return strip;
+    }
+
+    function hardResetRoll(strip) {
+      const roll = document.getElementById("caseRoll");
+      roll.style.transition = "none";
+      roll.style.transform = "translateX(0px)";
+      roll.innerHTML = strip.map(buildCaseItem).join("");
+      void roll.offsetWidth;
+      return roll;
+    }
+
+    function calculateCaseAlignX(index) {
+      const viewport = document.getElementById("caseViewport");
+      const roll = document.getElementById("caseRoll");
+      const items = roll.querySelectorAll(".case-item");
+      const target = items[index];
+      if (!target) return 0;
+
+      const viewportCenter = viewport.clientWidth / 2;
+      const itemCenter = target.offsetLeft + target.offsetWidth / 2;
+
+      return viewportCenter - itemCenter;
+    }
+
+    function getSortedInventory(inventory) {
+      const list = [...inventory];
+      if (inventorySort === "value") {
+        list.sort((a, b) => getSellValue(b) - getSellValue(a) || b.createdAt - a.createdAt);
+      } else {
+        list.sort((a, b) => b.createdAt - a.createdAt);
+      }
+      return list;
+    }
+
+    function sellSingleItem(itemId) {
+      const state = getState();
+      const item = state.inventory.find(entry => entry.id === itemId);
+      if (!item) return;
+
+      const sellValue = getSellValue(item);
+
+      state.inventory = state.inventory.filter(entry => entry.id !== itemId);
+      state.coins = Math.max(0, state.coins + sellValue);
+      state.lastWin = sellValue;
+      state.history.unshift({ text: `Verkauft ${item.name}`, amount: sellValue });
+      state.history = state.history.slice(0, 10);
+
+      setState(state);
+      syncHeader();
+      renderInventory();
+      soundWin();
+    }
+
+    function sellAllItems() {
+      const state = getState();
+      if (!state.inventory.length) return;
+
+      const totalSellValue = getInventoryTotalSellValue(state.inventory);
+      const soldCount = state.inventory.length;
+
+      state.inventory = [];
+      state.coins = Math.max(0, state.coins + totalSellValue);
+      state.lastWin = totalSellValue;
+      state.history.unshift({ text: `Inventar verkauft ${soldCount}`, amount: totalSellValue });
+      state.history = state.history.slice(0, 10);
+
+      setState(state);
+      syncHeader();
+      renderInventory();
+      soundWin();
+    }
+
+    function renderInventory() {
+      const state = getState();
+      state.inventory = normalizeInventory(state.inventory);
+      setState(state);
+
+      const root = document.getElementById("inventoryGrid");
+      root.innerHTML = "";
+
+      const inventory = getSortedInventory(state.inventory);
+
+      if (!inventory.length) {
+        root.innerHTML = `<div class="muted">Noch kein Drop. Öffne dein erstes Case.</div>`;
+        return;
+      }
+
+      inventory.forEach(item => {
+        const sellValue = getSellValue(item);
+        const card = document.createElement("div");
+        card.className = "inventory-card";
+        card.style.minHeight = "220px";
+        card.innerHTML = `
+          <div class="rarity-badge rarity-${item.rarity}">${rarityLabel(item.rarity)}</div>
+          <div class="inventory-name" style="font-size:17px;">${item.name}</div>
+          <div class="inventory-value">${formatCoins(sellValue)}</div>
+          <div class="muted" style="font-size:12px; margin-top:6px;">Original ${formatCoins(item.value)}</div>
+          <div class="muted" style="font-size:12px; margin-top:6px;">${item.sourceCase || "Case Drop"}</div>
+          <div style="display:flex; gap:10px; margin-top:14px;">
+            <button class="btn btn-primary" data-sell-id="${item.id}" style="width:100%; height:42px;">Verkaufen</button>
+          </div>
+        `;
+        root.appendChild(card);
+      });
+
+      root.querySelectorAll("[data-sell-id]").forEach(button => {
+        button.addEventListener("click", () => {
+          sellSingleItem(button.dataset.sellId);
+        });
+      });
+    }
+
+    function renderCaseView() {
+      document.getElementById("caseTitle").textContent = selectedCase.name;
+      document.getElementById("caseSubline").textContent = selectedCase.subtitle;
+      document.getElementById("caseViewBg").style.backgroundImage = `url('${selectedCase.image}')`;
+      document.getElementById("caseWin").className = "case-win";
+
+      renderCaseHighlights();
+
+      const roll = hardResetRoll(buildPreviewStrip());
+      roll.style.transition = "none";
+      roll.style.transform = `translateX(${calculateCaseAlignX(8)}px)`;
+
+      updateOpenButton();
+    }
+
+    document.getElementById("sortValueBtn").addEventListener("click", () => {
+      inventorySort = "value";
+      renderInventory();
+      soundClick();
+    });
+
+    document.getElementById("sortRecentBtn").addEventListener("click", () => {
+      inventorySort = "recent";
+      renderInventory();
+      soundClick();
+    });
+
+    document.getElementById("sellAllBtn").addEventListener("click", () => {
+      sellAllItems();
+    });
+
+    document.getElementById("openBtn").addEventListener("click", () => {
+      if (opening) return;
+
+      const state = getState();
+      if (state.coins < selectedCase.price) return;
+
+      opening = true;
+      updateOpenButton();
+      soundSpin();
+      document.getElementById("caseWin").className = "case-win";
+
+      if (rollTimeout) {
+        clearTimeout(rollTimeout);
+        rollTimeout = null;
+      }
+
+      const prizeBase = pickWeighted(selectedCase.items);
+      const prize = {
+        id: createItemId(),
+        name: prizeBase.name,
+        value: prizeBase.value,
+        rarity: prizeBase.rarity,
+        sourceCase: selectedCase.name,
+        createdAt: Date.now()
+      };
+
+      const strip = buildSpinStrip(prize);
+      const roll = hardResetRoll(strip);
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const targetX = calculateCaseAlignX(targetIndex);
+          roll.style.transition = `transform ${rollDuration}ms cubic-bezier(0.12, 0.86, 0.18, 1)`;
+          roll.style.transform = `translateX(${targetX}px)`;
+        });
+      });
+
+      rollTimeout = setTimeout(() => {
+        const delta = prize.value - selectedCase.price;
+        const nextState = getState();
+
+        nextState.coins = Math.max(0, nextState.coins + delta);
+        if (delta > 0) nextState.lastWin = delta;
+        nextState.history.unshift({ text: `Case ${selectedCase.name}`, amount: delta });
+        nextState.history = nextState.history.slice(0, 10);
+        nextState.inventory.unshift(prize);
+        nextState.inventory = nextState.inventory.slice(0, 60);
+
+        setState(nextState);
+        syncHeader();
+        renderInventory();
+
+        const win = document.getElementById("caseWin");
+        win.className = "case-win show";
+        win.innerHTML = `
+          <div class="section-kicker">Dein Drop</div>
+          <div class="case-title" style="font-size:34px; margin-bottom:10px;">${prize.name}</div>
+          <div class="rarity-badge rarity-${prize.rarity}" style="margin-bottom:12px;">${rarityLabel(prize.rarity)}</div>
+          <div class="payout-row"><span>Wert</span><strong>${formatCoins(prize.value)}</strong></div>
+          <div class="payout-row"><span>Verkauf</span><strong>${formatCoins(getSellValue(prize))}</strong></div>
+          <div class="payout-row"><span>Case Preis</span><strong>${formatCoins(selectedCase.price)}</strong></div>
+          <div class="payout-row"><span>Delta</span><strong>${delta > 0 ? "+" : ""}${formatCoins(delta)}</strong></div>
+        `;
+
+        if (delta >= 0) soundWin();
+
+        opening = false;
+        updateOpenButton();
+      }, rollDuration + 120);
+    });
+
+    syncHeader();
+    renderCaseChooser();
+    renderCaseView();
+    renderInventory();
+
+    window.addEventListener("resize", () => {
+      if (!opening) renderCaseView();
+    });
+  </script>
+</body>
+</html>
