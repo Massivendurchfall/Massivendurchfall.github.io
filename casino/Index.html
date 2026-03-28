@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Velora</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <a class="brand" href="index.html">
+        <div class="logo">◆</div>
+        <div>
+          <div class="brand-kicker">Arcade Casino</div>
+          <div class="brand-title">Velora</div>
+        </div>
+      </a>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">💰 Coins</div>
+          <div class="stat-value js-coins">15.000</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">👑 Letzter Gewinn</div>
+          <div class="stat-value js-lastwin">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">🎮 Spiele</div>
+          <div class="stat-value">4</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn js-sound">🔊 Sound</button>
+        <button class="btn btn-primary js-bonus">Bonus Coins</button>
+      </div>
+    </header>
+
+    <nav class="nav">
+      <a class="nav-btn active" href="index.html">✨ Start</a>
+      <a class="nav-btn" href="roulette.html">🎡 Roulette</a>
+      <a class="nav-btn" href="blackjack.html">🃏 Blackjack</a>
+      <a class="nav-btn" href="slots.html">⭐ Slots</a>
+      <a class="nav-btn" href="cases.html">💎 Case Opening</a>
+    </nav>
+
+    <section class="grid-home">
+      <div class="panel hero">
+        <div class="hero-media"></div>
+        <div class="hero-content">
+          <div>
+            <div class="tag">Spielcoins only</div>
+            <div class="hero-title">Saubere Casino Seite mit Stil statt billigem Standard Look</div>
+            <div class="hero-text">Wenig Text. Klare Wege. Schnelle Spiele. Glatte Animationen. Genau das Gefühl von direkt starten und einfach zocken.</div>
+          </div>
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="roulette.html">Jetzt spielen</a>
+            <a class="btn" href="cases.html">Cases öffnen</a>
+          </div>
+        </div>
+        <div class="hero-feed" id="homeFeed"></div>
+      </div>
+
+      <div class="panel quick">
+        <div>
+          <div class="section-kicker">Schnellwahl</div>
+          <h2 class="section-title">Dein Floor</h2>
+        </div>
+        <div class="quick-list">
+          <a class="quick-item" href="roulette.html">
+            <div>
+              <div class="quick-item-title">Roulette</div>
+              <div class="quick-item-sub">Farben oder Zahl</div>
+            </div>
+            <div>→</div>
+          </a>
+          <a class="quick-item" href="blackjack.html">
+            <div>
+              <div class="quick-item-title">Blackjack</div>
+              <div class="quick-item-sub">Gegen den Dealer</div>
+            </div>
+            <div>→</div>
+          </a>
+          <a class="quick-item" href="slots.html">
+            <div>
+              <div class="quick-item-title">Slots</div>
+              <div class="quick-item-sub">Klassische Walzen</div>
+            </div>
+            <div>→</div>
+          </a>
+          <a class="quick-item" href="cases.html">
+            <div>
+              <div class="quick-item-title">Case Opening</div>
+              <div class="quick-item-sub">Drops und Hype</div>
+            </div>
+            <div>→</div>
+          </a>
+        </div>
+        <div class="panel" style="padding:18px; background: rgba(0,0,0,0.18);">
+          <div class="section-kicker">Letzte Aktionen</div>
+          <div id="historyList"></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="tile-grid">
+      <a class="tile" href="roulette.html">
+        <div class="tile-bg" style="background-image:url('https://images.unsplash.com/photo-1606166325683-e6deb697d301?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="tile-content">
+          <div class="icon-box">🎡</div>
+          <div>
+            <div class="tile-title">Roulette</div>
+            <div class="tile-text">Klares Board, sauberes Wheel und schnelle Einsätze.</div>
+          </div>
+        </div>
+      </a>
+      <a class="tile" href="blackjack.html">
+        <div class="tile-bg" style="background-image:url('https://images.unsplash.com/photo-1511193311914-0346f16efe90?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="tile-content">
+          <div class="icon-box">🃏</div>
+          <div>
+            <div class="tile-title">Blackjack</div>
+            <div class="tile-text">Schöne Karten, ruhige Runde und direkte Entscheidungen.</div>
+          </div>
+        </div>
+      </a>
+      <a class="tile" href="slots.html">
+        <div class="tile-bg" style="background-image:url('https://images.unsplash.com/photo-1596838132731-3301c3fd4317?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="tile-content">
+          <div class="icon-box">⭐</div>
+          <div>
+            <div class="tile-title">Slots</div>
+            <div class="tile-text">Große Symbole, 777 Feeling und schnelle Hits.</div>
+          </div>
+        </div>
+      </a>
+      <a class="tile" href="cases.html">
+        <div class="tile-bg" style="background-image:url('https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="tile-content">
+          <div class="icon-box">💎</div>
+          <div>
+            <div class="tile-title">Case Opening</div>
+            <div class="tile-text">CS Style Vibe mit Seltenheiten und Hype Momenten.</div>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="footer-note">Nur Spielcoins. Kein Echtgeld. Alles lokal im Browser.</div>
+  </div>
+
+  <script>
+    const stateKey = 'velora_state_v1';
+
+    function getState() {
+      const raw = localStorage.getItem(stateKey);
+      if (raw) return JSON.parse(raw);
+      return {
+        coins: 15000,
+        lastWin: 0,
+        soundOn: true,
+        history: [{ text: 'Willkommen', amount: 0 }],
+        inventory: []
+      };
+    }
+
+    function setState(next) {
+      localStorage.setItem(stateKey, JSON.stringify(next));
+    }
+
+    function formatCoins(value) {
+      return new Intl.NumberFormat('de-DE').format(value);
+    }
+
+    function syncHeader() {
+      const state = getState();
+      document.querySelectorAll('.js-coins').forEach(el => el.textContent = formatCoins(state.coins));
+      document.querySelectorAll('.js-lastwin').forEach(el => el.textContent = formatCoins(state.lastWin));
+      document.querySelectorAll('.js-sound').forEach(el => el.textContent = state.soundOn ? '🔊 Sound' : '🔇 Sound');
+    }
+
+    function addHistory(text, amount) {
+      const state = getState();
+      state.history.unshift({ text, amount });
+      state.history = state.history.slice(0, 10);
+      if (amount > 0) state.lastWin = amount;
+      setState(state);
+      syncHeader();
+      renderHistory();
+      renderFeed();
+    }
+
+    function renderHistory() {
+      const state = getState();
+      const root = document.getElementById('historyList');
+      root.innerHTML = '';
+      state.history.slice(0, 6).forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'history-row';
+        const amountClass = item.amount > 0 ? 'pos' : item.amount < 0 ? 'neg' : 'zero';
+        row.innerHTML = `
+          <div class="history-text">${item.text}</div>
+          <div class="history-amount ${amountClass}">${item.amount > 0 ? '+' : ''}${formatCoins(item.amount)}</div>
+        `;
+        root.appendChild(row);
+      });
+    }
+
+    function renderFeed() {
+      const state = getState();
+      const root = document.getElementById('homeFeed');
+      root.innerHTML = '';
+      state.history.slice(0, 4).forEach(item => {
+        const div = document.createElement('div');
+        const amountClass = item.amount > 0 ? 'pos' : 'neg';
+        div.className = 'feed-item';
+        div.innerHTML = `
+          <div class="feed-label">Aktivität</div>
+          <div class="feed-title">${item.text}</div>
+          <div class="feed-amount ${item.amount >= 0 ? 'pos' : 'neg'}">${item.amount > 0 ? '+' : ''}${formatCoins(item.amount)}</div>
+        `;
+        root.appendChild(div);
+      });
+    }
+
+    function setupSharedActions() {
+      document.querySelectorAll('.js-sound').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const state = getState();
+          state.soundOn = !state.soundOn;
+          setState(state);
+          syncHeader();
+        });
+      });
+
+      document.querySelectorAll('.js-bonus').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const state = getState();
+          state.coins += 5000;
+          state.lastWin = 5000;
+          state.history.unshift({ text: 'Bonus', amount: 5000 });
+          state.history = state.history.slice(0, 10);
+          setState(state);
+          syncHeader();
+          renderHistory();
+          renderFeed();
+        });
+      });
+    }
+
+    syncHeader();
+    renderHistory();
+    renderFeed();
+    setupSharedActions();
+  </script>
+</body>
+</html>
