@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Velora Roulette</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <a class="brand" href="index.html">
+        <div class="logo">◆</div>
+        <div>
+          <div class="brand-kicker">Arcade Casino</div>
+          <div class="brand-title">Velora</div>
+        </div>
+      </a>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">💰 Coins</div>
+          <div class="stat-value js-coins">15.000</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">👑 Letzter Gewinn</div>
+          <div class="stat-value js-lastwin">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">🎮 Spiele</div>
+          <div class="stat-value">4</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn js-sound">🔊 Sound</button>
+        <button class="btn btn-primary js-bonus">Bonus Coins</button>
+      </div>
+    </header>
+
+    <nav class="nav">
+      <a class="nav-btn" href="index.html">✨ Start</a>
+      <a class="nav-btn active" href="roulette.html">🎡 Roulette</a>
+      <a class="nav-btn" href="blackjack.html">🃏 Blackjack</a>
+      <a class="nav-btn" href="slots.html">⭐ Slots</a>
+      <a class="nav-btn" href="cases.html">💎 Case Opening</a>
+    </nav>
+
+    <section class="game-grid">
+      <div class="panel game-panel">
+        <div class="panel-head">
+          <div>
+            <div class="section-kicker">Roulette</div>
+            <h2 class="section-title">Wheel Run</h2>
+          </div>
+          <div class="badge" id="rouletteResultBadge">0 green</div>
+        </div>
+
+        <div class="roulette-track-wrap">
+          <div class="roulette-pointer-line"></div>
+          <div class="roulette-track" id="rouletteTrack"></div>
+        </div>
+
+        <div class="choice-grid">
+          <button class="choice-btn choice-red active" data-choice="red">Rot</button>
+          <button class="choice-btn choice-black" data-choice="black">Schwarz</button>
+          <button class="choice-btn choice-green" data-choice="green">Grün</button>
+          <button class="choice-btn choice-gold" data-choice="number">Zahl 7</button>
+        </div>
+      </div>
+
+      <div class="panel game-panel">
+        <div class="panel-head">
+          <div>
+            <div class="section-kicker">Einsatz</div>
+            <h2 class="section-title">Spin Setup</h2>
+          </div>
+        </div>
+
+        <div class="control-box">
+          <div class="control-top">
+            <span>Coins</span>
+            <strong id="rouletteBetValue">250</strong>
+          </div>
+          <input type="range" id="rouletteBet" min="50" max="3000" step="50" value="250" />
+        </div>
+
+        <div class="preset-grid">
+          <button class="btn" data-preset="100">100</button>
+          <button class="btn" data-preset="500">500</button>
+          <button class="btn" data-preset="1000">1000</button>
+        </div>
+
+        <button class="btn btn-primary" id="spinBtn" style="width:100%; margin-top:14px; height:58px; font-size:18px;">Spin</button>
+
+        <div class="payout-list">
+          <div class="section-kicker" style="margin-bottom:10px;">Auszahlung</div>
+          <div class="payout-row"><span>Rot oder Schwarz</span><strong>2x</strong></div>
+          <div class="payout-row"><span>Grün</span><strong>14x</strong></div>
+          <div class="payout-row"><span>Zahl 7</span><strong>36x</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer-note">Nur Spielcoins. Kein Echtgeld. Alles lokal im Browser.</div>
+  </div>
+
+  <script>
+    const stateKey = 'velora_state_v1';
+    const numbers = [
+      { n: 0, color: 'green' }, { n: 32, color: 'red' }, { n: 15, color: 'black' }, { n: 19, color: 'red' }, { n: 4, color: 'black' },
+      { n: 21, color: 'red' }, { n: 2, color: 'black' }, { n: 25, color: 'red' }, { n: 17, color: 'black' }, { n: 34, color: 'red' },
+      { n: 6, color: 'black' }, { n: 27, color: 'red' }, { n: 13, color: 'black' }, { n: 36, color: 'red' }, { n: 11, color: 'black' },
+      { n: 30, color: 'red' }, { n: 8, color: 'black' }, { n: 23, color: 'red' }, { n: 10, color: 'black' }, { n: 5, color: 'red' },
+      { n: 24, color: 'black' }, { n: 16, color: 'red' }, { n: 33, color: 'black' }, { n: 1, color: 'red' }, { n: 20, color: 'black' },
+      { n: 14, color: 'red' }, { n: 31, color: 'black' }, { n: 9, color: 'red' }, { n: 22, color: 'black' }, { n: 18, color: 'red' },
+      { n: 29, color: 'black' }, { n: 7, color: 'red' }, { n: 28, color: 'black' }, { n: 12, color: 'red' }, { n: 35, color: 'black' },
+      { n: 3, color: 'red' }, { n: 26, color: 'black' }
+    ];
+
+    function getState() {
+      const raw = localStorage.getItem(stateKey);
+      if (raw) return JSON.parse(raw);
+      return { coins: 15000, lastWin: 0, soundOn: true, history: [{ text: 'Willkommen', amount: 0 }], inventory: [] };
+    }
+
+    function setState(next) {
+      localStorage.setItem(stateKey, JSON.stringify(next));
+    }
+
+    function formatCoins(value) {
+      return new Intl.NumberFormat('de-DE').format(value);
+    }
+
+    function syncHeader() {
+      const state = getState();
+      document.querySelectorAll('.js-coins').forEach(el => el.textContent = formatCoins(state.coins));
+      document.querySelectorAll('.js-lastwin').forEach(el => el.textContent = formatCoins(state.lastWin));
+      document.querySelectorAll('.js-sound').forEach(el => el.textContent = state.soundOn ? '🔊 Sound' : '🔇 Sound');
+    }
+
+    function addHistory(text, amount) {
+      const state = getState();
+      state.history.unshift({ text, amount });
+      state.history = state.history.slice(0, 10);
+      if (amount > 0) state.lastWin = amount;
+      setState(state);
+      syncHeader();
+    }
+
+    function beep(frequency = 500, duration = 0.06, type = 'sine', volume = 0.03) {
+      const state = getState();
+      if (!state.soundOn) return;
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+      if (!window.veloraAudio) window.veloraAudio = new AudioContextClass();
+      const ctx = window.veloraAudio;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.value = frequency;
+      gain.gain.value = volume;
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      const start = ctx.currentTime;
+      osc.start(start);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+      osc.stop(start + duration);
+    }
+
+    function soundClick() { beep(420, 0.03, 'square', 0.02); }
+    function soundSpin() { beep(340, 0.03, 'square', 0.015); setTimeout(() => beep(380, 0.03, 'square', 0.015), 50); setTimeout(() => beep(420, 0.03, 'square', 0.015), 100); }
+    function soundWin() { beep(660, 0.06, 'triangle', 0.03); setTimeout(() => beep(880, 0.08, 'triangle', 0.03), 80); setTimeout(() => beep(1200, 0.1, 'triangle', 0.03), 170); }
+    function soundLose() { beep(220, 0.08, 'sawtooth', 0.02); setTimeout(() => beep(180, 0.1, 'sawtooth', 0.02), 90); }
+
+    document.querySelectorAll('.js-sound').forEach(btn => btn.addEventListener('click', () => {
+      const state = getState();
+      state.soundOn = !state.soundOn;
+      setState(state);
+      syncHeader();
+    }));
+
+    document.querySelectorAll('.js-bonus').forEach(btn => btn.addEventListener('click', () => {
+      const state = getState();
+      state.coins += 5000;
+      state.lastWin = 5000;
+      state.history.unshift({ text: 'Bonus', amount: 5000 });
+      state.history = state.history.slice(0, 10);
+      setState(state);
+      syncHeader();
+      soundWin();
+    }));
+
+    const track = document.getElementById('rouletteTrack');
+    const badge = document.getElementById('rouletteResultBadge');
+    const betInput = document.getElementById('rouletteBet');
+    const betValue = document.getElementById('rouletteBetValue');
+    const spinBtn = document.getElementById('spinBtn');
+    let selectedChoice = 'red';
+    let spinning = false;
+
+    const displayNumbers = [];
+    for (let i = 0; i < 100; i++) displayNumbers.push(numbers[i % numbers.length]);
+
+    function renderTrack() {
+      track.innerHTML = '';
+      displayNumbers.forEach(item => {
+        const div = document.createElement('div');
+        div.className = `roulette-pill ${item.color}`;
+        div.textContent = item.n;
+        track.appendChild(div);
+      });
+      track.style.transform = 'translateX(260px)';
+    }
+
+    document.querySelectorAll('[data-choice]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (spinning) return;
+        soundClick();
+        selectedChoice = btn.dataset.choice;
+        document.querySelectorAll('[data-choice]').forEach(item => item.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    betInput.addEventListener('input', () => {
+      betValue.textContent = formatCoins(Number(betInput.value));
+    });
+
+    document.querySelectorAll('[data-preset]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        betInput.value = btn.dataset.preset;
+        betValue.textContent = formatCoins(Number(betInput.value));
+        soundClick();
+      });
+    });
+
+    spinBtn.addEventListener('click', () => {
+      if (spinning) return;
+      const state = getState();
+      const bet = Number(betInput.value);
+      if (bet > state.coins || bet <= 0) return;
+      spinning = true;
+      spinBtn.disabled = true;
+      spinBtn.textContent = 'Dreht';
+      soundSpin();
+      const resultIndex = Math.floor(Math.random() * numbers.length);
+      const loops = 4 * numbers.length;
+      const targetIndex = loops + resultIndex;
+      track.classList.add('spinning');
+      track.style.transform = `translateX(${-(targetIndex * 56) + 260}px)`;
+
+      setTimeout(() => {
+        const result = numbers[resultIndex];
+        badge.textContent = `${result.n} ${result.color}`;
+        let multiplier = 0;
+        if (selectedChoice === 'red' && result.color === 'red') multiplier = 2;
+        if (selectedChoice === 'black' && result.color === 'black') multiplier = 2;
+        if (selectedChoice === 'green' && result.color === 'green') multiplier = 14;
+        if (selectedChoice === 'number' && result.n === 7) multiplier = 36;
+        const delta = multiplier > 0 ? bet * (multiplier - 1) : -bet;
+        state.coins = Math.max(0, state.coins + delta);
+        if (delta > 0) state.lastWin = delta;
+        state.history.unshift({ text: delta > 0 ? 'Roulette Gewinn' : 'Roulette Verlust', amount: delta });
+        state.history = state.history.slice(0, 10);
+        setState(state);
+        syncHeader();
+        if (delta >= 0) soundWin(); else soundLose();
+        spinning = false;
+        spinBtn.disabled = false;
+        spinBtn.textContent = 'Spin';
+      }, 3600);
+    });
+
+    syncHeader();
+    renderTrack();
+  </script>
+</body>
+</html>
