@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tomodachi Life Ryujinx Setup Guide</title>
+<title>Tomodachi Life – Ryujinx Setup Guide</title>
 
+<!-- Open Graph / Discord Embed -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://massivendurchfall.github.io/ryjinx/">
 <meta property="og:title" content="Tomodachi Life – Ryujinx Setup Guide">
@@ -18,8 +19,7 @@
 <meta name="twitter:description" content="Step-by-step guide to install Ryujinx, set up firmware and keys, and play Tomodachi Life: Living the Dream on PC.">
 <meta name="twitter:image" content="https://assets.nintendo.com/image/upload/f_auto/q_auto/dpr_1.5/c_scale,w_500/Marketing/KWPrk6LG7f6pcDfo6uPckZPP4anLWs8dYrFGyXxWU9ksyHkwdYAd7jhGE8DqBFmJ/intro/friends-logo-2x">
 
-
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"><span class="li-text">
 <style>
   :root {
     --yellow: #FFD94A;
@@ -273,8 +273,9 @@
     font-size: 0.95rem;
     font-weight: 700;
     color: var(--text);
-    line-height: 1.65;
+    line-height: 1.75;
   }
+  .steps li .li-text { flex: 1; min-width: 0; }
   .steps li::before {
     content: counter(step);
     background: var(--sky);
@@ -289,6 +290,8 @@
     margin-top: 2px;
   }
 
+
+
   code {
     background: #f0edff;
     border: 1.5px solid #d4ccff;
@@ -298,6 +301,8 @@
     font-family: 'Courier New', monospace;
     color: #5a3fce;
     font-weight: 700;
+    display: inline;
+    white-space: nowrap;
   }
 
   .tip {
@@ -435,17 +440,17 @@
   <div class="card sky">
     <h4 data-i18n="s2a_title">📂 Extract the Emulator</h4>
     <ul class="steps">
-      <li data-i18n="s2a_1">Right-click <code>ryujinx-canary-1.3.272-win_x64.zip</code> and select <b>Extract Here</b> with WinRAR.</li>
-      <li data-i18n="s2a_2">Open the extracted folder and launch <code>Ryujinx.exe</code>.</li>
-      <li data-i18n="s2a_3">Once it is open, you can delete the original <code>.zip</code> file. It is no longer needed.</li>
+      <li data-i18n="s2a_1">Right-click <code>ryujinx-canary-1.3.272-win_x64.zip</code> and select <b>Extract Here</b> with WinRAR.</span></li>
+      <li data-i18n="s2a_2"><span class="li-text">Open the extracted folder and launch <code>Ryujinx.exe</code>.</span></li>
+      <li data-i18n="s2a_3"><span class="li-text">Once it is open, you can delete the original <code>.zip</code> file. It is no longer needed.</span></li>
     </ul>
-    <div class="tip" data-i18n="s2a_tip"><b>🔑 Key error on first launch? That's normal.</b> Ryujinx may show a <b>"Keys not found"</b> or similar error when you open it for the first time. Don't worry — you haven't added the keys yet. You will do that in <b>Step 3</b>. Just close the error and continue.</div>
+    <div class="tip" data-i18n="s2a_tip"><b>🔑 Key error on first launch? That's normal.</b> Ryujinx may show a <b>"Keys not found"</b> or similar error when you open it for the first time. Don't worry, you haven't added the keys yet. You will do that in <b>Step 3</b>. Just close the error and continue.</div>
   </div>
   <div class="card green">
     <h4 data-i18n="s2b_title">🔕 Disable the Console Window</h4>
     <ul class="steps">
-      <li data-i18n="s2b_1">In Ryujinx, click <b>Options</b> in the top menu bar.</li>
-      <li data-i18n="s2b_2">Find <b>Show Console</b> and uncheck it to hide the debug console window.</li>
+      <li data-i18n="s2b_1"><span class="li-text">In Ryujinx, click <b>Options</b> in the top menu bar.</span></li>
+      <li data-i18n="s2b_2"><span class="li-text">Find <b>Show Console</b> and uncheck it to hide the debug console window.</span></li>
     </ul>
     <div class="tip" data-i18n="s2b_tip"><b>💡 Tip:</b> This keeps Ryujinx clean and prevents an extra black window from appearing every time you launch a game.</div>
   </div>
@@ -455,10 +460,10 @@
   <div class="card pink">
     <h4 data-i18n="s3_card_title">🔑 Extract and Install the Keys</h4>
     <ul class="steps">
-      <li data-i18n="s3_1">Right-click <code>ProdKeys.NET-v22.0.0.zip</code> and select <b>Extract Here</b>.</li>
-      <li data-i18n="s3_2">This will produce a <code>prod.keys</code> and a <code>title.keys</code> file.</li>
-      <li data-i18n="s3_3">In Ryujinx, navigate to <b>Actions → Install Keys → Install Keys (.KEYS)</b>.</li>
-      <li data-i18n="s3_4">Select the <code>prod.keys</code> file from the folder you just extracted.</li>
+      <li data-i18n="s3_1"><span class="li-text">Right-click <code>ProdKeys.NET-v22.0.0.zip</code> and select <b>Extract Here</b>.</span></li>
+      <li data-i18n="s3_2"><span class="li-text">This will produce a <code>prod.keys</code> and a <code>title.keys</code> file.</span></li>
+      <li data-i18n="s3_3"><span class="li-text">In Ryujinx, navigate to <b>Actions → Install Keys → Install Keys (.KEYS)</b>.</span></li>
+      <li data-i18n="s3_4"><span class="li-text">Select the <code>prod.keys</code> file from the folder you just extracted.</span></li>
     </ul>
     <img src="step3.png" alt="Install Keys menu" class="step-img">
   </div>
@@ -468,9 +473,9 @@
   <div class="card purple">
     <h4 data-i18n="s4_card_title">💾 Install the Firmware</h4>
     <ul class="steps">
-      <li data-i18n="s4_1"><b>Do not extract</b> <code>Firmware.22.0.0.zip</code>. Leave it as a ZIP file.</li>
-      <li data-i18n="s4_2">In Ryujinx, go to <b>Actions → Install Firmware → Install Firmware (XCI or ZIP)</b>.</li>
-      <li data-i18n="s4_3">Select the <code>Firmware.22.0.0.zip</code> file directly and Ryujinx will install it automatically.</li>
+      <li data-i18n="s4_1"><span class="li-text"><b>Do not extract</b> <code>Firmware.22.0.0.zip</code>. Leave it as a ZIP file.</span></li>
+      <li data-i18n="s4_2"><span class="li-text">In Ryujinx, go to <b>Actions → Install Firmware → Install Firmware (XCI or ZIP)</b>.</span></li>
+      <li data-i18n="s4_3"><span class="li-text">Select the <code>Firmware.22.0.0.zip</code> file directly and Ryujinx will install it automatically.</span></li>
     </ul>
     <div class="tip" data-i18n="s4_tip"><b>💡 Note:</b> Unlike the keys, you do not extract the firmware ZIP. Just select it directly from where you downloaded it.</div>
     <img src="step4.png" alt="Install Firmware menu" class="step-img">
@@ -493,10 +498,10 @@
   <div class="card green">
     <h4 data-i18n="s6_card_title">📁 Point Ryujinx to Your Games</h4>
     <ul class="steps">
-      <li data-i18n="s6_1">Go to <b>Options → Settings</b>.</li>
-      <li data-i18n="s6_2">Open the <b>Interface</b> tab and find the <b>Game Directories</b> section.</li>
-      <li data-i18n="s6_3">Click <b>Add</b> and choose the folder where you will store your game files, for example <code>C:\Games\Switch\</code>.</li>
-      <li data-i18n="s6_4">Optionally, add a separate folder for DLCs and updates in the <b>Autoload DLC/Updates Directories</b> section below.</li>
+      <li data-i18n="s6_1"><span class="li-text">Go to <b>Options → Settings</b>.</span></li>
+      <li data-i18n="s6_2"><span class="li-text">Open the <b>Interface</b> tab and find the <b>Game Directories</b> section.</span></li>
+      <li data-i18n="s6_3"><span class="li-text">Click <b>Add</b> and choose the folder where you will store your game files, for example <code>C:\Games\Switch\</code>.</span></li>
+      <li data-i18n="s6_4"><span class="li-text">Optionally, add a separate folder for DLCs and updates in the <b>Autoload DLC/Updates Directories</b> section below.</span></li>
     </ul>
     <img src="step6.png" alt="Game Directories in Ryujinx Settings" class="step-img">
   </div>
@@ -511,15 +516,15 @@
       <a class="dl-btn" href="https://megaup.net/5422e071ead058050850766c4c0368bd/TOMLLTDREM-(US)-NSwTcH-[BASE]-NSP-Ziperto.part1.rar" target="_blank">⬇ Tomodachi Life Part 1 (.rar)</a>
       <a class="dl-btn pink-btn" href="https://megaup.net/91144fa33180b703e128e486bbc09206/TOMLLTDREM-(US)-NSwTcH-[BASE]-NSP-Ziperto.part2.rar" target="_blank">⬇ Tomodachi Life Part 2 (.rar)</a>
     </div>
-    <div class="warn" data-i18n="s7a_warn"><b>⚠ Download both parts before extracting.</b> The two files work together — when you go to extract in the next step, they both need to be in the same folder at that moment. If they somehow ended up in different places, just move them into the same folder before you start extracting. That's all that matters.</div>
+    <div class="warn" data-i18n="s7a_warn"><b>⚠ Download both parts before extracting.</b> The two files work together. When you go to extract in the next step, they both need to be in the same folder at that moment. If they somehow ended up in different places, just move them into the same folder before you start extracting. That's all that matters.</div>
   </div>
   <div class="card sky">
     <h4 data-i18n="s7b_title">📦 How to Extract the Game (Step by Step)</h4>
     <ul class="steps">
-      <li data-i18n="s7b_1">Open the folder where you saved both <code>part1.rar</code> and <code>part2.rar</code>. They need to be in the same folder.</li>
-      <li data-i18n="s7b_2"><b>Select both files at the same time:</b> click on <code>part1.rar</code>, then hold <code>Ctrl</code> on your keyboard and click <code>part2.rar</code>. Both files should now be highlighted/selected.</li>
-      <li data-i18n="s7b_3"><b>Right-click on either of the two highlighted files</b> and choose <b>Extract Here</b>. WinRAR will automatically read both parts together and produce a single <code>.nsp</code> game file.</li>
-      <li data-i18n="s7b_4">Once extraction is done, move the <code>.nsp</code> file into the <b>Games folder</b> you set up in Step 6 — for example <code>C:\Games\Switch\</code>. Ryujinx will detect it and show the game in your list.</li>
+      <li data-i18n="s7b_1"><span class="li-text">Open the folder where you saved both <code>part1.rar</code> and <code>part2.rar</code>. They need to be in the same folder.</span></li>
+      <li data-i18n="s7b_2"><span class="li-text"><b>Select both files at the same time:</b> click on <code>part1.rar</code>, then hold <code>Ctrl</code> on your keyboard and click <code>part2.rar</code>. Both files should now be highlighted/selected.</span></li>
+      <li data-i18n="s7b_3"><span class="li-text"><b>Right-click on either of the two highlighted files</b> and choose <b>Extract Here</b>. WinRAR will automatically read both parts together and produce a single <code>.nsp</code> game file.</span></li>
+      <li data-i18n="s7b_4"><span class="li-text">Once extraction is done, move the <code>.nsp</code> file into the <b>Games folder</b> you set up in Step 6, for example <code>C:\Games\Switch\</code>. Ryujinx will detect it and show the game in your list.</span></li>
     </ul>
     <div class="warn" data-i18n="s7b_warn"><b>⚠ Make sure both files are selected before you right-click.</b> If you only right-click <code>part1.rar</code> by itself without selecting both, WinRAR will only extract half the data and the result will be broken or incomplete.</div>
     <img src="step7.png" alt="Tomodachi Life in Ryujinx game list" class="step-img">
@@ -531,10 +536,10 @@
     <h4 data-i18n="s8_card_title">🎮 Configure Your Gamepad</h4>
     <p data-i18n="s8_desc">If you want to play with a controller, connect it to your PC first and then configure it inside Ryujinx.</p>
     <ul class="steps">
-      <li data-i18n="s8_1">Go to <b>Options → Settings</b>.</li>
-      <li data-i18n="s8_2">Click the <b>Input</b> tab at the top of the settings window.</li>
-      <li data-i18n="s8_3">Click the <b>Input Device</b> dropdown and select your controller from the list, for example <b>PS4 Controller (0)</b> or <b>Xbox Controller (0)</b>.</li>
-      <li data-i18n="s8_4">Click <b>Apply</b> and then <b>OK</b> to save the settings.</li>
+      <li data-i18n="s8_1"><span class="li-text">Go to <b>Options → Settings</b>.</span></li>
+      <li data-i18n="s8_2"><span class="li-text">Click the <b>Input</b> tab at the top of the settings window.</span></li>
+      <li data-i18n="s8_3"><span class="li-text">Click the <b>Input Device</b> dropdown and select your controller from the list, for example <b>PS4 Controller (0)</b> or <b>Xbox Controller (0)</b>.</span></li>
+      <li data-i18n="s8_4"><span class="li-text">Click <b>Apply</b> and then <b>OK</b> to save the settings.</span></li>
     </ul>
     <div class="tip" data-i18n="s8_tip"><b>💡 Tip:</b> Make sure your controller is plugged in or paired via Bluetooth before opening the settings. If it does not appear in the list, reconnect it and reopen the Input tab.</div>
   </div>
@@ -565,7 +570,7 @@ const T = {
     s2a_1:"Right-click <code>ryujinx-canary-1.3.272-win_x64.zip</code> and select <b>Extract Here</b> with WinRAR.",
     s2a_2:"Open the extracted folder and launch <code>Ryujinx.exe</code>.",
     s2a_3:"Once it is open, you can delete the original <code>.zip</code> file. It is no longer needed.",
-    s2a_tip:"<b>🔑 Key error on first launch? That's normal.</b> Ryujinx may show a <b>\"Keys not found\"</b> or similar error when you open it for the first time. Don't worry — you haven't added the keys yet. You will do that in <b>Step 3</b>. Just close the error and continue.",
+    s2a_tip:"<b>🔑 Key error on first launch? That's normal.</b> Ryujinx may show a <b>\"Keys not found\"</b> or similar error when you open it for the first time. Don't worry, you haven't added the keys yet. You will do that in <b>Step 3</b>. Just close the error and continue.",
     s2b_title:"🔕 Disable the Console Window",
     s2b_1:"In Ryujinx, click <b>Options</b> in the top menu bar.",
     s2b_2:"Find <b>Show Console</b> and uncheck it to hide the debug console window.",
@@ -591,12 +596,12 @@ const T = {
     s7_title:"Download and Install Tomodachi Life",s7a_title:"🎮 Download the Game (2 Parts)",
     s7a_desc:"The game file is split into two parts. You need both of them to extract the game correctly.",
     s7a_adblocker_tip:"<b>🛡️ Heads up: these download sites have ads.</b> We recommend using an ad blocker like <b>uBlock Origin</b> (free, available for Chrome and Firefox) before clicking the links below. This helps avoid accidental ad clicks and keeps things clean. You can find it by searching <b>\"uBlock Origin\"</b> in your browser's extension store.",
-    s7a_warn:"<b>⚠ Download both parts before extracting.</b> The two files work together — when you go to extract in the next step, they both need to be in the same folder at that moment. If they somehow ended up in different places, just move them into the same folder before you start extracting. That's all that matters.",
+    s7a_warn:"<b>⚠ Download both parts before extracting.</b> The two files work together. When you go to extract in the next step, they both need to be in the same folder at that moment. If they somehow ended up in different places, just move them into the same folder before you start extracting. That's all that matters.",
     s7b_title:"📦 How to Extract the Game (Step by Step)",
     s7b_1:"Open the folder where you saved both <code>part1.rar</code> and <code>part2.rar</code>. They need to be in the same folder.",
     s7b_2:"<b>Select both files at the same time:</b> click on <code>part1.rar</code>, then hold <code>Ctrl</code> on your keyboard and click <code>part2.rar</code>. Both files should now be highlighted/selected.",
     s7b_3:"<b>Right-click on either of the two highlighted files</b> and choose <b>Extract Here</b>. WinRAR will automatically read both parts together and produce a single <code>.nsp</code> game file.",
-    s7b_4:"Once extraction is done, move the <code>.nsp</code> file into the <b>Games folder</b> you set up in Step 6 — for example <code>C:\\Games\\Switch\\</code>. Ryujinx will detect it and show the game in your list.",
+    s7b_4:"Once extraction is done, move the <code>.nsp</code> file into the <b>Games folder</b> you set up in Step 6, for example <code>C:\\Games\\Switch\\</code>. Ryujinx will detect it and show the game in your list.",
     s7b_warn:"<b>⚠ Make sure both files are selected before you right-click.</b> If you only right-click <code>part1.rar</code> by itself without selecting both, WinRAR will only extract half the data and the result will be broken or incomplete.",
     s8_title:"Set Up Your Controller",s8_card_title:"🎮 Configure Your Gamepad",
     s8_desc:"If you want to play with a controller, connect it to your PC first and then configure it inside Ryujinx.",
