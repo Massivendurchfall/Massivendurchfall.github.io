@@ -1,0 +1,759 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Switch Libary - Ryujinx Switch Games</title>
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Switch Libary">
+<meta property="og:description" content="Browse and download Nintendo Switch games for Ryujinx emulator.">
+<meta name="theme-color" content="#FFD94A">
+
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --yellow: #FFD94A;
+    --sky: #4EC9F0;
+    --pink: #FF7BB5;
+    --green: #5DD87A;
+    --purple: #B07FFF;
+    --orange: #FF9B4A;
+    --white: #FFFDF4;
+    --dark: #1A1A2E;
+    --card: #FFFFFF;
+    --text: #2B2B4A;
+    --shadow: 0 6px 0 #00000025;
+    --radius: 20px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--sky);
+    color: var(--text);
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: -1;
+    background:
+      radial-gradient(circle at 15% 20%, #FFE66D55 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, #FF7BB555 0%, transparent 40%),
+      linear-gradient(160deg, #5DD8F0 0%, #4EC9F0 40%, #6BE6FF 100%);
+  }
+
+  .shape {
+    position: fixed; border-radius: 50%; opacity: 0.15; z-index: -1;
+    animation: float 8s ease-in-out infinite;
+  }
+  .shape-1 { width:220px;height:220px;background:var(--yellow);top:-60px;left:-60px;animation-delay:0s; }
+  .shape-2 { width:160px;height:160px;background:var(--pink);bottom:10%;right:-40px;animation-delay:2s; }
+  .shape-3 { width:100px;height:100px;background:var(--green);top:40%;left:5%;animation-delay:4s; }
+  .shape-4 { width:80px;height:80px;background:var(--purple);top:20%;right:10%;animation-delay:1s; }
+
+  @keyframes float {
+    0%,100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-22px) rotate(8deg); }
+  }
+
+  /* NAV */
+  .topnav {
+    display: flex; align-items: center; gap: 14px;
+    padding: 18px 24px 0;
+    max-width: 1100px; margin: 0 auto;
+  }
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #ffffff22;
+    border: 2px solid #ffffff33;
+    color: white;
+    font-family: 'Fredoka One', cursive;
+    font-size: 0.9rem;
+    padding: 8px 18px;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: background .15s;
+    backdrop-filter: blur(6px);
+  }
+  .back-btn:hover { background: #ffffff33; }
+
+  /* HERO */
+  .hero {
+    text-align: center;
+    padding: 44px 20px 32px;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: var(--yellow);
+    color: var(--dark);
+    font-family: 'Fredoka One', cursive;
+    font-size: 0.82rem;
+    letter-spacing: 2px;
+    padding: 6px 18px;
+    border-radius: 999px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+    text-transform: uppercase;
+  }
+  .hero h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(2rem, 6vw, 3.4rem);
+    color: var(--white);
+    line-height: 1.15;
+    text-shadow: 0 4px 0 #0003;
+    margin-bottom: 12px;
+  }
+  .hero h1 span { color: var(--yellow); }
+  .hero p {
+    font-size: 1rem;
+    color: #ffffffcc;
+    max-width: 520px;
+    margin: 0 auto 28px;
+    font-weight: 600;
+    line-height: 1.6;
+  }
+
+  /* STATS ROW */
+  .stats-row {
+    display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+    margin-bottom: 36px;
+  }
+  .stat-chip {
+    background: #ffffff18;
+    border: 1.5px solid #ffffff28;
+    backdrop-filter: blur(6px);
+    border-radius: 999px;
+    padding: 8px 20px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 0.92rem;
+    color: white;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .stat-chip span { font-size: 1.1rem; }
+
+  .adblock-note-wrap {
+    max-width: 900px;
+    margin: 0 auto 26px;
+    padding: 0 20px;
+  }
+  .adblock-note {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: 0 8px 0 #00000018, 0 2px 20px #0001;
+    padding: 20px 22px;
+    border-top: 4px solid var(--sky);
+  }
+  .adblock-note h3 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.1rem;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+  .adblock-note p {
+    font-size: 0.93rem;
+    line-height: 1.65;
+    color: #4a4a65;
+    font-weight: 700;
+  }
+  .adblock-note a {
+    color: #1a5c31;
+    font-weight: 800;
+    text-decoration: underline;
+  }
+
+  /* FILTER BAR */
+  .filter-bar {
+    display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+    margin: 0 auto 32px;
+    padding: 0 20px;
+  }
+  .filter-btn {
+    font-family: 'Fredoka One', cursive;
+    font-size: 0.85rem;
+    padding: 8px 20px;
+    border-radius: 999px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all .15s;
+    background: #ffffff22;
+    color: white;
+    backdrop-filter: blur(4px);
+  }
+  .filter-btn:hover { background: #ffffff33; }
+  .filter-btn.active {
+    background: var(--yellow);
+    color: var(--dark);
+    border-color: transparent;
+    box-shadow: 0 4px 0 #c9a400;
+  }
+
+  /* GRID */
+  .library-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 22px;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 18px 80px;
+  }
+
+  /* GAME CARD */
+  .lib-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: 0 8px 0 #00000020, 0 2px 24px #0001;
+    overflow: hidden;
+    transition: transform .18s, box-shadow .18s;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    animation: cardIn .4s ease backwards;
+  }
+  .lib-card:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 14px 0 #00000020, 0 4px 30px #0002;
+  }
+  .lib-card.hidden { display: none; }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-cover-wrap {
+    position: relative;
+    height: 160px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #e8e4ff, #d4ccff);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .card-cover-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform .3s;
+  }
+  .lib-card:hover .card-cover-wrap img { transform: scale(1.05); }
+  .card-cover-placeholder {
+    font-size: 4rem;
+    opacity: 0.5;
+  }
+  .card-cover-accent {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 40px;
+    background: linear-gradient(transparent, rgba(255,255,255,0.9));
+  }
+
+  /* Tags on cover */
+  .cover-tags {
+    position: absolute; top: 10px; left: 10px;
+    display: flex; flex-wrap: wrap; gap: 5px;
+  }
+  .ctag {
+    font-family: 'Fredoka One', cursive;
+    font-size: 0.65rem;
+    letter-spacing: 0.5px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    backdrop-filter: blur(6px);
+  }
+  .ctag-base   { background: #1a6aaadd; color: white; }
+  .ctag-update { background: #1a6a33dd; color: white; }
+  .ctag-dlc    { background: #7a1aaadd; color: white; }
+  .ctag-parts  { background: #8a6000dd; color: white; }
+
+  .card-body {
+    padding: 18px 20px 16px;
+    flex: 1;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .card-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.15rem;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .card-meta {
+    font-size: 0.82rem;
+    color: #888;
+    font-weight: 700;
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+  }
+  .card-meta span { display: flex; align-items: center; gap: 4px; }
+
+  .card-footer {
+    padding: 0 20px 18px;
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .mini-btn {
+    font-family: 'Fredoka One', cursive;
+    font-size: 0.78rem;
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    transition: transform .1s, box-shadow .1s;
+    display: inline-flex; align-items: center; gap: 6px;
+    text-decoration: none;
+  }
+  .mini-btn.base   { background: var(--yellow); color: var(--dark); box-shadow: 0 3px 0 #c9a400; }
+  .mini-btn.update { background: var(--green);  color: white;       box-shadow: 0 3px 0 #3aaa57; }
+  .mini-btn.dlc    { background: var(--purple); color: white;       box-shadow: 0 3px 0 #8055cc; }
+  .mini-btn.detail { background: #f0eeff; color: var(--purple);    box-shadow: 0 3px 0 #c8b8ff; }
+  .mini-btn:hover  { transform: translateY(-2px); }
+  .mini-btn:active { transform: translateY(1px); }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 1000;
+    background: #0009;
+    backdrop-filter: blur(6px);
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: white;
+    border-radius: 28px;
+    max-width: 660px; width: 100%;
+    max-height: 92vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 60px #0004;
+    animation: modalIn .22s ease;
+    position: relative;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(.94) translateY(20px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .modal-top-bar {
+    height: 6px; width: 100%;
+    border-radius: 28px 28px 0 0;
+  }
+  .modal-close {
+    position: absolute; top: 16px; right: 16px;
+    width: 36px; height: 36px;
+    background: #f5f3ff;
+    border: none; border-radius: 50%;
+    font-size: 1.2rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text);
+    transition: background .15s;
+    z-index: 10;
+  }
+  .modal-close:hover { background: #ebe8ff; }
+
+  .modal-hero {
+    display: flex; gap: 18px; align-items: flex-start;
+    padding: 22px 26px 18px;
+    border-bottom: 2px solid #f0eeff;
+  }
+  .modal-cover {
+    width: 90px; height: 90px;
+    border-radius: 16px;
+    object-fit: cover;
+    box-shadow: 0 4px 16px #0002;
+    flex-shrink: 0;
+    background: #e8e4ff;
+  }
+  .modal-info { flex: 1; }
+  .modal-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.4rem;
+    color: var(--text);
+    margin-bottom: 8px;
+    line-height: 1.2;
+  }
+  .modal-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .mtag {
+    font-family: 'Fredoka One', cursive;
+    font-size: 0.7rem;
+    padding: 3px 12px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .mtag-base   { background: #e8f5ff; color: #1a6aaa; border: 1.5px solid #b3d9f5; }
+  .mtag-update { background: #f0fff4; color: #1a6a33; border: 1.5px solid #a3e6b8; }
+  .mtag-dlc    { background: #fdf0ff; color: #7a1aaa; border: 1.5px solid #ddb3f5; }
+  .mtag-parts  { background: #fff8e0; color: #8a6000; border: 1.5px solid #f5d97a; }
+  .mtag-region { background: #f0f0ff; color: #444;    border: 1.5px solid #ccc; }
+
+  .modal-body { padding: 22px 26px; }
+
+  .dl-section { margin-bottom: 20px; }
+  .dl-section-header {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+    color: var(--text);
+  }
+  .dl-section-header .badge {
+    font-size: 0.72rem;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+  }
+  .badge-base   { background: #e8f5ff; color: #1a6aaa; }
+  .badge-update { background: #f0fff4; color: #1a6a33; }
+  .badge-dlc    { background: #fdf0ff; color: #7a1aaa; }
+
+  .dl-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+  .dl-btn-modal {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 0.9rem;
+    padding: 10px 20px;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: transform .1s, box-shadow .1s;
+  }
+  .dl-btn-modal:hover { transform: translateY(-2px); }
+  .dl-btn-modal:active { transform: translateY(1px); }
+  .dl-btn-modal.base-btn   { background: var(--yellow); color: var(--dark); box-shadow: 0 4px 0 #c9a400; }
+  .dl-btn-modal.base-btn2  { background: #ffe0ef; color: #a0005a; box-shadow: 0 4px 0 #d9608a; }
+  .dl-btn-modal.update-btn { background: var(--green);  color: white; box-shadow: 0 4px 0 #3aaa57; }
+  .dl-btn-modal.dlc-btn1   { background: var(--purple); color: white; box-shadow: 0 4px 0 #8055cc; }
+  .dl-btn-modal.dlc-btn2   { background: #c9a0ff; color: #2b004a; box-shadow: 0 4px 0 #9055bb; }
+
+  .info-note {
+    font-size: 0.83rem;
+    font-weight: 700;
+    padding: 9px 14px;
+    border-radius: 0 10px 10px 0;
+    line-height: 1.5;
+    margin-top: 4px;
+  }
+  .info-note.warn {
+    background: #fff5f0;
+    border-left: 4px solid var(--pink);
+    color: #7a2020;
+  }
+  .info-note.tip {
+    background: #f0fff5;
+    border-left: 4px solid var(--green);
+    color: #1a5c31;
+  }
+  .info-note.dlc-note {
+    background: #fdf0ff;
+    border-left: 4px solid var(--purple);
+    color: #5a006a;
+  }
+
+  .divider {
+    height: 2px;
+    background: #f0eeff;
+    border: none;
+    margin: 18px 0;
+  }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 22px;
+    font-size: 0.8rem;
+    color: #ffffffaa;
+    font-weight: 600;
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: #ffffffaa;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.3rem;
+    display: none;
+  }
+  .empty-state.show { display: block; }
+
+  @media (max-width: 500px) {
+    .library-grid { grid-template-columns: 1fr; padding: 0 12px 60px; }
+    .modal { border-radius: 20px; }
+    .modal-hero { flex-direction: column; }
+    .modal-cover { width: 70px; height: 70px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shape shape-1"></div>
+<div class="shape shape-2"></div>
+<div class="shape shape-3"></div>
+<div class="shape shape-4"></div>
+
+<nav class="topnav">
+  <a class="back-btn" href="index.html">← Back to Setup Guide</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">🎮 Switch Libary</div>
+  <h1>Your <span>Switch Libary</span></h1>
+  <p>All available games for Ryujinx. Click any game card to open its download details.</p>
+  <div class="stats-row">
+    <div class="stat-chip"><span>🎮</span> 2 Games</div>
+    <div class="stat-chip"><span>💎</span> 2 DLC Packs</div>
+    <div class="stat-chip"><span>⬆</span> Updates Available</div>
+  </div>
+</div>
+
+<div class="adblock-note-wrap">
+  <div class="adblock-note">
+    <h3>Use an Ad Blocker Before Downloading</h3>
+    <p>Some download pages contain ads or fake buttons. Install <a href="https://ublockorigin.com" target="_blank">uBlock Origin</a> before opening download links to keep it clean and safer.</p>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <button class="filter-btn active" data-filter="all">🎮 All Games</button>
+  <button class="filter-btn" data-filter="has-dlc">💎 With DLC</button>
+  <button class="filter-btn" data-filter="has-update">⬆ With Update</button>
+  <button class="filter-btn" data-filter="multipart">📦 Multi-Part</button>
+</div>
+
+<!-- LIBRARY GRID -->
+<div class="library-grid" id="grid">
+
+  <!-- Card: Tomodachi Life -->
+  <div class="lib-card" data-tags="base multipart" onclick="openModal('tomodachi')">
+    <div class="card-cover-wrap">
+      <img src="https://upload.wikimedia.org/wikipedia/en/thumb/2/2d/Tomodachi_Life_Living_the_Dream_boxart.jpg/220px-Tomodachi_Life_Living_the_Dream_boxart.jpg"
+           alt="Tomodachi Life" onerror="this.style.display='none'">
+      <div class="card-cover-accent"></div>
+      <div class="cover-tags">
+        <span class="ctag ctag-base">Base</span>
+        <span class="ctag ctag-parts">2 Parts</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-title">Tomodachi Life: Living the Dream</div>
+      <div class="card-meta">
+        <span>🌍 US NSP</span>
+        <span>📦 2 Part RAR</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="mini-btn base">⬇ Base Game</span>
+      <span class="mini-btn detail">Details -></span>
+    </div>
+  </div>
+
+  <!-- Card: Animal Crossing -->
+  <div class="lib-card" data-tags="base has-dlc has-update multipart" onclick="openModal('acnh')">
+    <div class="card-cover-wrap">
+      <img src="https://upload.wikimedia.org/wikipedia/en/thumb/a/a0/Animal_Crossing_New_Horizons.jpg/220px-Animal_Crossing_New_Horizons.jpg"
+           alt="Animal Crossing: New Horizons" onerror="this.style.display='none'">
+      <div class="card-cover-accent"></div>
+      <div class="cover-tags">
+        <span class="ctag ctag-base">Base</span>
+        <span class="ctag ctag-update">Update</span>
+        <span class="ctag ctag-dlc">DLC</span>
+        <span class="ctag ctag-parts">2 Parts</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-title">Animal Crossing: New Horizons</div>
+      <div class="card-meta">
+        <span>🌍 NSP eShop</span>
+        <span>⬆ v3.0.2</span>
+        <span>💎 2x DLC</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="mini-btn base">⬇ Base</span>
+      <span class="mini-btn update">⬆ Update</span>
+      <span class="mini-btn dlc">💎 DLC</span>
+      <span class="mini-btn detail">Details -></span>
+    </div>
+  </div>
+
+  <div class="empty-state" id="emptyState">😶 No games found</div>
+
+</div>
+
+<!-- ===================== MODAL: TOMODACHI ===================== -->
+<div class="modal-overlay" id="modal-tomodachi">
+  <div class="modal">
+    <div class="modal-top-bar" style="background: linear-gradient(90deg, #4EC9F0, #B07FFF);"></div>
+    <button class="modal-close" onclick="closeModal('tomodachi')">✕</button>
+
+    <div class="modal-hero">
+      <img class="modal-cover"
+           src="https://upload.wikimedia.org/wikipedia/en/thumb/2/2d/Tomodachi_Life_Living_the_Dream_boxart.jpg/220px-Tomodachi_Life_Living_the_Dream_boxart.jpg"
+           alt="Tomodachi Life" onerror="this.style.display='none'">
+      <div class="modal-info">
+        <div class="modal-title">Tomodachi Life: Living the Dream</div>
+        <div class="modal-tags">
+          <span class="mtag mtag-base">🎮 Base Game</span>
+          <span class="mtag mtag-parts">📦 2 Part RAR</span>
+          <span class="mtag mtag-region">🌍 US NSP</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="dl-section">
+        <div class="dl-section-header">
+          🎮 Base Game
+          <span class="badge badge-base">Split RAR, 2 parts</span>
+        </div>
+        <div class="dl-buttons">
+          <a class="dl-btn-modal base-btn" href="https://megaup.net/5422e071ead058050850766c4c0368bd/TOMLLTDREM-(US)-NSwTcH-[BASE]-NSP-Ziperto.part1.rar" target="_blank">⬇ Part 1</a>
+          <a class="dl-btn-modal base-btn2" href="https://megaup.net/91144fa33180b703e128e486bbc09206/TOMLLTDREM-(US)-NSwTcH-[BASE]-NSP-Ziperto.part2.rar" target="_blank">⬇ Part 2</a>
+        </div>
+        <div class="info-note warn">⚠ Download both parts, place them in the same folder, select both with Ctrl+Click, then right-click and choose <b>Extract Here</b>. This creates one <code>.nsp</code> file.</div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="info-note tip">💡 Move the finished <code>.nsp</code> file into your games folder (for example <code>C:\Games\Switch\</code>). Ryujinx will list it automatically.</div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL: ANIMAL CROSSING ===================== -->
+<div class="modal-overlay" id="modal-acnh">
+  <div class="modal">
+    <div class="modal-top-bar" style="background: linear-gradient(90deg, #5DD87A, #4EC9F0);"></div>
+    <button class="modal-close" onclick="closeModal('acnh')">✕</button>
+
+    <div class="modal-hero">
+      <img class="modal-cover"
+           src="https://upload.wikimedia.org/wikipedia/en/thumb/a/a0/Animal_Crossing_New_Horizons.jpg/220px-Animal_Crossing_New_Horizons.jpg"
+           alt="Animal Crossing" onerror="this.style.display='none'">
+      <div class="modal-info">
+        <div class="modal-title">Animal Crossing: New Horizons</div>
+        <div class="modal-tags">
+          <span class="mtag mtag-base">🎮 Base Game</span>
+          <span class="mtag mtag-update">⬆ Update v3.0.2</span>
+          <span class="mtag mtag-dlc">💎 2x DLC</span>
+          <span class="mtag mtag-parts">📦 2 Part RAR</span>
+          <span class="mtag mtag-region">🌍 NSP eShop</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- BASE -->
+      <div class="dl-section">
+        <div class="dl-section-header">
+          🎮 Base Game
+          <span class="badge badge-base">6.2 GB total, 2 parts</span>
+        </div>
+        <div class="dl-buttons">
+          <a class="dl-btn-modal base-btn" href="https://megaup.net/2lyy9/AC-NH-NSwTcH-[BASE]-NSP-(eShop)-Ziperto.part1.rar" target="_blank">⬇ Part 1</a>
+          <a class="dl-btn-modal base-btn2" href="https://megaup.net/2lyzL/AC-NH-NSwTcH-[BASE]-NSP-(eShop)-Ziperto.part2.rar" target="_blank">⬇ Part 2</a>
+        </div>
+        <div class="info-note warn">⚠ Download both parts, place them in the same folder, select both, then right-click and choose <b>Extract Here</b>. Move the final <code>.nsp</code> file into your games folder.</div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- UPDATE -->
+      <div class="dl-section">
+        <div class="dl-section-header">
+          ⬆ Update v3.0.2
+          <span class="badge badge-update">4.3 GB, latest version</span>
+        </div>
+        <div class="dl-buttons">
+          <a class="dl-btn-modal update-btn" href="https://megaup.net/71ba8c96cc0849af6c703294569e89ec/AC-NH-NSwTcH-NSP-Update302-Ziperto.rar" target="_blank">⬇ Update v3.0.2</a>
+        </div>
+        <div class="info-note tip">💡 After extraction, install in Ryujinx: right-click the game in your list -> <b>Manage Title Updates</b>. Do <b>not</b> place update files in the games folder.</div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- DLC -->
+      <div class="dl-section">
+        <div class="dl-section-header">
+          💎 DLC Pack
+          <span class="badge badge-dlc">2 DLC Packs</span>
+        </div>
+        <div class="dl-buttons">
+          <a class="dl-btn-modal dlc-btn1" href="https://megaup.net/18fr2/AC-NH-NSwTcH-NSP-[2DLCPack]-Ziperto.rar" target="_blank">💎 Nook Inc. &amp; Pocket Camp DLC</a>
+          <a class="dl-btn-modal dlc-btn2" href="https://megaup.net/1FVkn/AC-NH-NSwTcH-NSP-[HHPDLC]-Ziperto.rar" target="_blank">💎 Happy Home Paradise DLC</a>
+        </div>
+        <div class="info-note dlc-note">💎 After extraction: right-click the game in Ryujinx -> <b>Manage DLC</b>. DLC files are installed <b>separately</b> and not placed in the games folder.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer>Tutorial for educational purposes only &nbsp;•&nbsp; Ryujinx is an open-source Nintendo Switch emulator</footer>
+
+<script>
+  // Filter logic
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const cards = document.querySelectorAll('.lib-card');
+  const emptyState = document.getElementById('emptyState');
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const filter = btn.dataset.filter;
+      let visible = 0;
+
+      cards.forEach(card => {
+        const tags = card.dataset.tags || '';
+        if (filter === 'all' || tags.includes(filter)) {
+          card.classList.remove('hidden');
+          visible++;
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+
+      emptyState.classList.toggle('show', visible === 0);
+    });
+  });
+
+  // Modal logic
+  function openModal(id) {
+    document.getElementById('modal-' + id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(id) {
+    document.getElementById('modal-' + id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // Close on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) {
+      if (e.target === this) {
+        this.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    });
+  });
+
+  // Close on Escape
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay.open').forEach(m => {
+        m.classList.remove('open');
+        document.body.style.overflow = '';
+      });
+    }
+  });
+</script>
+</body>
+</html>
