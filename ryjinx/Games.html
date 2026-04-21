@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -502,8 +501,8 @@
   <h1>Your <span>Switch Libary</span></h1>
   <p>All available games for Ryujinx. Click any game card to open its download details.</p>
   <div class="stats-row">
-    <div class="stat-chip"><span>🎮</span> 2 Games</div>
-    <div class="stat-chip"><span>💎</span> 2 DLC Packs</div>
+    <div class="stat-chip"><span>🎮</span> 3 Games</div>
+    <div class="stat-chip"><span>💎</span> 3 DLC Packs</div>
     <div class="stat-chip"><span>⬆</span> Updates Available</div>
   </div>
 </div>
@@ -578,7 +577,34 @@
       <span class="mini-btn detail">Details -></span>
     </div>
   </div>
-
+  <!-- Card: Mario Kart 8 Deluxe -->
+  <div class="lib-card" data-tags="base has-dlc has-update multipart" onclick="openModal('mk8')">
+    <div class="card-cover-wrap">
+      <img src="https://www.mariowiki.com/images/thumb/9/98/MK8_Deluxe_-_Box_art.jpg/601px-MK8_Deluxe_-_Box_art.jpg"
+           alt="Mario Kart 8 Deluxe" onerror="this.style.display='none'">
+      <div class="card-cover-accent"></div>
+      <div class="cover-tags">
+        <span class="ctag ctag-base">Base</span>
+        <span class="ctag ctag-update">Update</span>
+        <span class="ctag ctag-dlc">DLC</span>
+        <span class="ctag ctag-parts">2 Parts</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-title">Mario Kart 8 Deluxe</div>
+      <div class="card-meta">
+        <span>US NSP/XCI</span>
+        <span>v3.0.5</span>
+        <span>Booster DLC Wave 6</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="mini-btn base">Base</span>
+      <span class="mini-btn update">Update</span>
+      <span class="mini-btn dlc">DLC</span>
+      <span class="mini-btn detail">Details -></span>
+    </div>
+  </div>
   <div class="empty-state" id="emptyState">😶 No games found</div>
 
 </div>
@@ -613,8 +639,10 @@
         <div class="dl-buttons">
           <a class="dl-btn-modal base-btn" href="https://megaup.net/5422e071ead058050850766c4c0368bd/TOMLLTDREM-(US)-NSwTcH-[BASE]-NSP-Ziperto.part1.rar" target="_blank">⬇ Part 1</a>
           <a class="dl-btn-modal base-btn2" href="https://megaup.net/91144fa33180b703e128e486bbc09206/TOMLLTDREM-(US)-NSwTcH-[BASE]-NSP-Ziperto.part2.rar" target="_blank">⬇ Part 2</a>
+          <a class="dl-btn-modal update-btn" href="https://1fichier.com/?f9sxl48dl27i1sjvzela" target="_blank">Download Alternative</a>
         </div>
         <div class="info-note warn">⚠ Download both parts, place them in the same folder, select both with Ctrl+Click, then right-click and choose <b>Extract Here</b>. This creates one <code>.nsp</code> file.</div>
+        <div class="info-note tip">If multipart hosting is unavailable, use the single-file alternative download above.</div>
       </div>
 
       <hr class="divider">
@@ -695,6 +723,72 @@
   </div>
 </div>
 
+
+<!-- ===================== MODAL: MARIO KART 8 DELUXE ===================== -->
+<div class="modal-overlay" id="modal-mk8">
+  <div class="modal">
+    <div class="modal-top-bar" style="background: linear-gradient(90deg, #FF9B4A, #FFD94A);"></div>
+    <button class="modal-close" onclick="closeModal('mk8')">X</button>
+
+    <div class="modal-hero">
+      <img class="modal-cover"
+           src="https://www.mariowiki.com/images/thumb/9/98/MK8_Deluxe_-_Box_art.jpg/601px-MK8_Deluxe_-_Box_art.jpg"
+           alt="Mario Kart 8 Deluxe" onerror="this.style.display='none'">
+      <div class="modal-info">
+        <div class="modal-title">Mario Kart 8 Deluxe</div>
+        <div class="modal-tags">
+          <span class="mtag mtag-base">Base Game</span>
+          <span class="mtag mtag-update">Update v3.0.5</span>
+          <span class="mtag mtag-dlc">Booster DLC</span>
+          <span class="mtag mtag-parts">2 Part RAR</span>
+          <span class="mtag mtag-region">USA</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="dl-section">
+        <div class="dl-section-header">
+          Base Game
+          <span class="badge badge-base">Switch NSP/XCI, 2 parts</span>
+        </div>
+        <div class="dl-buttons">
+          <a class="dl-btn-modal base-btn" href="https://megaup.net/2j2H9/Mario_Kart_8_Deluxe_[0100152000022000][v0].nsp.part1.rar" target="_blank">Download Part 1</a>
+          <a class="dl-btn-modal base-btn2" href="https://megaup.net/2j2H7/Mario_Kart_8_Deluxe_[0100152000022000][v0].nsp.part2.rar" target="_blank">Download Part 2</a>
+        </div>
+        <div class="info-note warn">Download both parts into one folder, select both, and extract together to create the final game file.</div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="dl-section">
+        <div class="dl-section-header">
+          Update 3.0.5
+          <span class="badge badge-update">Latest</span>
+        </div>
+        <div class="dl-buttons">
+          <a class="dl-btn-modal update-btn" href="https://megaup.net/c2d99c410912db95cbac76b45b4c6dbe/Mario_Kart_8_Deluxe_[0100152000022800][v1376256][US].nsp.rar" target="_blank">Download Update</a>
+        </div>
+        <div class="info-note tip">Install via Ryujinx game menu -> <b>Manage Title Updates</b>. Do not place update files in your games folder.</div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="dl-section">
+        <div class="dl-section-header">
+          Booster Course DLC
+          <span class="badge badge-dlc">Wave 1 to 6</span>
+        </div>
+        <div class="dl-buttons">
+          <a class="dl-btn-modal dlc-btn1" href="https://megaup.net/1jxrr/Mario_Kart_8_Deluxe_(NSP)(Booster_Course_Wave_1_to_6).rar" target="_blank">Download Booster DLC</a>
+        </div>
+        <div class="info-note dlc-note">Install via Ryujinx game menu -> <b>Manage DLC</b>. DLC installs separately from base files.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
 <footer>Tutorial for educational purposes only &nbsp;•&nbsp; Ryujinx is an open-source Nintendo Switch emulator</footer>
 
 <script>
@@ -757,3 +851,6 @@
 </script>
 </body>
 </html>
+
+
+
