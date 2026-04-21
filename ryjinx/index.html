@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +6,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tomodachi Life Ryujinx Setup Guide</title>
 
-<!-- Open Graph / Discord Embed -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://massivendurchfall.github.io/ryjinx/">
 <meta property="og:title" content="Tomodachi Life – Ryujinx Setup Guide">
@@ -19,7 +19,7 @@
 <meta name="twitter:description" content="Step-by-step guide to install Ryujinx, set up firmware and keys, and play Tomodachi Life: Living the Dream on PC.">
 <meta name="twitter:image" content="https://assets.nintendo.com/image/upload/f_auto/q_auto/dpr_1.5/c_scale,w_500/Marketing/KWPrk6LG7f6pcDfo6uPckZPP4anLWs8dYrFGyXxWU9ksyHkwdYAd7jhGE8DqBFmJ/intro/friends-logo-2x">
 
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"><span class="li-text">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     --yellow: #FFD94A;
@@ -27,6 +27,7 @@
     --pink: #FF7BB5;
     --green: #5DD87A;
     --purple: #B07FFF;
+    --orange: #FF9B4A;
     --white: #FFFDF4;
     --dark: #1A1A2E;
     --card: #FFFFFF;
@@ -190,6 +191,7 @@
   .card.green::before  { background: var(--green); }
   .card.purple::before { background: var(--purple); }
   .card.sky::before    { background: var(--sky); }
+  .card.orange::before { background: var(--orange); }
 
   .card h4 {
     font-family: 'Fredoka One', cursive;
@@ -222,10 +224,14 @@
   }
   .dl-btn:hover { transform: translateY(-2px); box-shadow: 0 7px 0 #c9a400, 0 12px 24px #ffd94a55; }
   .dl-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #c9a400; }
-  .dl-btn.pink-btn  { background: var(--pink);  box-shadow: 0 5px 0 #d95a90; }
+  .dl-btn.pink-btn  { background: var(--pink);  box-shadow: 0 5px 0 #d95a90; color: white; }
   .dl-btn.pink-btn:hover  { box-shadow: 0 7px 0 #d95a90; }
   .dl-btn.green-btn { background: var(--green); box-shadow: 0 5px 0 #3aaa57; color: #fff; }
   .dl-btn.green-btn:hover { box-shadow: 0 7px 0 #3aaa57; }
+  .dl-btn.purple-btn { background: var(--purple); box-shadow: 0 5px 0 #8055cc; color: #fff; }
+  .dl-btn.purple-btn:hover { box-shadow: 0 7px 0 #8055cc; }
+  .dl-btn.orange-btn { background: var(--orange); box-shadow: 0 5px 0 #cc6e1e; color: #fff; }
+  .dl-btn.orange-btn:hover { box-shadow: 0 7px 0 #cc6e1e; }
 
   /* STEPS */
   .steps { list-style: none; counter-reset: step; display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
@@ -254,8 +260,6 @@
     box-shadow: 0 3px 0 #0001;
     margin-top: 2px;
   }
-
-
 
   code {
     background: #f0edff;
@@ -317,7 +321,86 @@
   }
   @keyframes pulse { 0%,100%{opacity:1;}50%{opacity:0.3;} }
 
-  /* DONE BANNER */
+  /* ===================== LIBRARY LINK CARD ===================== */
+  .library-link-card {
+    background: linear-gradient(135deg, #1A1A2E 0%, #2d1b4e 100%);
+    border-radius: var(--radius);
+    padding: 30px 28px;
+    box-shadow: 0 8px 0 #00000030, 0 2px 30px #0002;
+    margin-bottom: 14px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    text-decoration: none;
+    transition: transform .18s, box-shadow .18s;
+  }
+  .library-link-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 0 #00000025, 0 4px 40px #b07fff33;
+  }
+  .library-link-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    border-radius: var(--radius) var(--radius) 0 0;
+    background: linear-gradient(90deg, var(--purple), var(--pink), var(--yellow));
+  }
+  /* Decorative background circles */
+  .library-link-card::after {
+    content: '🎮';
+    position: absolute; right: 24px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 4rem;
+    opacity: 0.12;
+    pointer-events: none;
+  }
+  .lib-icon {
+    width: 64px; height: 64px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, var(--purple), var(--pink));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 16px #b07fff44;
+  }
+  .lib-text { flex: 1; }
+  .lib-text h4 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.3rem;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+  .lib-text p {
+    font-size: 0.88rem;
+    color: #ffffffaa;
+    font-weight: 700;
+    line-height: 1.5;
+    margin: 0;
+  }
+  .lib-chips {
+    display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px;
+  }
+  .lib-chip {
+    background: #ffffff12;
+    border: 1.5px solid #ffffff20;
+    border-radius: 999px;
+    padding: 3px 12px;
+    font-size: 0.74rem;
+    font-weight: 800;
+    color: #ffffffcc;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .lib-arrow {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.4rem;
+    color: var(--yellow);
+    flex-shrink: 0;
+    transition: transform .18s;
+  }
+  .library-link-card:hover .lib-arrow { transform: translateX(4px); }
+
+  /* ===================== DONE BANNER ===================== */
   .done-banner {
     background: linear-gradient(135deg, var(--yellow) 0%, #FFB347 100%);
     border-radius: var(--radius);
@@ -349,7 +432,8 @@
     .card { padding: 18px 16px; }
     .dl-btn { font-size: 0.9rem; padding: 10px 18px; }
     .section-title { font-size: 1.4rem; }
-
+    .library-link-card { flex-direction: column; align-items: flex-start; gap: 14px; }
+    .lib-arrow { display: none; }
   }
 </style>
 </head>
@@ -392,7 +476,7 @@
     <h4>📥 Required Downloads</h4>
     <p>Download all three files before doing anything else. Make sure WinRAR is already installed on your PC, you will need it to extract the files.</p>
     <div class="dl-group">
-      <a class="dl-btn" href="https://www.mediafire.com/file/13dhwo99wq8bl40/ryujinx-canary-1.3.272-win_x64.zip/file" target="_blank">⬇ Ryujinx Emulator (.zip)</a>
+      <a class="dl-btn" href="https://git.ryujinx.app/Ryubing/Canary/releases/download/1.3.272/ryujinx-canary-1.3.272-win_x64.zip" target="_blank">⬇ Ryujinx Emulator (.zip)</a>
       <a class="dl-btn pink-btn" href="https://github.com/THZoria/NX_Firmware/releases/download/22.0.0/Firmware.22.0.0.zip" target="_blank">⬇ Firmware 22.0.0 (.zip)</a>
       <a class="dl-btn green-btn" href="https://files.prodkeys.net/ProdKeys.NET-v22.0.0.zip" target="_blank">⬇ Keys v22.0.0 (.zip)</a>
     </div>
@@ -425,7 +509,7 @@
   <div class="card sky">
     <h4>📂 Extract the Emulator</h4>
     <ul class="steps">
-      <li>Right-click <code>ryujinx-canary-1.3.272-win_x64.zip</code> and select <b>Extract Here</b> with WinRAR.</span></li>
+      <li><span class="li-text">Right-click <code>ryujinx-canary-1.3.272-win_x64.zip</code> and select <b>Extract Here</b> with WinRAR.</span></li>
       <li><span class="li-text">Open the extracted folder and launch <code>Ryujinx.exe</code>.</span></li>
       <li><span class="li-text">Once it is open, you can delete the original <code>.zip</code> file. It is no longer needed.</span></li>
     </ul>
@@ -492,27 +576,40 @@
   </div>
 
   <!-- STEP 7 -->
-  <div class="section-title"><div class="num">7</div> <span>Download and Install Tomodachi Life</span></div>
-  <div class="card pink">
-    <h4>🎮 Download the Game (2 Parts)</h4>
-    <p>The game file is split into two parts. You need both of them to extract the game correctly.</p>
-    <div class="tip"><b>🛡️ Heads up: these download sites have ads.</b> We recommend using an ad blocker like <a href="https://ublockorigin.com" target="_blank" style="color:#1a5c31;text-decoration:underline;"><b>uBlock Origin</b></a> (free, available for Chrome and Firefox) before clicking the links below. This helps avoid accidental ad clicks and keeps things clean. You can find it by searching <b>"uBlock Origin"</b> in your browser's extension store or at <a href="https://ublockorigin.com" target="_blank" style="color:#1a5c31;text-decoration:underline;">ublockorigin.com</a>.</div>
-    <div class="dl-group">
-      <a class="dl-btn" href="https://megaup.net/5422e071ead058050850766c4c0368bd/TOMLLTDREM-(US)-NSwTcH-[BASE]-NSP-Ziperto.part1.rar" target="_blank">⬇ Tomodachi Life Part 1 (.rar)</a>
-      <a class="dl-btn pink-btn" href="https://megaup.net/91144fa33180b703e128e486bbc09206/TOMLLTDREM-(US)-NSwTcH-[BASE]-NSP-Ziperto.part2.rar" target="_blank">⬇ Tomodachi Life Part 2 (.rar)</a>
-    </div>
-    <div class="warn"><b>⚠ Download both parts before extracting.</b> The two files work together. When you go to extract in the next step, they both need to be in the same folder at that moment. If they somehow ended up in different places, just move them into the same folder before you start extracting. That's all that matters.</div>
+  <div class="section-title"><div class="num">7</div> <span>Open the Switch Libary</span></div>
+
+  <div class="card sky" style="margin-bottom:22px;">
+    <h4>Game Downloads Are on the Switch Libary Page</h4>
+    <p>You can find all available games, updates, and DLC packs on <b>Games.html</b>. Use the card below to open the Switch Libary page.</p>
   </div>
-  <div class="card sky">
-    <h4>📦 How to Extract the Game (Step by Step)</h4>
+
+  <!-- LIBRARY LINK -->
+  <a class="library-link-card" href="Games.html">
+    <div class="lib-icon">🎮</div>
+    <div class="lib-text">
+      <h4>Open Switch Libary -></h4>
+      <p>All available games with download links, preview covers, and install guidance.</p>
+      <div class="lib-chips">
+        <span class="lib-chip">🎮 Tomodachi Life</span>
+        <span class="lib-chip">🌿 Animal Crossing</span>
+        <span class="lib-chip">💎 DLC Included</span>
+        <span class="lib-chip">⬆ Updates Available</span>
+      </div>
+    </div>
+    <div class="lib-arrow">-></div>
+  </a>
+
+  <!-- How to Extract (shared guide) -->
+  <div class="card sky" style="margin-top:6px;">
+    <h4>📦 How to Extract Multi-Part RAR Files</h4>
     <ul class="steps">
-      <li><span class="li-text">Open the folder where you saved both <code>part1.rar</code> and <code>part2.rar</code>. They need to be in the same folder.</span></li>
-      <li><span class="li-text"><b>Select both files at the same time:</b> click on <code>part1.rar</code>, then hold <code>Ctrl</code> on your keyboard and click <code>part2.rar</code>. Both files should now be highlighted/selected.</span></li>
-      <li><span class="li-text"><b>Right-click on either of the two highlighted files</b> and choose <b>Extract Here</b>. WinRAR will automatically read both parts together and produce a single <code>.nsp</code> game file.</span></li>
-      <li><span class="li-text">Once extraction is done, move the <code>.nsp</code> file into the <b>Games folder</b> you set up in Step 6, for example <code>C:\Games\Switch\</code>. Ryujinx will detect it and show the game in your list.</span></li>
+      <li><span class="li-text">Make sure <b>all parts</b> (part1.rar, part2.rar, ...) are in the <b>same folder</b>.</span></li>
+      <li><span class="li-text"><b>Select all parts at once</b> using <code>Ctrl+Click</code> — click the first part, hold Ctrl, click the rest. All should be highlighted.</span></li>
+      <li><span class="li-text"><b>Right-click on any highlighted file</b> and choose <b>Extract Here</b>. WinRAR will combine them automatically into one file.</span></li>
+      <li><span class="li-text">Move the resulting <code>.nsp</code> or <code>.xci</code> <b>Base Game</b> file into your games folder (e.g. <code>C:\Games\Switch\</code>). For Updates and DLC, install them through Ryujinx instead.</span></li>
     </ul>
-    <div class="warn"><b>⚠ Make sure both files are selected before you right-click.</b> If you only right-click <code>part1.rar</code> by itself without selecting both, WinRAR will only extract half the data and the result will be broken or incomplete.</div>
-    <img src="step7.png" alt="Tomodachi Life in Ryujinx game list" class="step-img">
+    <div class="warn"><b>⚠ Only select all parts together.</b> Extracting part1 alone gives you a broken, incomplete file. Always select all parts before extracting.</div>
+    <img src="step7.png" alt="Game in Ryujinx game list" class="step-img">
   </div>
 
   <!-- STEP 8 -->
@@ -533,9 +630,9 @@
   <div class="done-banner">
     <span class="confetti">🎉</span>
     <h2>You're All Set!</h2>
-    <p>Tomodachi Life should now appear in your Ryujinx game list and your controller is ready. Just double-click the game to start playing.</p>
+    <p>Your games should now appear in your Ryujinx game list and your controller is ready. Just double-click any game to start playing.</p>
     <br>
-    <p style="color:#6a4800;font-size:0.88rem;">Enjoy your island life! 🌴🏘️</p>
+    <p style="color:#6a4800;font-size:0.88rem;">Enjoy your island life! 🌴🏘️ &nbsp;|&nbsp; Happy gaming! 🎮</p>
   </div>
 
 </div>
