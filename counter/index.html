@@ -13,6 +13,7 @@
     --surface: #1a1a1a;
     --border: #2e2e2e;
     --accent: #c8f060;
+    --red: #f06060;
     --text: #f0f0f0;
     --muted: #555;
   }
@@ -26,6 +27,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding: 2rem 1rem;
     gap: 0;
   }
 
@@ -39,7 +41,7 @@
 
   .number {
     font-family: 'Playfair Display', serif;
-    font-size: clamp(6rem, 20vw, 12rem);
+    font-size: clamp(5rem, 18vw, 11rem);
     line-height: 1;
     color: var(--accent);
     transition: transform 0.08s ease, opacity 0.08s ease;
@@ -47,66 +49,100 @@
   }
 
   .number.bump {
-    transform: scale(1.06);
-    opacity: 0.7;
+    transform: scale(1.05);
+    opacity: 0.65;
   }
 
   .input-row {
     display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    margin-top: 2.5rem;
+    gap: 0.7rem;
+    margin-top: 2.2rem;
   }
 
   .val-input {
-    width: 120px;
+    width: 130px;
     background: var(--surface);
     border: 1.5px solid var(--border);
     border-radius: 8px;
     color: var(--text);
     font-family: 'DM Mono', monospace;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     text-align: center;
-    padding: 10px 0;
+    padding: 9px 0;
     outline: none;
     transition: border-color 0.15s;
   }
 
-  .val-input:focus {
-    border-color: var(--accent);
-  }
+  .val-input:focus { border-color: var(--accent); }
 
-  .controls {
-    display: flex;
-    gap: 0.8rem;
-    margin-top: 1.2rem;
-  }
-
-  .btn {
-    padding: 10px 28px;
+  .btn-main {
+    padding: 9px 20px;
     border-radius: 8px;
     border: 1.5px solid var(--border);
     background: var(--surface);
-    color: var(--text);
     font-family: 'DM Mono', monospace;
-    font-size: 1rem;
+    font-size: 0.9rem;
     cursor: pointer;
     transition: border-color 0.15s, background 0.15s, transform 0.1s;
   }
 
-  .btn:hover { border-color: var(--accent); background: #222; }
-  .btn:active { transform: scale(0.95); }
+  .btn-main:active { transform: scale(0.95); }
+  .btn-main.add { color: var(--accent); }
+  .btn-main.add:hover { border-color: var(--accent); background: #1f241a; }
+  .btn-main.sub { color: var(--red); }
+  .btn-main.sub:hover { border-color: var(--red); background: #241a1a; }
 
-  .btn.add { color: var(--accent); }
-  .btn.sub { color: #f06060; }
+  .quick-section {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    width: 100%;
+    max-width: 480px;
+  }
+
+  .quick-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .qbtn {
+    padding: 9px 0;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    text-align: center;
+  }
+
+  .qbtn:active { transform: scale(0.96); }
+
+  .qbtn.qadd { color: var(--accent); }
+  .qbtn.qadd:hover { border-color: var(--accent); background: #1f241a; }
+
+  .qbtn.qsub { color: var(--red); }
+  .qbtn.qsub:hover { border-color: var(--red); background: #241a1a; }
+
+  .divider {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: center;
+    margin: 0.3rem 0 0;
+  }
 
   .reset {
-    margin-top: 2rem;
+    margin-top: 1.8rem;
     background: none;
     border: none;
     color: var(--muted);
     font-family: 'DM Mono', monospace;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     letter-spacing: 0.15em;
     text-transform: uppercase;
     cursor: pointer;
@@ -124,12 +160,14 @@
 <div class="number" id="num">0</div>
 
 <div class="input-row">
-  <input class="val-input" type="number" id="eingabe" placeholder="z.B. 100">
+  <input class="val-input" type="number" id="eingabe" placeholder="Betrag">
+  <button class="btn-main add" id="plus">+ Add</button>
+  <button class="btn-main sub" id="minus">− Sub</button>
 </div>
 
-<div class="controls">
-  <button class="btn add" id="plus">Addieren</button>
-  <button class="btn sub" id="minus">Subtrahieren</button>
+<div class="quick-section">
+  <div class="divider">Schnellauswahl</div>
+  <div id="quick-grid"></div>
 </div>
 
 <button class="reset" id="reset">zurücksetzen</button>
@@ -137,11 +175,13 @@
 <script>
   const numEl = document.getElementById('num');
   const eingabe = document.getElementById('eingabe');
+  const grid = document.getElementById('quick-grid');
+  const presets = [100, 150, 200, 500, 1000, 10000, 100000];
 
   let value = parseInt(localStorage.getItem('hauptzahl') ?? '0');
 
   function render(animate) {
-    numEl.textContent = value;
+    numEl.textContent = value.toLocaleString('de-DE');
     localStorage.setItem('hauptzahl', value);
     if (animate) {
       numEl.classList.remove('bump');
@@ -151,27 +191,31 @@
     }
   }
 
-  function getVal() {
-    return parseInt(eingabe.value) || 0;
-  }
+  function getVal() { return parseInt(eingabe.value) || 0; }
 
-  document.getElementById('plus').addEventListener('click', () => {
-    value += getVal();
-    render(true);
-  });
+  document.getElementById('plus').addEventListener('click', () => { value += getVal(); render(true); });
+  document.getElementById('minus').addEventListener('click', () => { value -= getVal(); render(true); });
+  eingabe.addEventListener('keydown', e => { if (e.key === 'Enter') { value += getVal(); render(true); } });
+  document.getElementById('reset').addEventListener('click', () => { value = 0; render(true); });
 
-  document.getElementById('minus').addEventListener('click', () => {
-    value -= getVal();
-    render(true);
-  });
+  presets.forEach(n => {
+    const row = document.createElement('div');
+    row.className = 'quick-row';
+    row.style.marginBottom = '0.5rem';
 
-  eingabe.addEventListener('keydown', e => {
-    if (e.key === 'Enter') { value += getVal(); render(true); }
-  });
+    const add = document.createElement('button');
+    add.className = 'qbtn qadd';
+    add.textContent = `+ ${n.toLocaleString('de-DE')}`;
+    add.addEventListener('click', () => { value += n; render(true); });
 
-  document.getElementById('reset').addEventListener('click', () => {
-    value = 0;
-    render(true);
+    const sub = document.createElement('button');
+    sub.className = 'qbtn qsub';
+    sub.textContent = `− ${n.toLocaleString('de-DE')}`;
+    sub.addEventListener('click', () => { value -= n; render(true); });
+
+    row.appendChild(add);
+    row.appendChild(sub);
+    grid.appendChild(row);
   });
 
   render(false);
