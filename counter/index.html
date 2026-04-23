@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zähler</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0e0e0e;
+    --surface: #1a1a1a;
+    --border: #2e2e2e;
+    --accent: #c8f060;
+    --text: #f0f0f0;
+    --muted: #555;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+  }
+
+  .label {
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.2rem;
+  }
+
+  .number {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(6rem, 20vw, 12rem);
+    line-height: 1;
+    color: var(--accent);
+    transition: transform 0.08s ease, opacity 0.08s ease;
+    user-select: none;
+  }
+
+  .number.bump {
+    transform: scale(1.06);
+    opacity: 0.7;
+  }
+
+  .input-row {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: 2.5rem;
+  }
+
+  .val-input {
+    width: 120px;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 1.2rem;
+    text-align: center;
+    padding: 10px 0;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .val-input:focus {
+    border-color: var(--accent);
+  }
+
+  .controls {
+    display: flex;
+    gap: 0.8rem;
+    margin-top: 1.2rem;
+  }
+
+  .btn {
+    padding: 10px 28px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  }
+
+  .btn:hover { border-color: var(--accent); background: #222; }
+  .btn:active { transform: scale(0.95); }
+
+  .btn.add { color: var(--accent); }
+  .btn.sub { color: #f06060; }
+
+  .reset {
+    margin-top: 2rem;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 4px 0;
+    border-bottom: 1px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .reset:hover { color: #888; border-color: #555; }
+</style>
+</head>
+<body>
+
+<div class="label">Hauptzahl</div>
+<div class="number" id="num">0</div>
+
+<div class="input-row">
+  <input class="val-input" type="number" id="eingabe" placeholder="z.B. 100">
+</div>
+
+<div class="controls">
+  <button class="btn add" id="plus">Addieren</button>
+  <button class="btn sub" id="minus">Subtrahieren</button>
+</div>
+
+<button class="reset" id="reset">zurücksetzen</button>
+
+<script>
+  const numEl = document.getElementById('num');
+  const eingabe = document.getElementById('eingabe');
+
+  let value = parseInt(localStorage.getItem('hauptzahl') ?? '0');
+
+  function render(animate) {
+    numEl.textContent = value;
+    localStorage.setItem('hauptzahl', value);
+    if (animate) {
+      numEl.classList.remove('bump');
+      void numEl.offsetWidth;
+      numEl.classList.add('bump');
+      setTimeout(() => numEl.classList.remove('bump'), 120);
+    }
+  }
+
+  function getVal() {
+    return parseInt(eingabe.value) || 0;
+  }
+
+  document.getElementById('plus').addEventListener('click', () => {
+    value += getVal();
+    render(true);
+  });
+
+  document.getElementById('minus').addEventListener('click', () => {
+    value -= getVal();
+    render(true);
+  });
+
+  eingabe.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { value += getVal(); render(true); }
+  });
+
+  document.getElementById('reset').addEventListener('click', () => {
+    value = 0;
+    render(true);
+  });
+
+  render(false);
+</script>
+</body>
+</html>
