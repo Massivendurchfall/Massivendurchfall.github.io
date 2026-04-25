@@ -237,10 +237,6 @@
     transition: transform .3s;
   }
   .lib-card:hover .card-cover-wrap img { transform: scale(1.05); }
-  .card-cover-placeholder {
-    font-size: 4rem;
-    opacity: 0.5;
-  }
   .card-cover-accent {
     position: absolute; bottom: 0; left: 0; right: 0;
     height: 40px;
@@ -525,14 +521,15 @@
 <!-- LIBRARY GRID -->
 <div class="library-grid" id="grid">
 
-  <!-- Card: Tomodachi Life -->
-  <div class="lib-card" data-tags="base multipart" onclick="openModal('tomodachi')">
+  <!-- Card: Tomodachi Life — now has update -->
+  <div class="lib-card" data-tags="base has-update multipart" onclick="openModal('tomodachi')">
     <div class="card-cover-wrap">
       <img src="https://upload.wikimedia.org/wikipedia/en/thumb/2/2d/Tomodachi_Life_Living_the_Dream_boxart.jpg/220px-Tomodachi_Life_Living_the_Dream_boxart.jpg"
            alt="Tomodachi Life" onerror="this.style.display='none'">
       <div class="card-cover-accent"></div>
       <div class="cover-tags">
         <span class="ctag ctag-base">Base</span>
+        <span class="ctag ctag-update">Update</span>
         <span class="ctag ctag-parts">2 Parts</span>
       </div>
     </div>
@@ -541,10 +538,12 @@
       <div class="card-meta">
         <span>🌍 US NSP</span>
         <span>📦 2 Part RAR</span>
+        <span>⬆ v1.0.1</span>
       </div>
     </div>
     <div class="card-footer">
       <span class="mini-btn base">⬇ Base Game</span>
+      <span class="mini-btn update">⬆ Update</span>
       <span class="mini-btn detail">Details -></span>
     </div>
   </div>
@@ -577,6 +576,7 @@
       <span class="mini-btn detail">Details -></span>
     </div>
   </div>
+
   <!-- Card: Mario Kart 8 Deluxe -->
   <div class="lib-card" data-tags="base has-dlc has-update multipart" onclick="openModal('mk8')">
     <div class="card-cover-wrap">
@@ -605,6 +605,7 @@
       <span class="mini-btn detail">Details -></span>
     </div>
   </div>
+
   <div class="empty-state" id="emptyState">😶 No games found</div>
 
 </div>
@@ -623,6 +624,7 @@
         <div class="modal-title">Tomodachi Life: Living the Dream</div>
         <div class="modal-tags">
           <span class="mtag mtag-base">🎮 Base Game</span>
+          <span class="mtag mtag-update">⬆ Update v1.0.1</span>
           <span class="mtag mtag-parts">📦 2 Part RAR</span>
           <span class="mtag mtag-region">🌍 US NSP</span>
         </div>
@@ -631,6 +633,7 @@
 
     <div class="modal-body">
 
+      <!-- BASE -->
       <div class="dl-section">
         <div class="dl-section-header">
           🎮 Base Game
@@ -639,7 +642,7 @@
         <div class="dl-buttons">
           <a class="dl-btn-modal base-btn" href="https://megaup.net/5422e071ead058050850766c4c0368bd/TOMLLTDREM-(US)-NSwTcH-[BASE]-NSP-Ziperto.part1.rar" target="_blank">⬇ Part 1</a>
           <a class="dl-btn-modal base-btn2" href="https://megaup.net/91144fa33180b703e128e486bbc09206/TOMLLTDREM-(US)-NSwTcH-[BASE]-NSP-Ziperto.part2.rar" target="_blank">⬇ Part 2</a>
-          <a class="dl-btn-modal update-btn" href="https://archive.org/download/tomodachi-life-living-the-dream_nsp" target="_blank">Download Alternative</a>
+          <a class="dl-btn-modal update-btn" href="https://archive.org/download/tomodachi-life-living-the-dream_nsp" target="_blank">⬇ Alternative</a>
         </div>
         <div class="info-note warn">⚠ Download both parts, place them in the same folder, select both with Ctrl+Click, then right-click and choose <b>Extract Here</b>. This creates one <code>.nsp</code> file.</div>
         <div class="info-note tip">If multipart hosting is unavailable, use the single-file alternative download above.</div>
@@ -647,7 +650,21 @@
 
       <hr class="divider">
 
-      <div class="info-note tip">💡 Move the finished <code>.nsp</code> file into your games folder (for example <code>C:\Games\Switch\</code>). Ryujinx will list it automatically.</div>
+      <!-- UPDATE -->
+      <div class="dl-section">
+        <div class="dl-section-header">
+          ⬆ Update v1.0.1
+          <span class="badge badge-update">Latest version</span>
+        </div>
+        <div class="dl-buttons">
+          <a class="dl-btn-modal update-btn" href="https://bzzhr.to/h3pxh1w8ac4b" target="_blank">⬆ Download Update v1.0.1</a>
+        </div>
+        <div class="info-note tip">💡 After extraction, install in Ryujinx: right-click the game in your list → <b>Manage Title Updates</b>. Do <b>not</b> place update files in the games folder.</div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="info-note tip">💡 Move the finished <code>.nsp</code> base game file into your games folder (for example <code>C:\Games\Switch\</code>). Ryujinx will list it automatically.</div>
 
     </div>
   </div>
@@ -677,7 +694,6 @@
 
     <div class="modal-body">
 
-      <!-- BASE -->
       <div class="dl-section">
         <div class="dl-section-header">
           🎮 Base Game
@@ -692,7 +708,6 @@
 
       <hr class="divider">
 
-      <!-- UPDATE -->
       <div class="dl-section">
         <div class="dl-section-header">
           ⬆ Update v3.0.2
@@ -701,12 +716,11 @@
         <div class="dl-buttons">
           <a class="dl-btn-modal update-btn" href="https://megaup.net/71ba8c96cc0849af6c703294569e89ec/AC-NH-NSwTcH-NSP-Update302-Ziperto.rar" target="_blank">⬇ Update v3.0.2</a>
         </div>
-        <div class="info-note tip">💡 After extraction, install in Ryujinx: right-click the game in your list -> <b>Manage Title Updates</b>. Do <b>not</b> place update files in the games folder.</div>
+        <div class="info-note tip">💡 After extraction, install in Ryujinx: right-click the game in your list → <b>Manage Title Updates</b>. Do <b>not</b> place update files in the games folder.</div>
       </div>
 
       <hr class="divider">
 
-      <!-- DLC -->
       <div class="dl-section">
         <div class="dl-section-header">
           💎 DLC Pack
@@ -716,19 +730,18 @@
           <a class="dl-btn-modal dlc-btn1" href="https://megaup.net/18fr2/AC-NH-NSwTcH-NSP-[2DLCPack]-Ziperto.rar" target="_blank">💎 Nook Inc. &amp; Pocket Camp DLC</a>
           <a class="dl-btn-modal dlc-btn2" href="https://megaup.net/1FVkn/AC-NH-NSwTcH-NSP-[HHPDLC]-Ziperto.rar" target="_blank">💎 Happy Home Paradise DLC</a>
         </div>
-        <div class="info-note dlc-note">💎 After extraction: right-click the game in Ryujinx -> <b>Manage DLC</b>. DLC files are installed <b>separately</b> and not placed in the games folder.</div>
+        <div class="info-note dlc-note">💎 After extraction: right-click the game in Ryujinx → <b>Manage DLC</b>. DLC files are installed <b>separately</b> and not placed in the games folder.</div>
       </div>
 
     </div>
   </div>
 </div>
 
-
 <!-- ===================== MODAL: MARIO KART 8 DELUXE ===================== -->
 <div class="modal-overlay" id="modal-mk8">
   <div class="modal">
     <div class="modal-top-bar" style="background: linear-gradient(90deg, #FF9B4A, #FFD94A);"></div>
-    <button class="modal-close" onclick="closeModal('mk8')">X</button>
+    <button class="modal-close" onclick="closeModal('mk8')">✕</button>
 
     <div class="modal-hero">
       <img class="modal-cover"
@@ -770,7 +783,7 @@
         <div class="dl-buttons">
           <a class="dl-btn-modal update-btn" href="https://megaup.net/c2d99c410912db95cbac76b45b4c6dbe/Mario_Kart_8_Deluxe_[0100152000022800][v1376256][US].nsp.rar" target="_blank">Download Update</a>
         </div>
-        <div class="info-note tip">Install via Ryujinx game menu -> <b>Manage Title Updates</b>. Do not place update files in your games folder.</div>
+        <div class="info-note tip">Install via Ryujinx game menu → <b>Manage Title Updates</b>. Do not place update files in your games folder.</div>
       </div>
 
       <hr class="divider">
@@ -783,12 +796,13 @@
         <div class="dl-buttons">
           <a class="dl-btn-modal dlc-btn1" href="https://megaup.net/1jxrr/Mario_Kart_8_Deluxe_(NSP)(Booster_Course_Wave_1_to_6).rar" target="_blank">Download Booster DLC</a>
         </div>
-        <div class="info-note dlc-note">Install via Ryujinx game menu -> <b>Manage DLC</b>. DLC installs separately from base files.</div>
+        <div class="info-note dlc-note">Install via Ryujinx game menu → <b>Manage DLC</b>. DLC installs separately from base files.</div>
       </div>
 
     </div>
   </div>
 </div>
+
 <footer>Tutorial for educational purposes only &nbsp;•&nbsp; Ryujinx is an open-source Nintendo Switch emulator</footer>
 
 <script>
@@ -851,6 +865,3 @@
 </script>
 </body>
 </html>
-
-
-
