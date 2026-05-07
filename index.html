@@ -122,6 +122,32 @@
       font-size: 0.97rem;
     }
 
+    .repo-cta {
+      margin-top: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-decoration: none;
+      color: #041421;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border-radius: 14px;
+      padding: 13px 16px;
+      background: linear-gradient(135deg, var(--accent-3), #ffd19b);
+      border: 1px solid rgba(255, 159, 74, 0.72);
+      box-shadow: 0 12px 24px rgba(255, 159, 74, 0.34);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .repo-cta:hover,
+    .repo-cta:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 30px rgba(255, 159, 74, 0.38);
+      outline: none;
+    }
+
     .section {
       margin-top: 28px;
     }
@@ -261,6 +287,10 @@
   <main class="layout">
     <section class="hero">
       <h1>My Projects</h1>
+      <p class="hero-note">Clean launcher for your Android APKs and web pages.</p>
+      <a class="repo-cta" href="https://github.com/Massivendurchfall?tab=repositories" target="_blank" rel="noopener">
+        Open My GitHub Repositories
+      </a>
     </section>
 
     <section class="section" aria-labelledby="apps-title">
