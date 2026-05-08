@@ -362,7 +362,7 @@
       {
         title: "Suffishing",
         note: "Self-made game. Download the SurfFishing.exe build.",
-        filePath: "/games/SurfFishing.exe",
+        filePath: "https://github.com/Massivendurchfall/Massivendurchfall.github.io/releases/download/Release/SurfFishing.exe",
         pagePath: "/games/",
         tag: "Game"
       }
@@ -407,9 +407,9 @@
           <span class="title">${item.title}</span>
           <span class="chip game">${item.tag}</span>
         </div>
-        <p class="info">${item.note}<br>${BASE + item.filePath}</p>
+        <p class="info">${item.note}<br>${item.filePath}</p>
         <div class="btn-row">
-          <a class="btn btn-game" href="${BASE + item.filePath}" download>Download EXE</a>
+          <a class="btn btn-game" href="${item.filePath}" download>Download EXE</a>
           <a class="btn btn-muted" href="${BASE + item.pagePath}">Open Game Page</a>
         </div>
       `;
