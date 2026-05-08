@@ -391,8 +391,8 @@
         </div>
         <p class="info">${item.note}<br>${BASE + item.filePath}</p>
         <div class="btn-row">
-          <a class="btn btn-apk" href="${BASE + item.filePath}" download>Download APK</a>
-          <a class="btn btn-muted" href="${BASE + item.pagePath}">Open App Page</a>
+          <a class="btn btn-apk" href="${BASE + item.filePath}" target="_blank" rel="noopener" download>Download APK</a>
+          <a class="btn btn-muted" href="${BASE + item.pagePath}" target="_blank" rel="noopener">Open App Page</a>
         </div>
       `;
       return node;
@@ -409,8 +409,8 @@
         </div>
         <p class="info">${item.note}<br>${item.filePath}</p>
         <div class="btn-row">
-          <a class="btn btn-game" href="${item.filePath}" download>Download EXE</a>
-          <a class="btn btn-muted" href="${BASE + item.pagePath}">Open Game Page</a>
+          <a class="btn btn-game" href="${item.filePath}" target="_blank" rel="noopener" download>Download EXE</a>
+          <a class="btn btn-muted" href="${BASE + item.pagePath}" target="_blank" rel="noopener">Open Game Page</a>
         </div>
       `;
       return node;
@@ -427,7 +427,7 @@
         </div>
         <p class="info">${item.note}<br>${BASE + item.path}</p>
         <div class="btn-row">
-          <a class="btn btn-muted" href="${BASE + item.path}">Open Project</a>
+          <a class="btn btn-muted" href="${BASE + item.path}" target="_blank" rel="noopener">Open Project</a>
         </div>
       `;
       return node;

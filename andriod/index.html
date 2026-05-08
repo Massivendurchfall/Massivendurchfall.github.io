@@ -1,317 +1,130 @@
 ﻿<!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Android Downloads | Massivendurchfall</title>
-  <meta name="description" content="Download Seite fuer GhostChat APK und S.to APK.">
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Android Downloads | Massivendurchfall">
-  <meta property="og:description" content="GhostChat und S.to als APK direkt downloaden.">
-  <meta property="og:url" content="https://massivendurchfall.github.io/andriod/">
-  <meta name="theme-color" content="#111f36">
+  <title>Android APKs | Massivendurchfall</title>
+  <meta name="description" content="Android APK download deck.">
+  <meta name="theme-color" content="#0f1c17">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-a: #081526;
-      --bg-b: #112b47;
-      --bg-c: #1b3d60;
-      --surface: rgba(7, 25, 42, 0.77);
-      --line: rgba(227, 241, 255, 0.18);
-      --text: #edf5ff;
-      --muted: #b4c8dd;
-      --accent-1: #ff9334;
-      --accent-2: #59e0c8;
-      --radius-xl: 25px;
-      --radius-lg: 17px;
-      --shadow: 0 24px 55px rgba(0, 0, 0, 0.38);
+      --bg0: #07110f;
+      --bg1: #10322a;
+      --ink: #d9ffe8;
+      --muted: #9fdfc2;
+      --line: rgba(176, 255, 214, 0.28);
+      --tile: rgba(8, 28, 22, 0.86);
+      --hot: #8fffbd;
     }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       min-height: 100vh;
-      color: var(--text);
-      font-family: "Chakra Petch", sans-serif;
-      background:
-        radial-gradient(45rem 30rem at 6% -12%, rgba(255, 147, 52, 0.27), transparent 55%),
-        radial-gradient(35rem 28rem at 92% 8%, rgba(89, 224, 200, 0.22), transparent 60%),
-        linear-gradient(155deg, var(--bg-a), var(--bg-b) 52%, var(--bg-c));
-      overflow-x: hidden;
-    }
-
-    .screen {
-      width: min(840px, 92vw);
-      margin: 0 auto;
-      padding: 32px 0 52px;
-    }
-
-    .header {
-      border: 1px solid var(--line);
-      border-radius: var(--radius-xl);
-      padding: 26px 20px 22px;
-      background: linear-gradient(150deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.03));
-      backdrop-filter: blur(7px);
-      box-shadow: var(--shadow);
-      animation: reveal 0.5s ease both;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(227, 241, 255, 0.35);
-      padding: 7px 11px;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-weight: 700;
-    }
-
-    h1 {
-      margin-top: 14px;
-      font-family: "Syne", sans-serif;
-      font-size: clamp(2rem, 9vw, 4.1rem);
-      line-height: 0.96;
-      letter-spacing: 0.01em;
-      text-wrap: balance;
-    }
-
-    .lead {
-      margin-top: 12px;
-      color: var(--muted);
-      line-height: 1.62;
-      font-size: 0.97rem;
-      max-width: 640px;
-    }
-
-    .jump {
-      margin-top: 18px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      color: #04131c;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      border-radius: 13px;
-      padding: 11px 14px;
-      background: linear-gradient(130deg, var(--accent-1), #ffc174);
-      border: 1px solid #ffb261;
-      box-shadow: 0 10px 22px rgba(255, 147, 52, 0.36);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .jump:hover,
-    .jump:focus-visible {
-      transform: translateY(-2px);
-      box-shadow: 0 14px 28px rgba(255, 147, 52, 0.38);
-      outline: none;
-    }
-
-    .cards {
-      margin-top: 20px;
+      font-family: "Space Mono", monospace;
+      color: var(--ink);
+      background: radial-gradient(40rem 26rem at 90% -12%, rgba(143, 255, 189, 0.15), transparent 60%), linear-gradient(160deg, var(--bg0), var(--bg1));
+      padding: 20px;
       display: grid;
-      gap: 12px;
+      place-items: center;
     }
-
-    .card {
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      padding: 14px;
-      background: var(--surface);
+    .deck {
+      width: min(760px, 96vw);
+      border: 2px solid var(--line);
+      border-radius: 22px;
+      background: var(--tile);
+      box-shadow: 0 20px 42px rgba(0, 0, 0, 0.4);
+      padding: 22px 16px;
+    }
+    h1 {
+      font-family: "Silkscreen", cursive;
+      font-size: clamp(1.4rem, 6vw, 2.3rem);
+      letter-spacing: 0.03em;
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
+    .lead {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+    .grid {
+      margin-top: 14px;
       display: grid;
       gap: 10px;
-      animation: reveal 0.45s ease both;
-      transform: translateY(8px);
-      opacity: 0;
     }
-
-    .card:nth-child(1) {
-      animation-delay: 0.08s;
+    .item {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 11px;
+      display: grid;
+      gap: 8px;
+      background: rgba(5, 22, 17, 0.76);
     }
-
-    .card:nth-child(2) {
-      animation-delay: 0.14s;
-    }
-
-    .row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
     .name {
-      font-family: "Syne", sans-serif;
-      font-size: 1.22rem;
-      letter-spacing: 0.01em;
+      font-family: "Silkscreen", cursive;
+      font-size: 0.92rem;
+      letter-spacing: 0.04em;
     }
-
-    .stat {
-      color: #0d1821;
-      border-radius: 10px;
-      background: linear-gradient(135deg, var(--accent-2), #a6ffe2);
-      border: 1px solid rgba(89, 224, 200, 0.67);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      font-weight: 700;
-      padding: 5px 9px;
-    }
-
     .desc {
       color: var(--muted);
-      font-size: 0.92rem;
-      line-height: 1.56;
+      font-size: 0.8rem;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
     }
-
     .actions {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
     }
-
     .btn {
       text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 12px;
-      padding: 10px 13px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
+      border-radius: 9px;
+      padding: 8px 10px;
+      font-size: 0.68rem;
       text-transform: uppercase;
-      font-size: 0.8rem;
-      transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      border: 1px solid transparent;
     }
-
-    .btn.primary {
-      color: #06141d;
-      background: linear-gradient(135deg, var(--accent-1), #ffd39f);
-      border: 1px solid rgba(255, 147, 52, 0.6);
-      box-shadow: 0 8px 18px rgba(255, 147, 52, 0.34);
+    .btn.main {
+      background: linear-gradient(135deg, var(--hot), #d5ffe6);
+      border-color: rgba(143, 255, 189, 0.8);
+      color: #032015;
     }
-
-    .btn.secondary {
-      color: var(--text);
-      background: rgba(227, 241, 255, 0.09);
-      border: 1px solid rgba(227, 241, 255, 0.32);
-    }
-
-    .btn:hover,
-    .btn:focus-visible {
-      transform: translateY(-2px);
-      outline: none;
-    }
-
-    .note {
-      margin-top: 16px;
-      color: var(--muted);
-      font-size: 0.84rem;
-      line-height: 1.5;
-    }
-
-    footer {
-      margin-top: 24px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.82rem;
-      animation: reveal 1s ease both;
-    }
-
-    @keyframes reveal {
-      from {
-        opacity: 0;
-        transform: translateY(11px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @media (max-width: 700px) {
-      .screen {
-        padding-top: 20px;
-      }
-
-      .header {
-        padding: 21px 15px 18px;
-      }
-
-      .lead {
-        font-size: 0.92rem;
-      }
-
-      .card {
-        padding: 13px 12px;
-      }
-
-      .name {
-        font-size: 1.07rem;
-      }
+    .btn.alt {
+      background: rgba(217, 255, 232, 0.08);
+      border-color: rgba(217, 255, 232, 0.32);
+      color: var(--ink);
     }
   </style>
 </head>
 <body>
-  <main class="screen">
-    <section class="header">
-      <span class="pill">Android Downloads</span>
-      <h1>Install Deine Phone Apps</h1>
-      <p class="lead">
-        Lade die APKs direkt herunter. Falls Android blockt, aktiviere einmalig
-        "Install unknown apps" fuer deinen Browser oder Dateimanager.
-      </p>
-      <a class="jump" href="https://massivendurchfall.github.io/">Zurueck zur Hauptseite</a>
-    </section>
+  <main class="deck">
+    <h1>Android APK Deck</h1>
+    <p class="lead">Quick access to your phone app packages.</p>
 
-    <section class="cards" aria-label="APK Downloads">
-      <article class="card">
-        <div class="row">
-          <h2 class="name">GhostChat</h2>
-          <span class="stat">18.6 MB</span>
-        </div>
-        <p class="desc">
-          GhostChat Android Build als direkte APK.
-        </p>
+    <section class="grid" aria-label="APK downloads">
+      <article class="item">
+        <h2 class="name">GhostChat APK</h2>
+        <p class="desc">Anonymous chat app.<br>https://massivendurchfall.github.io/andriod/ghostchat.apk</p>
         <div class="actions">
-          <a class="btn primary" href="./ghostchat.apk" download>Download APK</a>
-          <a class="btn secondary" href="./ghostchat.apk" target="_blank" rel="noopener">Direkt oeffnen</a>
+          <a class="btn main" href="./ghostchat.apk" target="_blank" rel="noopener" download>Download APK</a>
+          <a class="btn alt" href="https://massivendurchfall.github.io/" target="_blank" rel="noopener">Main Page</a>
         </div>
       </article>
 
-      <article class="card">
-        <div class="row">
-          <h2 class="name">S.to</h2>
-          <span class="stat">6.3 MB</span>
-        </div>
-        <p class="desc">
-          S.to Android Build als APK Paket.
-        </p>
+      <article class="item">
+        <h2 class="name">S.to APK</h2>
+        <p class="desc">App for s.to, ad-free and lightweight.<br>https://massivendurchfall.github.io/andriod/s.to.apk</p>
         <div class="actions">
-          <a class="btn primary" href="./s.to.apk" download>Download APK</a>
-          <a class="btn secondary" href="./s.to.apk" target="_blank" rel="noopener">Direkt oeffnen</a>
+          <a class="btn main" href="./s.to.apk" target="_blank" rel="noopener" download>Download APK</a>
+          <a class="btn alt" href="https://massivendurchfall.github.io/" target="_blank" rel="noopener">Main Page</a>
         </div>
       </article>
     </section>
-
-    <p class="note">
-      Hinweis: Diese Seite liegt aktuell unter <strong>/andriod/</strong> (Ordnername aus dem Repo).
-    </p>
-
-    <footer>
-      Massivendurchfall Android Hub
-    </footer>
   </main>
 </body>
 </html>
