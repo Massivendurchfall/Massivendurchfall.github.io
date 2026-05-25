@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Lexikon — Ein Vokabel-Journal</title>
+<title>Lexikon Ein Vokabel Journal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -32,52 +32,53 @@
       radial-gradient(circle at 1px 1px, rgba(122,28,28,0.06) 1px, transparent 0) 0 0 / 22px 22px,
       linear-gradient(135deg, var(--cream) 0%, var(--cream-2) 100%);
     background-attachment: fixed;
-    padding: 24px 20px 60px;
-    line-height: 1.5;
+    padding: 28px 22px 70px;
+    line-height: 1.55;
+    font-size: 17px;
   }
-  .wrap { max-width: 720px; margin: 0 auto; }
+  .wrap { max-width: 900px; margin: 0 auto; }
 
   header.top {
     display: flex; align-items: center; justify-content: space-between;
     flex-wrap: wrap; gap: 16px;
-    padding-bottom: 16px; margin-bottom: 28px;
+    padding-bottom: 20px; margin-bottom: 30px;
     border-bottom: 1px solid var(--rule);
   }
-  .brand { display: flex; align-items: center; gap: 12px; }
-  .brand-icon { width: 26px; height: 26px; color: var(--bordeaux); flex-shrink: 0; }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .brand-icon { width: 32px; height: 32px; color: var(--bordeaux); flex-shrink: 0; }
   .brand-title {
     font-family: 'Fraunces', serif;
-    font-size: 28px; font-weight: 700; letter-spacing: -0.02em; line-height: 1;
+    font-size: 36px; font-weight: 700; letter-spacing: 0; line-height: 1;
   }
   .brand-sub {
-    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase;
     color: var(--muted); margin-top: 5px;
   }
   .stats { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .chip {
     display: inline-flex; align-items: center; gap: 6px;
-    padding: 7px 12px;
+    padding: 10px 14px;
     background: var(--paper);
     border: 1px solid var(--rule);
     border-radius: 999px;
-    font-size: 13px; font-weight: 600;
+    font-size: 16px; font-weight: 600;
   }
-  .chip svg { width: 16px; height: 16px; }
+  .chip svg { width: 18px; height: 18px; }
   .chip-flame { color: var(--ember); }
 
   .phase-bar {
-    max-width: 720px; margin: 0 auto 20px;
+    max-width: 900px; margin: 0 auto 22px;
     background: var(--paper); border: 1px solid var(--rule);
-    border-radius: 4px; padding: 12px 16px;
-    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    border-radius: 4px; padding: 16px 18px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
   }
   .phase-label {
     font-family: 'Fraunces', serif; font-style: italic;
-    font-size: 14px; color: var(--ink-soft); flex-shrink: 0;
+    font-size: 18px; color: var(--ink-soft); flex-shrink: 0;
   }
   .phase-label strong { font-style: normal; color: var(--bordeaux); font-weight: 600; }
   .phase-track {
-    flex: 1; min-width: 120px; height: 6px;
+    flex: 1; min-width: 140px; height: 8px;
     background: var(--rule-soft); border-radius: 99px; overflow: hidden;
   }
   .phase-fill {
@@ -85,7 +86,7 @@
     transition: width 0.4s ease;
   }
   .phase-count {
-    font-size: 12px; color: var(--muted);
+    font-size: 15px; color: var(--muted);
     letter-spacing: 0.08em; text-transform: uppercase;
     flex-shrink: 0;
   }
@@ -94,7 +95,7 @@
     background: var(--paper);
     border: 1px solid var(--rule);
     border-radius: 4px;
-    padding: 36px 32px;
+    padding: 44px 40px;
     box-shadow:
       0 1px 0 var(--rule),
       0 8px 24px -12px rgba(42,30,16,0.15),
@@ -117,58 +118,60 @@
 
   .card-head {
     display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 28px; flex-wrap: wrap; gap: 12px;
+    margin-bottom: 34px; flex-wrap: wrap; gap: 14px;
   }
   .dir-row { display: flex; align-items: center; gap: 8px; }
   .flag {
     display: inline-flex; align-items: center; gap: 5px;
-    font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
-    padding: 4px 9px; border-radius: 4px; color: var(--cream);
+    font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 7px 11px; border-radius: 4px; color: var(--cream);
   }
   .flag-en { background: var(--forest); }
   .flag-de { background: var(--bordeaux); }
   .arrow { color: var(--muted); }
   .mode-label {
     font-family: 'Fraunces', serif; font-style: italic;
-    font-size: 13px; color: var(--muted);
+    font-size: 17px; color: var(--muted);
   }
 
   .prompt-word {
     display: flex; align-items: center; justify-content: center; gap: 14px;
     font-family: 'Fraunces', serif;
-    font-size: clamp(36px, 7vw, 56px);
-    font-weight: 600; letter-spacing: -0.02em; line-height: 1.1;
-    margin-bottom: 8px; text-align: center;
+    font-size: 56px;
+    font-weight: 600; letter-spacing: 0; line-height: 1.08;
+    margin-bottom: 12px; text-align: center;
     flex-wrap: wrap;
   }
   .speak-btn {
     background: transparent; border: 1px solid var(--rule); border-radius: 999px;
-    width: 38px; height: 38px;
+    width: 48px; height: 48px;
     display: inline-flex; align-items: center; justify-content: center;
     color: var(--bordeaux); cursor: pointer; flex-shrink: 0;
     transition: background 0.15s, transform 0.15s;
   }
   .speak-btn:hover { background: var(--cream); transform: scale(1.05); }
-  .speak-btn svg { width: 18px; height: 18px; }
+  .speak-btn svg { width: 22px; height: 22px; }
   .pos {
     text-align: center; font-style: italic;
     font-family: 'Fraunces', serif; color: var(--muted);
-    font-size: 14px; margin-bottom: 28px;
+    font-size: 17px; margin-bottom: 32px;
   }
 
   .choice-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 16px;
   }
   .choice-btn {
-    padding: 18px 16px;
+    min-height: 78px;
+    padding: 22px 20px;
     border: 2px solid var(--rule);
     background: var(--paper);
     color: var(--ink);
     border-radius: 4px;
-    font-size: 17px; font-weight: 500;
+    font-size: 21px; font-weight: 500; line-height: 1.25;
     cursor: pointer; font-family: inherit;
+    overflow-wrap: anywhere;
     transition: transform 0.15s, border-color 0.15s, background 0.15s;
   }
   .choice-btn:hover:not(:disabled) { transform: translateY(-2px); border-color: var(--ink-soft); }
@@ -178,8 +181,8 @@
   .choice-btn.dim { opacity: 0.4; }
 
   .input {
-    width: 100%; padding: 16px 18px;
-    font-size: 18px;
+    width: 100%; padding: 20px 20px;
+    font-size: 22px;
     border: 2px solid var(--rule);
     border-radius: 4px;
     font-family: 'Fraunces', serif;
@@ -193,26 +196,26 @@
   .input.wrong { border-color: var(--bordeaux); background: #f5dede; }
   .correct-reveal {
     margin-top: 12px; font-family: 'Fraunces', serif; font-style: italic;
-    color: var(--bordeaux); font-size: 15px;
+    color: var(--bordeaux); font-size: 18px;
   }
 
   .sentence-prompt {
     font-family: 'Fraunces', serif; font-style: italic;
-    font-size: clamp(18px, 3vw, 22px); text-align: center; line-height: 1.4;
-    margin-bottom: 24px;
+    font-size: 26px; text-align: center; line-height: 1.4;
+    margin-bottom: 28px;
   }
   .cloze-intro {
     text-align: center;
     font-family: 'Fraunces', serif; font-style: italic;
-    color: var(--muted); font-size: 13px;
-    margin-bottom: 10px;
+    color: var(--muted); font-size: 16px;
+    margin-bottom: 12px;
   }
   .cloze-blank {
     font-family: 'Fraunces', serif;
-    font-size: clamp(16px, 2.5vw, 20px);
+    font-size: 24px;
     text-align: center; line-height: 1.5;
-    margin-bottom: 24px;
-    padding: 14px 16px;
+    margin-bottom: 28px;
+    padding: 18px 20px;
     background: var(--cream);
     border-left: 3px solid var(--bordeaux);
     border-radius: 2px;
@@ -233,7 +236,7 @@
   }
   .token {
     padding: 9px 14px; border-radius: 4px;
-    font-size: 15px; cursor: pointer; font-family: inherit; font-weight: 500;
+    font-size: 18px; cursor: pointer; font-family: inherit; font-weight: 500;
     border: 1px solid var(--rule);
     background: var(--paper); color: var(--ink);
     transition: transform 0.12s;
@@ -248,8 +251,8 @@
   .flash-word {
     display: flex; align-items: center; justify-content: center; gap: 14px;
     font-family: 'Fraunces', serif;
-    font-size: clamp(40px, 8vw, 64px);
-    font-weight: 600; letter-spacing: -0.02em; line-height: 1;
+    font-size: 64px;
+    font-weight: 600; letter-spacing: 0; line-height: 1;
     flex-wrap: wrap;
   }
   .flash-back {
@@ -263,12 +266,12 @@
     to { opacity: 1; max-height: 600px; padding-top: 20px; padding-bottom: 20px; }
   }
   .flash-answer {
-    font-family: 'Fraunces', serif; font-size: 32px; font-weight: 600;
+    font-family: 'Fraunces', serif; font-size: 38px; font-weight: 600;
     text-align: center; margin-bottom: 12px; color: var(--bordeaux);
   }
   .definition {
     font-family: 'Fraunces', serif; font-style: italic;
-    text-align: center; color: var(--ink-soft); font-size: 15px;
+    text-align: center; color: var(--ink-soft); font-size: 18px;
     margin-bottom: 14px;
   }
   .example-block {
@@ -276,14 +279,14 @@
     border-left: 3px solid var(--bordeaux);
     border-radius: 2px;
   }
-  .example-en { font-family: 'Fraunces', serif; font-size: 15px; margin-bottom: 4px; }
-  .example-de { font-family: 'Fraunces', serif; font-style: italic; font-size: 14px; color: var(--ink-soft); }
+  .example-en { font-family: 'Fraunces', serif; font-size: 18px; margin-bottom: 4px; }
+  .example-de { font-family: 'Fraunces', serif; font-style: italic; font-size: 17px; color: var(--ink-soft); }
 
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    padding: 14px 22px;
+    padding: 17px 24px;
     border-radius: 4px; cursor: pointer; font-family: inherit;
-    font-size: 15px; font-weight: 600; letter-spacing: 0.03em;
+    font-size: 18px; font-weight: 600; letter-spacing: 0.03em;
     border: none; transition: transform 0.12s, opacity 0.12s;
   }
   .btn:hover { transform: translateY(-1px); }
@@ -309,17 +312,17 @@
   .result.right { background: var(--forest); }
   .result.wrong { background: var(--bordeaux); }
   .result-text {
-    font-family: 'Fraunces', serif; font-size: 19px; font-weight: 600;
+    font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600;
     display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
   }
-  .result-example { font-size: 14px; line-height: 1.5; margin-bottom: 14px; }
+  .result-example { font-size: 17px; line-height: 1.5; margin-bottom: 14px; }
   .result-example .de { opacity: 0.78; font-style: italic; }
   .continue {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    padding: 12px 20px;
+    padding: 15px 22px;
     background: var(--cream); color: var(--ink);
     border: none; border-radius: 4px;
-    font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    font-size: 16px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
     cursor: pointer; font-family: inherit; width: 100%;
   }
 
@@ -328,11 +331,11 @@
     margin: 24px auto 0; padding: 10px 14px;
     background: transparent; color: var(--muted);
     border: none; cursor: pointer; font-family: inherit;
-    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase;
     width: 100%;
   }
   .pool-refresh:hover { color: var(--bordeaux); }
-  .pool-refresh svg { width: 12px; height: 12px; }
+  .pool-refresh svg { width: 15px; height: 15px; }
 
   .skip-btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 6px;
@@ -340,7 +343,7 @@
     background: transparent; color: var(--muted);
     border: none; border-bottom: 1px dashed var(--rule);
     cursor: pointer; font-family: inherit;
-    font-size: 12px; letter-spacing: 0.06em;
+    font-size: 15px; letter-spacing: 0.04em;
     transition: color 0.15s, border-color 0.15s;
     align-self: center;
   }
@@ -348,32 +351,32 @@
   .skip-row { display: flex; justify-content: center; margin-top: 12px; }
 
   footer.bottom {
-    max-width: 720px; margin: 40px auto 0;
+    max-width: 900px; margin: 44px auto 0;
     padding-top: 16px; border-top: 1px solid var(--rule-soft);
     display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
-    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase;
     color: var(--muted);
   }
 
   .loading {
-    max-width: 480px; margin: 12vh auto 0; text-align: center; padding: 0 20px;
+    max-width: 620px; margin: 12vh auto 0; text-align: center; padding: 0 20px;
   }
   .loading-icon { color: var(--bordeaux); animation: spin 2s linear infinite; display: inline-block; }
   @keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
   .loading-title {
-    font-family: 'Fraunces', serif; font-size: 32px; font-weight: 600;
-    letter-spacing: -0.02em; margin: 24px 0 6px;
+    font-family: 'Fraunces', serif; font-size: 42px; font-weight: 600;
+    letter-spacing: 0; margin: 28px 0 8px;
   }
   .loading-sub {
     font-family: 'Fraunces', serif; font-style: italic;
-    color: var(--muted); margin-bottom: 28px;
+    color: var(--muted); margin-bottom: 32px; font-size: 20px;
   }
   .loading-detail {
-    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase;
     color: var(--muted); margin-top: 14px; min-height: 16px;
   }
   .progress-track {
-    height: 6px; background: var(--rule-soft); border-radius: 99px;
+    height: 8px; background: var(--rule-soft); border-radius: 99px;
     overflow: hidden; margin-bottom: 12px;
   }
   .progress-fill {
@@ -381,47 +384,81 @@
     transition: width 0.3s ease;
   }
   .loading-count {
-    font-size: 12px; color: var(--muted);
-    letter-spacing: 0.1em; text-transform: uppercase;
+    font-size: 15px; color: var(--muted);
+    letter-spacing: 0.08em; text-transform: uppercase;
   }
 
   .error-box {
-    max-width: 480px; margin: 10vh auto 0; padding: 32px;
+    max-width: 620px; margin: 10vh auto 0; padding: 40px;
     background: var(--paper); border: 1px solid var(--rule); border-radius: 4px;
     text-align: center;
   }
   .error-title {
-    font-family: 'Fraunces', serif; font-size: 24px; font-weight: 600;
+    font-family: 'Fraunces', serif; font-size: 32px; font-weight: 600;
     margin-bottom: 12px;
   }
-  .error-msg { color: var(--ink-soft); margin-bottom: 24px; font-size: 14px; }
+  .error-msg { color: var(--ink-soft); margin-bottom: 28px; font-size: 17px; }
 
   .stage-banner {
     background: linear-gradient(135deg, var(--forest) 0%, #2a5341 100%);
     color: var(--cream);
-    padding: 28px 30px; border-radius: 4px;
+    padding: 34px 36px; border-radius: 4px;
     text-align: center; margin-bottom: 20px;
     animation: fadeUp 0.4s ease;
   }
   .stage-banner h2 {
-    font-family: 'Fraunces', serif; font-size: 24px; font-weight: 600;
-    margin: 0 0 8px; letter-spacing: -0.01em;
+    font-family: 'Fraunces', serif; font-size: 30px; font-weight: 600;
+    margin: 0 0 10px; letter-spacing: 0;
   }
-  .stage-banner p { margin: 0; opacity: 0.85; font-size: 14px; }
+  .stage-banner p { margin: 0; opacity: 0.85; font-size: 17px; }
   .stage-banner .stage-btn {
     margin-top: 18px;
     background: var(--cream); color: var(--ink);
-    border: none; padding: 10px 20px; border-radius: 4px;
-    font-family: inherit; font-weight: 700; font-size: 13px;
-    letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer;
+    border: none; padding: 13px 22px; border-radius: 4px;
+    font-family: inherit; font-weight: 700; font-size: 15px;
+    letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;
   }
 
   .hidden { display: none !important; }
 
-  @media (max-width: 540px) {
-    body { padding: 16px 14px 60px; }
-    .card { padding: 24px 18px; }
-    .brand-title { font-size: 24px; }
+  @media (max-width: 640px) {
+    body { padding: 14px 12px 48px; font-size: 16px; }
+    header.top { gap: 14px; margin-bottom: 18px; padding-bottom: 16px; }
+    .brand { gap: 10px; }
+    .brand-icon { width: 28px; height: 28px; }
+    .brand-title { font-size: 30px; }
+    .brand-sub { font-size: 12px; letter-spacing: 0.1em; }
+    .stats { width: 100%; gap: 8px; }
+    .chip { flex: 1; justify-content: center; padding: 9px 10px; font-size: 14px; }
+    .phase-bar { padding: 14px; gap: 10px; margin-bottom: 16px; }
+    .phase-label { width: 100%; font-size: 17px; }
+    .phase-track { flex-basis: 100%; min-width: 100%; order: 3; }
+    .phase-count { margin-left: auto; font-size: 14px; }
+    .card { padding: 24px 16px; }
+    .card-head { justify-content: center; margin-bottom: 24px; }
+    .dir-row { width: 100%; justify-content: center; }
+    .mode-label { width: 100%; text-align: center; font-size: 16px; }
+    .prompt-word { font-size: 40px; gap: 10px; }
+    .flash-word { font-size: 44px; }
+    .speak-btn { width: 46px; height: 46px; }
+    .pos { font-size: 16px; margin-bottom: 24px; }
+    .choice-grid { grid-template-columns: 1fr; gap: 10px; }
+    .choice-btn { min-height: 68px; padding: 18px 16px; font-size: 20px; }
+    .input { font-size: 20px; padding: 18px 16px; }
+    .sentence-prompt { font-size: 21px; margin-bottom: 20px; }
+    .cloze-intro { font-size: 15px; }
+    .cloze-blank { font-size: 20px; padding: 16px; margin-bottom: 20px; }
+    .btn { font-size: 17px; padding: 16px 18px; }
+    .continue { font-size: 15px; }
+    .pool-refresh { font-size: 13px; line-height: 1.3; }
+    footer.bottom { margin-top: 30px; flex-direction: column; text-align: center; font-size: 12px; }
+    .loading { margin-top: 9vh; padding: 0 8px; }
+    .loading-title { font-size: 34px; }
+    .loading-sub { font-size: 18px; }
+    .error-box { padding: 28px 20px; }
+    .stage-banner { padding: 26px 18px; }
+    .stage-banner h2 { font-size: 25px; }
+    .stage-banner p { font-size: 16px; }
   }
 </style>
 </head>
@@ -437,13 +474,13 @@
   <h1 class="loading-title">Lexikon wird geöffnet</h1>
   <p class="loading-sub">Wörter werden aus dem Äther gesammelt</p>
   <div class="progress-track"><div id="progress-fill" class="progress-fill" style="width:0%"></div></div>
-  <p class="loading-count"><span id="progress-done">0</span> / <span id="progress-total">12</span> Vokabeln</p>
+  <p class="loading-count"><span id="progress-done">0</span> / <span id="progress-total">20</span> Vokabeln</p>
   <p class="loading-detail" id="loading-detail"></p>
 </div>
 
 <div id="error-view" class="error-box hidden">
   <h2 class="error-title">Hmm.</h2>
-  <p class="error-msg" id="error-msg">Die Wörterbuch-Verbindung ist gerade gestört. Vielleicht später erneut versuchen?</p>
+  <p class="error-msg" id="error-msg">Die Wörterbuch Verbindung ist gerade gestört. Vielleicht später erneut versuchen?</p>
   <button class="btn btn-primary" id="retry-btn">Erneut versuchen</button>
 </div>
 
@@ -456,7 +493,7 @@
       </svg>
       <div>
         <div class="brand-title">Lexikon</div>
-        <div class="brand-sub">Ein Vokabel-Journal</div>
+        <div class="brand-sub">Ein Vokabel Journal</div>
       </div>
     </div>
     <div class="stats">
@@ -518,7 +555,7 @@ const COMMON_SEED_WORDS = [
   'butter','silver','laughter','distance','daughter','brother','sister','mother','father','neighbor'
 ];
 
-const POOL_SIZE = 10;
+const POOL_SIZE = 20;
 
 const CLOZE_TEMPLATES = {
   noun: [
@@ -718,7 +755,7 @@ async function buildPool(size) {
     if (seen.has(w)) continue;
     if (STOP_WORDS.has(w)) continue;
     seen.add(w);
-    setDetail(`„${w}" wird geprüft…`);
+    setDetail(`„${w}“ wird geprüft…`);
 
     const [dict, deResult] = await Promise.all([fetchDictionary(w), translate(w, 'en-de')]);
     if (!deResult) continue;
@@ -781,7 +818,7 @@ function pickDistractors(correctWord, key, allAccepted, n) {
 }
 
 function buildPhase1Queue() {
-  const modes = ['choice', 'type', 'flash'];
+  const modes = ['choice', 'type'];
   const items = [];
   for (const w of pool) {
     items.push({ word: w, dir: 'en-de', mode: modes[Math.floor(Math.random() * modes.length)] });
@@ -793,8 +830,8 @@ function buildPhase1Queue() {
 function buildPhase2Queue() {
   const items = [];
   for (const w of pool) {
-    items.push({ word: w, dir: 'en-de', mode: 'sentence' });
-    items.push({ word: w, dir: 'de-en', mode: 'sentence' });
+    items.push({ word: w, dir: 'en-de', mode: 'listen' });
+    items.push({ word: w, dir: 'de-en', mode: 'listen' });
   }
   return shuffle(items);
 }
@@ -804,19 +841,12 @@ function generateQuestion(item) {
   const dir = item.dir;
   const mode = item.mode;
 
-  if (mode === 'sentence') {
+  if (mode === 'listen') {
     const sourceLang = dir === 'en-de' ? 'en' : 'de';
     const targetLang = dir === 'en-de' ? 'de' : 'en';
-    const cloze = buildClozeFor(w, w.posKey || 'default');
-
     const sourceWord = sourceLang === 'en' ? w.en : w.de;
     const targetWord = targetLang === 'en' ? w.en : w.de;
-    const sourceAccepted = sourceLang === 'en' ? (w.enAll || [w.en]) : (w.deAll || [w.de]);
     const targetAccepted = targetLang === 'en' ? (w.enAll || [w.en]) : (w.deAll || [w.de]);
-
-    const promptText = sourceLang === 'en' ? cloze.renderEn(sourceWord) : cloze.renderDe(sourceWord);
-    const blankText = targetLang === 'en' ? cloze.renderEn('___') : cloze.renderDe('___');
-
     const acceptedLower = new Set(targetAccepted.map(s => s.toLowerCase()));
     const distractorPool = pool
       .filter(p => p.posKey === w.posKey)
@@ -833,8 +863,7 @@ function generateQuestion(item) {
 
     return {
       mode, dir, sourceLang, targetLang,
-      prompt: promptText,
-      blank: blankText,
+      prompt: sourceWord,
       correct: targetWord,
       accepted: targetAccepted,
       options,
@@ -854,7 +883,7 @@ function generateQuestion(item) {
   if (mode === 'type') {
     return { mode, dir, prompt: w[promptKey], correct: primary, accepted, raw: w };
   }
-  return { mode: 'flash', dir, raw: w, promptKey, answerKey };
+  return { mode: 'choice', dir, prompt: w[promptKey], correct: primary, accepted, options: shuffle([primary, ...pickDistractors(primary, answerKey, accepted, 3)]), raw: w };
 }
 
 function normalize(s) {
@@ -891,9 +920,9 @@ let voicesReady = false;
 let voiceCache = { en: null, de: null };
 
 function refreshVoices() {
-  if (!window.speechSynthesis) return;
+  if (!window.speechSynthesis) return [];
   const voices = window.speechSynthesis.getVoices();
-  if (!voices || voices.length === 0) return;
+  if (!voices || voices.length === 0) return [];
   voicesReady = true;
   voiceCache.en =
     voices.find(v => v.lang === 'en-US') ||
@@ -907,23 +936,32 @@ function refreshVoices() {
     voices.find(v => /^de[-_]DE/i.test(v.lang)) ||
     voices.find(v => v.lang.toLowerCase().startsWith('de')) ||
     null;
+  return voices;
 }
 
-function hasVoiceFor(lang) {
-  return !!voiceCache[lang];
+function loadVoices() {
+  const voices = refreshVoices();
+  if (voices.length) return Promise.resolve(voices);
+  return new Promise(resolve => {
+    const done = () => resolve(refreshVoices());
+    if (!window.speechSynthesis) return resolve([]);
+    window.speechSynthesis.onvoiceschanged = done;
+    setTimeout(done, 350);
+  });
 }
 
-function speak(text, lang) {
+async function speak(text, lang) {
   try {
     if (!window.speechSynthesis || !text) return;
-    if (!voicesReady) refreshVoices();
-    const voice = voiceCache.de || voiceCache.en;
-    if (!voice) return;
+    if (!voicesReady) await loadVoices();
+    const voice = voiceCache[lang] || voiceCache.en || voiceCache.de || null;
     window.speechSynthesis.cancel();
+    if (window.speechSynthesis.paused) window.speechSynthesis.resume();
     const u = new SpeechSynthesisUtterance(text);
-    u.voice = voice;
-    u.lang = voice.lang;
+    if (voice) u.voice = voice;
+    u.lang = voice?.lang || (lang === 'de' ? 'de-DE' : 'en-US');
     u.rate = 0.9;
+    u.volume = 1;
     window.speechSynthesis.speak(u);
   } catch (e) {}
 }
@@ -959,14 +997,14 @@ function flagEl(lang) {
 }
 
 function modeLabelText(m) {
-  return { choice: 'Wähle die Übersetzung', type: 'Tippe die Übersetzung', sentence: 'Bilde den Satz', flash: 'Karteikarte' }[m];
+  return { choice: 'Wähle die Übersetzung', type: 'Tippe die Übersetzung', listen: 'Hör Check', flash: 'Karteikarte' }[m];
 }
 
 function speakerButton(text, lang) {
-  const available = !!(voiceCache.de || voiceCache.en);
+  const available = !!window.speechSynthesis;
   const btn = el('button', {
     class: 'speak-btn',
-    title: available ? 'Aussprechen' : 'Keine TTS-Stimme verfügbar',
+    title: available ? 'Anhören' : 'Keine TTS Stimme verfügbar',
     html: SVG_SPEAKER
   });
   if (!available) {
@@ -1052,27 +1090,27 @@ function renderQuestion() {
     checkBtn.addEventListener('click', onTypeCheck);
     card.appendChild(checkBtn);
     setTimeout(() => input.focus(), 60);
-  } else if (q.mode === 'sentence') {
+  } else if (q.mode === 'listen') {
     const promptEl = el('div', { class: 'sentence-prompt' });
-    promptEl.textContent = `„${q.prompt}"`;
+    promptEl.textContent = 'Hör dir das Wort an und wähle die Übersetzung.';
     card.appendChild(promptEl);
 
-    const speakerRow = el('div', { style: 'display:flex; justify-content:center; margin-bottom:18px;' });
+    const speakerRow = el('div', { style: 'display:flex; justify-content:center; margin-bottom:16px;' });
     speakerRow.appendChild(speakerButton(q.prompt, q.sourceLang));
     card.appendChild(speakerRow);
 
     const blankRow = el('div', { class: 'cloze-blank' });
     const blankIntro = el('div', { class: 'cloze-intro' });
-    blankIntro.textContent = `Welches Wort passt in die Lücke? (${q.targetLang === 'de' ? 'auf Deutsch' : 'auf Englisch'})`;
+    blankIntro.textContent = `Welche Übersetzung hast du gehört? (${q.targetLang === 'de' ? 'auf Deutsch' : 'auf Englisch'})`;
     card.appendChild(blankIntro);
-    blankRow.textContent = `„${q.blank}"`;
+    blankRow.textContent = `${q.sourceLang === 'en' ? 'Englisches' : 'Deutsches'} Wort: "${q.prompt}"`;
     card.appendChild(blankRow);
 
     const grid = el('div', { class: 'choice-grid' });
     q.options.forEach((opt, i) => {
       const btn = el('button', { class: 'choice-btn' });
       btn.textContent = opt;
-      btn.addEventListener('click', () => onClozeChoice(i, opt));
+      btn.addEventListener('click', () => onListenChoice(i, opt));
       grid.appendChild(btn);
     });
     card.appendChild(grid);
@@ -1141,7 +1179,7 @@ function onSkip() {
     }
     const checkBtn = document.getElementById('check-btn');
     if (checkBtn) checkBtn.remove();
-  } else if (q.mode === 'sentence') {
+  } else if (q.mode === 'listen') {
     document.querySelectorAll('.choice-btn').forEach((btn, idx) => {
       btn.disabled = true;
       const opt = q.options[idx];
@@ -1163,7 +1201,7 @@ function onSkip() {
   grade(false);
 }
 
-function onClozeChoice(i, picked) {
+function onListenChoice(i, picked) {
   if (state.answered) return;
   const q = currentQ;
   const acceptedLower = new Set((q.accepted || [q.correct]).map(s => s.toLowerCase()));
@@ -1217,7 +1255,7 @@ function updateStats() {
 
 function updatePhaseBar() {
   document.getElementById('phase-num').textContent = phase === 1 ? 'I' : 'II';
-  document.getElementById('phase-name').textContent = phase === 1 ? 'Vokabeln' : 'Sätze';
+  document.getElementById('phase-name').textContent = phase === 1 ? 'Vokabeln' : 'Hören';
   document.getElementById('phase-done').textContent = phaseDone;
   document.getElementById('phase-total').textContent = phaseTotal;
   const pct = phaseTotal > 0 ? (phaseDone / phaseTotal) * 100 : 0;
@@ -1289,14 +1327,10 @@ function onFlashReveal() {
   slot.appendChild(back);
 
   const action = document.getElementById('flash-action');
-  const row = el('div', { class: 'btn-row', id: 'flash-action' });
-  const noBtn = el('button', { class: 'btn btn-grade no', html: SVG_X + ' Wusste es nicht' });
-  noBtn.addEventListener('click', () => onFlashGrade(false));
-  const yesBtn = el('button', { class: 'btn btn-grade yes', html: SVG_CHECK + ' Konnte ich' });
-  yesBtn.addEventListener('click', () => onFlashGrade(true));
-  row.appendChild(noBtn);
-  row.appendChild(yesBtn);
-  action.replaceWith(row);
+  const nextBtn = el('button', { class: 'btn btn-primary', id: 'flash-action' });
+  nextBtn.textContent = 'Weiter';
+  nextBtn.addEventListener('click', () => onFlashGrade(true));
+  action.replaceWith(nextBtn);
 }
 
 function onFlashGrade(knew) {
@@ -1308,7 +1342,7 @@ function onFlashGrade(knew) {
 function showResult() {
   const q = currentQ;
   const slot = document.getElementById('result-slot');
-  const showExample = q.raw.exampleEn && q.mode !== 'sentence' && q.mode !== 'flash';
+  const showExample = q.raw.exampleEn && q.mode !== 'listen' && q.mode !== 'flash';
   const result = el('div', { class: `result ${state.correct ? 'right' : 'wrong'}` });
   const text = el('div', { class: 'result-text' });
   text.innerHTML = state.correct ? SVG_SPARK + ' Hervorragend' : SVG_X + ' Nicht ganz';
@@ -1352,7 +1386,7 @@ function startPhase1() {
   phaseTotal = phaseQueue.length;
   phaseDone = 0;
   updatePhaseBar();
-  showStageBanner('Phase I — Vokabeln', `Jedes der ${pool.length} Wörter wird in beide Richtungen geprüft, mit Auswahl, Tippen und Karteikarten.`, 'Los geht\'s', () => {
+  showStageBanner('Phase I Vokabeln', `Jedes der ${pool.length} Wörter wird in beide Richtungen geprüft, mit Auswahl und Tippen.`, 'Los geht\'s', () => {
     const next = phaseQueue.shift();
     currentQ = generateQuestion(next);
     renderQuestion();
@@ -1366,10 +1400,10 @@ function startPhase2() {
   phaseDone = 0;
   updatePhaseBar();
   if (phaseTotal === 0) {
-    showStageBanner('Keine Beispielsätze verfügbar', 'Für die geladenen Wörter konnten keine geeigneten Beispielsätze gefunden werden.', 'Frische Wörter ziehen', reloadPool);
+    showStageBanner('Keine Hör Checks verfügbar', 'Für die geladenen Wörter konnte keine Hör Runde gebaut werden.', 'Frische Wörter ziehen', reloadPool);
     return;
   }
-  showStageBanner('Phase II — Sätze bauen', `Jetzt baust du ${phaseTotal} Sätze zusammen — in beide Richtungen, aus den Wörtern die du gerade gelernt hast.`, 'Weiter', () => {
+  showStageBanner('Phase II Hör Check', `Jetzt hörst du ${phaseTotal} Wörter und wählst die passende Übersetzung.`, 'Weiter', () => {
     const next = phaseQueue.shift();
     currentQ = generateQuestion(next);
     renderQuestion();
@@ -1444,7 +1478,7 @@ async function init() {
   document.getElementById('retry-btn').addEventListener('click', init);
   document.getElementById('refresh-btn').addEventListener('click', reloadPool);
   if (window.speechSynthesis) {
-    window.speechSynthesis.onvoiceschanged = () => { voicesReady = false; refreshVoices(); };
+    window.speechSynthesis.onvoiceschanged = refreshVoices;
     refreshVoices();
   }
   await reloadPool();
@@ -1454,3 +1488,4 @@ init();
 </script>
 </body>
 </html>
+
