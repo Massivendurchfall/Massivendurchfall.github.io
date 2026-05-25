@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="UTF-8" />
@@ -199,88 +199,29 @@
     color: var(--bordeaux); font-size: 18px;
   }
 
-  .sentence-prompt {
-    font-family: 'Fraunces', serif; font-style: italic;
-    font-size: 26px; text-align: center; line-height: 1.4;
+  .def-block {
+    background: var(--cream);
+    border-left: 4px solid var(--bordeaux);
+    padding: 22px 24px;
+    border-radius: 2px;
     margin-bottom: 28px;
   }
-  .cloze-intro {
-    text-align: center;
+  .def-intro {
+    font-family: 'Fraunces', serif; font-style: italic;
+    color: var(--muted); font-size: 14px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .def-text {
+    font-family: 'Fraunces', serif;
+    font-size: 22px; line-height: 1.45;
+    color: var(--ink);
+  }
+  .def-target {
+    text-align: center; margin-bottom: 22px;
     font-family: 'Fraunces', serif; font-style: italic;
     color: var(--muted); font-size: 16px;
-    margin-bottom: 12px;
   }
-  .cloze-blank {
-    font-family: 'Fraunces', serif;
-    font-size: 24px;
-    text-align: center; line-height: 1.5;
-    margin-bottom: 28px;
-    padding: 18px 20px;
-    background: var(--cream);
-    border-left: 3px solid var(--bordeaux);
-    border-radius: 2px;
-    color: var(--ink-soft);
-  }
-  .sentence-target {
-    min-height: 70px; padding: 14px;
-    background: var(--cream);
-    border: 1px dashed var(--rule);
-    border-radius: 4px;
-    display: flex; flex-wrap: wrap; gap: 8px;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-  .sentence-placeholder {
-    color: #a89876; font-style: italic; font-family: 'Fraunces', serif;
-    margin: auto;
-  }
-  .token {
-    padding: 9px 14px; border-radius: 4px;
-    font-size: 18px; cursor: pointer; font-family: inherit; font-weight: 500;
-    border: 1px solid var(--rule);
-    background: var(--paper); color: var(--ink);
-    transition: transform 0.12s;
-    animation: pop 0.2s ease;
-  }
-  @keyframes pop { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-  .token:hover:not(:disabled) { transform: translateY(-2px); }
-  .token.picked { background: var(--forest); color: var(--cream); border-color: var(--forest); }
-  .token:disabled { cursor: default; opacity: 0.5; }
-
-  .flash-front { text-align: center; margin-bottom: 16px; }
-  .flash-word {
-    display: flex; align-items: center; justify-content: center; gap: 14px;
-    font-family: 'Fraunces', serif;
-    font-size: 64px;
-    font-weight: 600; letter-spacing: 0; line-height: 1;
-    flex-wrap: wrap;
-  }
-  .flash-back {
-    border-top: 1px solid var(--rule-soft);
-    border-bottom: 1px solid var(--rule-soft);
-    padding: 20px 0; margin: 0 0 20px;
-    animation: revealDown 0.3s ease;
-  }
-  @keyframes revealDown {
-    from { opacity: 0; max-height: 0; padding-top: 0; padding-bottom: 0; }
-    to { opacity: 1; max-height: 600px; padding-top: 20px; padding-bottom: 20px; }
-  }
-  .flash-answer {
-    font-family: 'Fraunces', serif; font-size: 38px; font-weight: 600;
-    text-align: center; margin-bottom: 12px; color: var(--bordeaux);
-  }
-  .definition {
-    font-family: 'Fraunces', serif; font-style: italic;
-    text-align: center; color: var(--ink-soft); font-size: 18px;
-    margin-bottom: 14px;
-  }
-  .example-block {
-    background: var(--cream); padding: 14px 18px;
-    border-left: 3px solid var(--bordeaux);
-    border-radius: 2px;
-  }
-  .example-en { font-family: 'Fraunces', serif; font-size: 18px; margin-bottom: 4px; }
-  .example-de { font-family: 'Fraunces', serif; font-style: italic; font-size: 17px; color: var(--ink-soft); }
 
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
@@ -296,12 +237,6 @@
     background: transparent; color: var(--ink);
     border: 1px solid var(--rule);
   }
-  .btn-grade {
-    background: var(--paper); border: 2px solid; flex: 1;
-  }
-  .btn-grade.no { color: var(--bordeaux); border-color: var(--bordeaux); }
-  .btn-grade.yes { color: var(--forest); border-color: var(--forest); }
-  .btn-row { display: flex; gap: 12px; }
   .mt-16 { margin-top: 16px; }
 
   .result {
@@ -315,8 +250,6 @@
     font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600;
     display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
   }
-  .result-example { font-size: 17px; line-height: 1.5; margin-bottom: 14px; }
-  .result-example .de { opacity: 0.78; font-style: italic; }
   .continue {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     padding: 15px 22px;
@@ -439,15 +372,14 @@
     .dir-row { width: 100%; justify-content: center; }
     .mode-label { width: 100%; text-align: center; font-size: 16px; }
     .prompt-word { font-size: 40px; gap: 10px; }
-    .flash-word { font-size: 44px; }
     .speak-btn { width: 46px; height: 46px; }
     .pos { font-size: 16px; margin-bottom: 24px; }
     .choice-grid { grid-template-columns: 1fr; gap: 10px; }
     .choice-btn { min-height: 68px; padding: 18px 16px; font-size: 20px; }
     .input { font-size: 20px; padding: 18px 16px; }
-    .sentence-prompt { font-size: 21px; margin-bottom: 20px; }
-    .cloze-intro { font-size: 15px; }
-    .cloze-blank { font-size: 20px; padding: 16px; margin-bottom: 20px; }
+    .def-block { padding: 18px 18px; margin-bottom: 22px; }
+    .def-text { font-size: 19px; }
+    .def-target { font-size: 15px; }
     .btn { font-size: 17px; padding: 16px 18px; }
     .continue { font-size: 15px; }
     .pool-refresh { font-size: 13px; line-height: 1.3; }
@@ -551,103 +483,23 @@ const COMMON_SEED_WORDS = [
   'family','school','music','friend','water','house','book','bread','cloud','beach',
   'corner','dancer','engine','fabric','glance','helmet','island','jacket','kettle','lantern',
   'marble','needle','orchard','pillow','quill','rabbit','saddle','tunnel','velvet','wagon',
-  'breakfast','answer','question','journey','picture','language','animal','flower','painting','library',
-  'butter','silver','laughter','distance','daughter','brother','sister','mother','father','neighbor'
+  'breakfast','answer','question','picture','language','animal','painting','library',
+  'butter','distance','daughter','brother','sister','mother','father','neighbor'
 ];
 
 const POOL_SIZE = 20;
 
-const CLOZE_TEMPLATES = {
-  noun: [
-    { en: ['I see a', '___', 'over there.'], de: ['Ich sehe da drüben einen', '___', '.'] },
-    { en: ['This is my', '___', '.'], de: ['Das ist mein', '___', '.'] },
-    { en: ['She bought a', '___', 'yesterday.'], de: ['Sie hat gestern einen', '___', 'gekauft.'] },
-    { en: ['Where is the', '___', '?'], de: ['Wo ist der', '___', '?'] },
-    { en: ['I have a', '___', 'at home.'], de: ['Ich habe einen', '___', 'zu Hause.'] },
-    { en: ['He needs a new', '___', '.'], de: ['Er braucht einen neuen', '___', '.'] },
-    { en: ['The', '___', 'is broken.'], de: ['Der', '___', 'ist kaputt.'] },
-    { en: ['We talked about the', '___', '.'], de: ['Wir haben über den', '___', 'gesprochen.'] },
-  ],
-  verb: [
-    { en: ['I want to', '___', 'tomorrow.'], de: ['Ich möchte morgen', '___', '.'] },
-    { en: ['We can', '___', 'together.'], de: ['Wir können zusammen', '___', '.'] },
-    { en: ['She likes to', '___', 'on weekends.'], de: ['Sie mag es, am Wochenende zu', '___', '.'] },
-    { en: ['You should', '___', 'now.'], de: ['Du solltest jetzt', '___', '.'] },
-    { en: ['They will', '___', 'next week.'], de: ['Sie werden nächste Woche', '___', '.'] },
-    { en: ['Let me', '___', 'first.'], de: ['Lass mich zuerst', '___', '.'] },
-    { en: ['I need to', '___', 'today.'], de: ['Ich muss heute', '___', '.'] },
-  ],
-  adjective: [
-    { en: ['The house is very', '___', '.'], de: ['Das Haus ist sehr', '___', '.'] },
-    { en: ['She looks', '___', 'today.'], de: ['Sie sieht heute', '___', 'aus.'] },
-    { en: ['This car is too', '___', '.'], de: ['Dieses Auto ist zu', '___', '.'] },
-    { en: ['My friend is always', '___', '.'], de: ['Mein Freund ist immer', '___', '.'] },
-    { en: ['The weather was', '___', 'yesterday.'], de: ['Das Wetter war gestern', '___', '.'] },
-    { en: ['He seems', '___', 'right now.'], de: ['Er wirkt gerade', '___', '.'] },
-  ],
-  adverb: [
-    { en: ['She speaks', '___', '.'], de: ['Sie spricht', '___', '.'] },
-    { en: ['He runs', '___', 'every morning.'], de: ['Er läuft jeden Morgen', '___', '.'] },
-    { en: ['They work', '___', 'at the office.'], de: ['Sie arbeiten', '___', 'im Büro.'] },
-    { en: ['I answered', '___', '.'], de: ['Ich habe', '___', 'geantwortet.'] },
-  ],
-  default: [
-    { en: ['The word here is', '___', '.'], de: ['Das Wort hier ist', '___', '.'] },
-    { en: ['I am thinking about', '___', '.'], de: ['Ich denke über', '___', 'nach.'] },
-    { en: ['We talked about', '___', '.'], de: ['Wir haben über', '___', 'gesprochen.'] },
-  ],
-};
-
-function getPosKey(pos) {
-  const p = (pos || '').toLowerCase();
-  if (p.includes('noun')) return 'noun';
-  if (p.includes('verb')) return 'verb';
-  if (p.includes('adjective')) return 'adjective';
-  if (p.includes('adverb')) return 'adverb';
-  return 'default';
-}
-
-function buildClozeFor(word, posKey) {
-  const bucket = CLOZE_TEMPLATES[posKey] || CLOZE_TEMPLATES.default;
-  const tpl = bucket[Math.floor(Math.random() * bucket.length)];
-  const renderEn = (filler) => tpl.en.map(p => p === '___' ? filler : p).join(' ').replace(/\s+([.,!?])/g, '$1');
-  const renderDe = (filler) => tpl.de.map(p => p === '___' ? filler : p).join(' ').replace(/\s+([.,!?])/g, '$1');
-  return { renderEn, renderDe };
-}
-
-let pool = [];
-let phase = 1;
-let phaseQueue = [];
-let phaseTotal = 0;
-let phaseDone = 0;
-let currentQ = null;
-let streak = 0;
-let bestStreak = 0;
-let state = { answered: false, correct: null };
-
-function fetchWithTimeout(url, ms = 7000) {
-  return Promise.race([
-    fetch(url),
-    new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))
-  ]);
-}
-
 const STOP_WORDS = new Set([
   'the','and','for','are','but','not','you','all','can','had','her','was','one','our','out',
-  'day','get','has','him','his','how','its','may','new','now','old','see','two','way','who',
+  'day','get','has','him','his','how','its','may','now','old','see','two','way','who',
   'boy','did','man','men','put','say','she','too','use','any','few','let','own','top','try',
-  'why','yes','far','off','run','set','sit','ten','win','yet','ago','air','arm','art','ask',
-  'bad','bag','bed','big','bit','box','buy','car','cup','cut','dad','die','dog','eat','egg',
-  'end','eye','fix','fly','fun','god','got','gun','guy','hat','hit','hot','ice','job','key',
-  'kid','law','lay','leg','lie','lot','low','map','mom','mrs','net','oil','pay','red','sir',
-  'son','sun','tax','tea','war','yet','add','any','bus','due','low','mid','non','per','via',
-  'tom','jim','bob','sam','joe','ben','ann','sue','him','her','his','its','our','their','your',
+  'why','yes','off','set','sit','ten','win','yet','ago','add','due','low','mid','non','per','via',
+  'tom','jim','bob','sam','joe','ben','ann','sue','your','yours',
   'this','that','these','those','what','when','where','which','while','with','from','have','will','would',
   'could','should','about','after','again','also','been','before','being','between','both',
-  'doing','does','down','each','even','from','further','here','into','just','more','most','only',
+  'doing','does','down','each','from','further','into','just','more','most','only',
   'other','over','same','some','such','than','then','there','they','through','under','until',
-  'very','were','what','where','will','with','would','your','yours','about','above','below',
-  'mister','okay','well','still','quite','already','almost','among'
+  'very','were','about','above','below','mister','among','their','them'
 ]);
 
 const FREQUENCY_LISTS = [
@@ -686,6 +538,13 @@ async function fetchSeedWords(n) {
   return shuffle([...COMMON_SEED_WORDS]).slice(0, n);
 }
 
+function fetchWithTimeout(url, ms = 7000) {
+  return Promise.race([
+    fetch(url),
+    new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))
+  ]);
+}
+
 async function fetchDictionary(word) {
   try {
     const r = await fetchWithTimeout(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`, 6000);
@@ -693,19 +552,21 @@ async function fetchDictionary(word) {
     const data = await r.json();
     if (!Array.isArray(data) || !data[0]) return null;
     const entry = data[0];
-    let pos = null, definition = null, example = null;
+    let pos = null, definition = null;
     for (const m of (entry.meanings || [])) {
       if (!pos) pos = m.partOfSpeech;
       for (const d of (m.definitions || [])) {
-        if (!definition) definition = d.definition;
-        if (d.example && !example) {
-          const wc = d.example.split(/\s+/).length;
-          if (wc >= 3 && wc <= 10) { example = d.example; break; }
-        }
+        const txt = (d.definition || '').trim();
+        if (!txt) continue;
+        const wc = txt.split(/\s+/).length;
+        if (wc < 3 || wc > 18) continue;
+        if (txt.toLowerCase().includes(word.toLowerCase())) continue;
+        definition = txt;
+        break;
       }
-      if (example) break;
+      if (definition) break;
     }
-    return { pos, definition, example };
+    return { pos, definition };
   } catch (e) { return null; }
 }
 
@@ -736,11 +597,6 @@ async function translate(text, direction) {
   } catch (e) { return null; }
 }
 
-async function translateSimple(text, direction) {
-  const r = await translate(text, direction);
-  return r ? r.primary : null;
-}
-
 async function buildPool(size) {
   document.getElementById('progress-total').textContent = size;
   setDetail('Hole englische Wörter…');
@@ -755,7 +611,7 @@ async function buildPool(size) {
     if (seen.has(w)) continue;
     if (STOP_WORDS.has(w)) continue;
     seen.add(w);
-    setDetail(`„${w}“ wird geprüft…`);
+    setDetail(`„${w}" wird geprüft…`);
 
     const [dict, deResult] = await Promise.all([fetchDictionary(w), translate(w, 'en-de')]);
     if (!deResult) continue;
@@ -779,6 +635,12 @@ async function buildPool(size) {
       .map(t => t.toLowerCase());
     if (!enAll.includes(w)) enAll.unshift(w);
 
+    let definitionDe = null;
+    if (dict?.definition) {
+      const defTrans = await translate(dict.definition, 'en-de');
+      if (defTrans) definitionDe = defTrans.primary;
+    }
+
     const posKey = getPosKey(dict?.pos);
 
     newPool.push({
@@ -789,12 +651,22 @@ async function buildPool(size) {
       pos: dict?.pos || null,
       posKey,
       definition: dict?.definition || null,
+      definitionDe,
     });
     document.getElementById('progress-done').textContent = newPool.length;
     document.getElementById('progress-fill').style.width = ((newPool.length / size) * 100) + '%';
   }
   setDetail('');
   return newPool;
+}
+
+function getPosKey(pos) {
+  const p = (pos || '').toLowerCase();
+  if (p.includes('noun')) return 'noun';
+  if (p.includes('verb')) return 'verb';
+  if (p.includes('adjective')) return 'adjective';
+  if (p.includes('adverb')) return 'adverb';
+  return 'default';
 }
 
 function setDetail(s) {
@@ -817,6 +689,16 @@ function pickDistractors(correctWord, key, allAccepted, n) {
   return shuffle(filtered).slice(0, n).map(p => p[key]);
 }
 
+let pool = [];
+let phase = 1;
+let phaseQueue = [];
+let phaseTotal = 0;
+let phaseDone = 0;
+let currentQ = null;
+let streak = 0;
+let bestStreak = 0;
+let state = { answered: false, correct: null };
+
 function buildPhase1Queue() {
   const modes = ['choice', 'type'];
   const items = [];
@@ -830,8 +712,13 @@ function buildPhase1Queue() {
 function buildPhase2Queue() {
   const items = [];
   for (const w of pool) {
-    items.push({ word: w, dir: 'en-de', mode: 'listen' });
-    items.push({ word: w, dir: 'de-en', mode: 'listen' });
+    if (w.definitionDe && w.definition) {
+      items.push({ word: w, dir: 'def-en', mode: 'definition' });
+      items.push({ word: w, dir: 'def-de', mode: 'definition' });
+    } else {
+      items.push({ word: w, dir: 'en-de', mode: 'type' });
+      items.push({ word: w, dir: 'de-en', mode: 'type' });
+    }
   }
   return shuffle(items);
 }
@@ -841,31 +728,31 @@ function generateQuestion(item) {
   const dir = item.dir;
   const mode = item.mode;
 
-  if (mode === 'listen') {
-    const sourceLang = dir === 'en-de' ? 'en' : 'de';
-    const targetLang = dir === 'en-de' ? 'de' : 'en';
-    const sourceWord = sourceLang === 'en' ? w.en : w.de;
-    const targetWord = targetLang === 'en' ? w.en : w.de;
-    const targetAccepted = targetLang === 'en' ? (w.enAll || [w.en]) : (w.deAll || [w.de]);
-    const acceptedLower = new Set(targetAccepted.map(s => s.toLowerCase()));
+  if (mode === 'definition') {
+    const defLang = dir === 'def-en' ? 'en' : 'de';
+    const answerLang = defLang;
+    const defText = defLang === 'en' ? w.definition : w.definitionDe;
+    const answerWord = answerLang === 'en' ? w.en : w.de;
+    const accepted = answerLang === 'en' ? (w.enAll || [w.en]) : (w.deAll || [w.de]);
+    const acceptedLower = new Set(accepted.map(s => s.toLowerCase()));
     const distractorPool = pool
-      .filter(p => p.posKey === w.posKey)
-      .map(p => targetLang === 'en' ? p.en : p.de)
+      .filter(p => p.posKey === w.posKey || w.posKey === 'default')
+      .map(p => answerLang === 'en' ? p.en : p.de)
       .filter(t => t && !acceptedLower.has(t.toLowerCase()));
     let distractors = shuffle(distractorPool).slice(0, 3);
     if (distractors.length < 3) {
-      const fallbackPool = pool
-        .map(p => targetLang === 'en' ? p.en : p.de)
+      const fallback = pool
+        .map(p => answerLang === 'en' ? p.en : p.de)
         .filter(t => t && !acceptedLower.has(t.toLowerCase()) && !distractors.includes(t));
-      distractors = [...distractors, ...shuffle(fallbackPool).slice(0, 3 - distractors.length)];
+      distractors = [...distractors, ...shuffle(fallback).slice(0, 3 - distractors.length)];
     }
-    const options = shuffle([targetWord, ...distractors]);
-
+    const options = shuffle([answerWord, ...distractors]);
     return {
-      mode, dir, sourceLang, targetLang,
-      prompt: sourceWord,
-      correct: targetWord,
-      accepted: targetAccepted,
+      mode, dir,
+      defLang, answerLang,
+      definition: defText,
+      correct: answerWord,
+      accepted,
       options,
       raw: w,
     };
@@ -985,10 +872,10 @@ function el(tag, attrs = {}, ...children) {
 
 const SVG_ARROW = `<svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
 const SVG_SPEAKER = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`;
-const SVG_CHECK = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
 const SVG_X = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
 const SVG_SPARK = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>`;
 const SVG_RIGHT = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
+const SVG_BOOK = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>`;
 
 function flagEl(lang) {
   const flag = el('span', { class: `flag flag-${lang}` });
@@ -997,7 +884,12 @@ function flagEl(lang) {
 }
 
 function modeLabelText(m) {
-  return { choice: 'Wähle die Übersetzung', type: 'Tippe die Übersetzung', listen: 'Hör Check', flash: 'Karteikarte' }[m];
+  return {
+    choice: 'Wähle die Übersetzung',
+    type: 'Tippe die Übersetzung',
+    definition: 'Welches Wort wird beschrieben?',
+    flash: 'Karteikarte',
+  }[m];
 }
 
 function speakerButton(text, lang) {
@@ -1023,24 +915,35 @@ function renderQuestion() {
   const host = document.getElementById('card-host');
   host.innerHTML = '';
 
-  const fromLang = q.dir === 'en-de' ? 'en' : 'de';
-  const toLang = q.dir === 'en-de' ? 'de' : 'en';
-
   const card = el('div', { class: 'card', id: 'card' });
 
   const head = el('div', { class: 'card-head' });
-  const dirRow = el('div', { class: 'dir-row' });
-  dirRow.appendChild(flagEl(fromLang));
-  const arrow = el('span', { html: SVG_ARROW });
-  dirRow.appendChild(arrow.firstChild);
-  dirRow.appendChild(flagEl(toLang));
-  head.appendChild(dirRow);
+
+  if (q.mode === 'definition') {
+    const tag = el('div', { class: 'dir-row' });
+    const langTag = el('span', { class: `flag flag-${q.defLang}` });
+    langTag.textContent = q.defLang === 'en' ? '🇺🇸 Definition' : '🇩🇪 Definition';
+    tag.appendChild(langTag);
+    head.appendChild(tag);
+  } else {
+    const fromLang = q.dir === 'en-de' ? 'en' : 'de';
+    const toLang = q.dir === 'en-de' ? 'de' : 'en';
+    const dirRow = el('div', { class: 'dir-row' });
+    dirRow.appendChild(flagEl(fromLang));
+    const arrow = el('span', { html: SVG_ARROW });
+    dirRow.appendChild(arrow.firstChild);
+    dirRow.appendChild(flagEl(toLang));
+    head.appendChild(dirRow);
+  }
+
   const modeLabel = el('div', { class: 'mode-label' });
   modeLabel.textContent = modeLabelText(q.mode);
   head.appendChild(modeLabel);
   card.appendChild(head);
 
   if (q.mode === 'choice') {
+    const fromLang = q.dir === 'en-de' ? 'en' : 'de';
+    const toLang = q.dir === 'en-de' ? 'de' : 'en';
     const promptWord = el('div', { class: 'prompt-word' });
     const span = el('span');
     span.textContent = q.prompt;
@@ -1063,6 +966,8 @@ function renderQuestion() {
     });
     card.appendChild(grid);
   } else if (q.mode === 'type') {
+    const fromLang = q.dir === 'en-de' ? 'en' : 'de';
+    const toLang = q.dir === 'en-de' ? 'de' : 'en';
     const promptWord = el('div', { class: 'prompt-word' });
     const span = el('span');
     span.textContent = q.prompt;
@@ -1090,78 +995,67 @@ function renderQuestion() {
     checkBtn.addEventListener('click', onTypeCheck);
     card.appendChild(checkBtn);
     setTimeout(() => input.focus(), 60);
-  } else if (q.mode === 'listen') {
-    const promptEl = el('div', { class: 'sentence-prompt' });
-    promptEl.textContent = 'Hör dir das Wort an und wähle die Übersetzung.';
-    card.appendChild(promptEl);
+  } else if (q.mode === 'definition') {
+    const block = el('div', { class: 'def-block' });
+    const intro = el('div', { class: 'def-intro' });
+    intro.innerHTML = SVG_BOOK + ' &nbsp; ' + (q.defLang === 'en' ? 'Definition' : 'Beschreibung');
+    block.appendChild(intro);
+    const dtext = el('div', { class: 'def-text' });
+    dtext.textContent = q.definition;
+    block.appendChild(dtext);
+    card.appendChild(block);
 
-    const speakerRow = el('div', { style: 'display:flex; justify-content:center; margin-bottom:16px;' });
-    speakerRow.appendChild(speakerButton(q.prompt, q.sourceLang));
-    card.appendChild(speakerRow);
-
-    const blankRow = el('div', { class: 'cloze-blank' });
-    const blankIntro = el('div', { class: 'cloze-intro' });
-    blankIntro.textContent = `Welche Übersetzung hast du gehört? (${q.targetLang === 'de' ? 'auf Deutsch' : 'auf Englisch'})`;
-    card.appendChild(blankIntro);
-    blankRow.textContent = `${q.sourceLang === 'en' ? 'Englisches' : 'Deutsches'} Wort: "${q.prompt}"`;
-    card.appendChild(blankRow);
+    const target = el('div', { class: 'def-target' });
+    target.textContent = `Welches ${q.answerLang === 'en' ? 'englische' : 'deutsche'} Wort wird hier beschrieben?`;
+    card.appendChild(target);
 
     const grid = el('div', { class: 'choice-grid' });
     q.options.forEach((opt, i) => {
       const btn = el('button', { class: 'choice-btn' });
       btn.textContent = opt;
-      btn.addEventListener('click', () => onListenChoice(i, opt));
+      btn.addEventListener('click', () => onDefinitionChoice(i, opt));
       grid.appendChild(btn);
     });
     card.appendChild(grid);
     card.appendChild(el('div', { id: 'reveal-slot' }));
-  } else if (q.mode === 'flash') {
-    const front = el('div', { class: 'flash-front' });
-    const word = el('div', { class: 'flash-word' });
-    const span = el('span');
-    span.textContent = q.raw[q.promptKey];
-    word.appendChild(span);
-    word.appendChild(speakerButton(q.raw[q.promptKey], q.promptKey));
-    front.appendChild(word);
-    if (q.raw.pos) {
-      const pos = el('div', { class: 'pos' });
-      pos.textContent = q.raw.pos;
-      front.appendChild(pos);
-    }
-    card.appendChild(front);
-    card.appendChild(el('div', { id: 'flash-reveal' }));
-    const actionBtn = el('button', { class: 'btn btn-primary', id: 'flash-action' });
-    actionBtn.textContent = 'Aufdecken';
-    actionBtn.addEventListener('click', onFlashReveal);
-    card.appendChild(actionBtn);
   }
 
   card.appendChild(el('div', { id: 'result-slot' }));
 
-  if (q.mode !== 'flash') {
-    const skipRow = el('div', { class: 'skip-row', id: 'skip-row' });
-    const skipBtn = el('button', { class: 'skip-btn' });
-    skipBtn.textContent = 'Lösung zeigen';
-    skipBtn.addEventListener('click', onSkip);
-    skipRow.appendChild(skipBtn);
-    card.appendChild(skipRow);
-  }
+  const skipRow = el('div', { class: 'skip-row', id: 'skip-row' });
+  const skipBtn = el('button', { class: 'skip-btn' });
+  skipBtn.textContent = 'Lösung zeigen';
+  skipBtn.addEventListener('click', onSkip);
+  skipRow.appendChild(skipBtn);
+  card.appendChild(skipRow);
 
   host.appendChild(card);
+}
+
+function markAllChoices(q, pickedIdx) {
+  const acceptedLower = new Set((q.accepted || [q.correct]).map(s => s.toLowerCase()));
+  document.querySelectorAll('.choice-btn').forEach((btn, idx) => {
+    btn.disabled = true;
+    const opt = q.options[idx];
+    if (acceptedLower.has(opt.toLowerCase())) btn.classList.add('correct');
+    else if (idx === pickedIdx) btn.classList.add('wrong');
+    else btn.classList.add('dim');
+  });
 }
 
 function onSkip() {
   if (state.answered) return;
   const q = currentQ;
 
-  if (q.mode === 'choice') {
-    document.querySelectorAll('.choice-btn').forEach((btn, idx) => {
-      btn.disabled = true;
-      const opt = q.options[idx];
-      const acceptedLower = new Set((q.accepted || [q.correct]).map(s => s.toLowerCase()));
-      if (acceptedLower.has(opt.toLowerCase())) btn.classList.add('correct');
-      else btn.classList.add('dim');
-    });
+  if (q.mode === 'choice' || q.mode === 'definition') {
+    markAllChoices(q, -1);
+    const reveal = document.getElementById('reveal-slot');
+    if (reveal) {
+      const div = el('div', { class: 'correct-reveal' });
+      div.innerHTML = 'Richtig: <strong></strong>';
+      div.querySelector('strong').textContent = q.correct;
+      reveal.appendChild(div);
+    }
   } else if (q.mode === 'type') {
     const input = document.getElementById('type-input');
     if (input) {
@@ -1179,40 +1073,17 @@ function onSkip() {
     }
     const checkBtn = document.getElementById('check-btn');
     if (checkBtn) checkBtn.remove();
-  } else if (q.mode === 'listen') {
-    document.querySelectorAll('.choice-btn').forEach((btn, idx) => {
-      btn.disabled = true;
-      const opt = q.options[idx];
-      const acceptedLower = new Set((q.accepted || [q.correct]).map(s => s.toLowerCase()));
-      if (acceptedLower.has(opt.toLowerCase())) btn.classList.add('correct');
-      else btn.classList.add('dim');
-    });
-    const reveal = document.getElementById('reveal-slot');
-    if (reveal) {
-      const div = el('div', { class: 'correct-reveal' });
-      div.innerHTML = 'Richtig: <strong></strong>';
-      div.querySelector('strong').textContent = q.correct;
-      reveal.appendChild(div);
-    }
   }
 
-  const skipRow = document.getElementById('skip-row');
-  if (skipRow) skipRow.remove();
   grade(false);
 }
 
-function onListenChoice(i, picked) {
+function onDefinitionChoice(i, picked) {
   if (state.answered) return;
   const q = currentQ;
   const acceptedLower = new Set((q.accepted || [q.correct]).map(s => s.toLowerCase()));
   const isRight = acceptedLower.has(picked.toLowerCase());
-  document.querySelectorAll('.choice-btn').forEach((btn, idx) => {
-    btn.disabled = true;
-    const opt = q.options[idx];
-    if (acceptedLower.has(opt.toLowerCase())) btn.classList.add('correct');
-    else if (idx === i) btn.classList.add('wrong');
-    else btn.classList.add('dim');
-  });
+  markAllChoices(q, i);
   if (!isRight) {
     const reveal = document.getElementById('reveal-slot');
     if (reveal) {
@@ -1255,7 +1126,7 @@ function updateStats() {
 
 function updatePhaseBar() {
   document.getElementById('phase-num').textContent = phase === 1 ? 'I' : 'II';
-  document.getElementById('phase-name').textContent = phase === 1 ? 'Vokabeln' : 'Hören';
+  document.getElementById('phase-name').textContent = phase === 1 ? 'Vokabeln' : 'Definitionen';
   document.getElementById('phase-done').textContent = phaseDone;
   document.getElementById('phase-total').textContent = phaseTotal;
   const pct = phaseTotal > 0 ? (phaseDone / phaseTotal) * 100 : 0;
@@ -1268,13 +1139,7 @@ function onChoice(i, btnEl) {
   const picked = q.options[i];
   const acceptedLower = new Set((q.accepted || [q.correct]).map(s => s.toLowerCase()));
   const isRight = acceptedLower.has(picked.toLowerCase());
-  document.querySelectorAll('.choice-btn').forEach((btn, idx) => {
-    btn.disabled = true;
-    const opt = q.options[idx];
-    if (acceptedLower.has(opt.toLowerCase())) btn.classList.add('correct');
-    else if (idx === i) btn.classList.add('wrong');
-    else btn.classList.add('dim');
-  });
+  markAllChoices(q, i);
   grade(isRight);
 }
 
@@ -1300,65 +1165,12 @@ function onTypeCheck() {
   grade(isRight);
 }
 
-function onFlashReveal() {
-  const q = currentQ;
-  const slot = document.getElementById('flash-reveal');
-  const back = el('div', { class: 'flash-back' });
-  const ans = el('div', { class: 'flash-answer' });
-  ans.textContent = q.raw[q.answerKey];
-  back.appendChild(ans);
-  if (q.raw.definition) {
-    const def = el('div', { class: 'definition' });
-    def.textContent = `„${q.raw.definition}"`;
-    back.appendChild(def);
-  }
-  if (q.raw.exampleEn) {
-    const block = el('div', { class: 'example-block' });
-    const en = el('div', { class: 'example-en' });
-    en.textContent = q.raw.exampleEn;
-    block.appendChild(en);
-    if (q.raw.exampleDe) {
-      const de = el('div', { class: 'example-de' });
-      de.textContent = q.raw.exampleDe;
-      block.appendChild(de);
-    }
-    back.appendChild(block);
-  }
-  slot.appendChild(back);
-
-  const action = document.getElementById('flash-action');
-  const nextBtn = el('button', { class: 'btn btn-primary', id: 'flash-action' });
-  nextBtn.textContent = 'Weiter';
-  nextBtn.addEventListener('click', () => onFlashGrade(true));
-  action.replaceWith(nextBtn);
-}
-
-function onFlashGrade(knew) {
-  const action = document.getElementById('flash-action');
-  if (action) action.remove();
-  grade(knew);
-}
-
 function showResult() {
-  const q = currentQ;
   const slot = document.getElementById('result-slot');
-  const showExample = q.raw.exampleEn && q.mode !== 'listen' && q.mode !== 'flash';
   const result = el('div', { class: `result ${state.correct ? 'right' : 'wrong'}` });
   const text = el('div', { class: 'result-text' });
   text.innerHTML = state.correct ? SVG_SPARK + ' Hervorragend' : SVG_X + ' Nicht ganz';
   result.appendChild(text);
-  if (showExample) {
-    const ex = el('div', { class: 'result-example' });
-    const en = el('div');
-    en.textContent = q.raw.exampleEn;
-    ex.appendChild(en);
-    if (q.raw.exampleDe) {
-      const de = el('div', { class: 'de' });
-      de.textContent = q.raw.exampleDe;
-      ex.appendChild(de);
-    }
-    result.appendChild(ex);
-  }
   const cont = el('button', { class: 'continue' });
   cont.innerHTML = 'Weiter ' + SVG_RIGHT;
   cont.addEventListener('click', advance);
@@ -1386,11 +1198,16 @@ function startPhase1() {
   phaseTotal = phaseQueue.length;
   phaseDone = 0;
   updatePhaseBar();
-  showStageBanner('Phase I Vokabeln', `Jedes der ${pool.length} Wörter wird in beide Richtungen geprüft, mit Auswahl und Tippen.`, 'Los geht\'s', () => {
-    const next = phaseQueue.shift();
-    currentQ = generateQuestion(next);
-    renderQuestion();
-  });
+  showStageBanner(
+    'Phase I — Vokabeln',
+    `Jedes der ${pool.length} Wörter wird in beide Richtungen geprüft, mit Auswahl und Tippen.`,
+    'Los geht\'s',
+    () => {
+      const next = phaseQueue.shift();
+      currentQ = generateQuestion(next);
+      renderQuestion();
+    }
+  );
 }
 
 function startPhase2() {
@@ -1400,14 +1217,20 @@ function startPhase2() {
   phaseDone = 0;
   updatePhaseBar();
   if (phaseTotal === 0) {
-    showStageBanner('Keine Hör Checks verfügbar', 'Für die geladenen Wörter konnte keine Hör Runde gebaut werden.', 'Frische Wörter ziehen', reloadPool);
+    showStageBanner('Keine Definitionen verfügbar', 'Für die geladenen Wörter konnten keine Beschreibungen gefunden werden.', 'Frische Wörter ziehen', reloadPool);
     return;
   }
-  showStageBanner('Phase II Hör Check', `Jetzt hörst du ${phaseTotal} Wörter und wählst die passende Übersetzung.`, 'Weiter', () => {
-    const next = phaseQueue.shift();
-    currentQ = generateQuestion(next);
-    renderQuestion();
-  });
+  const withDefs = pool.filter(p => p.definition && p.definitionDe).length;
+  showStageBanner(
+    'Phase II — Definitionen',
+    `Du liest eine Definition und wählst das passende Wort. ${withDefs} von ${pool.length} Wörtern haben eine Beschreibung, der Rest wird per Tippen geübt.`,
+    'Weiter',
+    () => {
+      const next = phaseQueue.shift();
+      currentQ = generateQuestion(next);
+      renderQuestion();
+    }
+  );
 }
 
 function showFinish() {
@@ -1488,4 +1311,3 @@ init();
 </script>
 </body>
 </html>
-
