@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lexikon — Ein Vokabel-Journal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #f4ebd9;
+    --cream-2: #ede1c6;
+    --paper: #fbf5e7;
+    --ink: #2a1e10;
+    --ink-soft: #5a4a30;
+    --muted: #8a7a5c;
+    --rule: #d8c9a3;
+    --rule-soft: #e5dcc1;
+    --bordeaux: #7a1c1c;
+    --forest: #1c3d2e;
+    --ember: #c2410c;
+    --gold: #e6c879;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 1px 1px, rgba(122,28,28,0.06) 1px, transparent 0) 0 0 / 22px 22px,
+      linear-gradient(135deg, var(--cream) 0%, var(--cream-2) 100%);
+    background-attachment: fixed;
+    padding: 24px 20px 60px;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; }
+
+  header.top {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px;
+    padding-bottom: 16px; margin-bottom: 28px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand-icon {
+    width: 26px; height: 26px; color: var(--bordeaux);
+    flex-shrink: 0;
+  }
+  .brand-title {
+    font-family: 'Fraunces', serif;
+    font-size: 28px; font-weight: 700; letter-spacing: -0.02em; line-height: 1;
+  }
+  .brand-sub {
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted); margin-top: 5px;
+  }
+  .stats { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 12px;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    font-size: 13px; font-weight: 600;
+  }
+  .chip svg { width: 16px; height: 16px; }
+  .chip-flame { color: var(--ember); }
+
+  main { position: relative; }
+
+  .card {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 36px 32px;
+    box-shadow:
+      0 1px 0 var(--rule),
+      0 8px 24px -12px rgba(42,30,16,0.15),
+      0 24px 60px -24px rgba(42,30,16,0.2);
+    position: relative;
+    animation: fadeUp 0.4s ease;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .card.shake { animation: shake 0.5s ease; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  .card-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 28px; flex-wrap: wrap; gap: 12px;
+  }
+  .dir-row { display: flex; align-items: center; gap: 8px; }
+  .flag {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 4px 9px; border-radius: 4px; color: var(--cream);
+  }
+  .flag-en { background: var(--forest); }
+  .flag-de { background: var(--bordeaux); }
+  .arrow { color: var(--muted); }
+  .mode-label {
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: 13px; color: var(--muted);
+  }
+
+  .prompt-word {
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+    font-family: 'Fraunces', serif;
+    font-size: clamp(36px, 7vw, 56px);
+    font-weight: 600; letter-spacing: -0.02em; line-height: 1.1;
+    margin-bottom: 8px; text-align: center;
+    flex-wrap: wrap;
+  }
+  .speak-btn {
+    background: transparent; border: 1px solid var(--rule); border-radius: 999px;
+    width: 38px; height: 38px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--bordeaux); cursor: pointer; flex-shrink: 0;
+    transition: background 0.15s, transform 0.15s;
+  }
+  .speak-btn:hover { background: var(--cream); transform: scale(1.05); }
+  .speak-btn svg { width: 18px; height: 18px; }
+  .pos {
+    text-align: center; font-style: italic;
+    font-family: 'Fraunces', serif; color: var(--muted);
+    font-size: 14px; margin-bottom: 28px;
+  }
+
+  .choice-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+  }
+  .choice-btn {
+    padding: 18px 16px;
+    border: 2px solid var(--rule);
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 4px;
+    font-size: 17px; font-weight: 500;
+    cursor: pointer; font-family: inherit;
+    transition: transform 0.15s, border-color 0.15s, background 0.15s;
+  }
+  .choice-btn:hover:not(:disabled) { transform: translateY(-2px); border-color: var(--ink-soft); }
+  .choice-btn:disabled { cursor: default; }
+  .choice-btn.correct { background: #e8f0e4; border-color: var(--forest); color: var(--forest); }
+  .choice-btn.wrong { background: #f5dede; border-color: var(--bordeaux); color: var(--bordeaux); }
+  .choice-btn.dim { opacity: 0.4; }
+
+  .input {
+    width: 100%; padding: 16px 18px;
+    font-size: 18px;
+    border: 2px solid var(--rule);
+    border-radius: 4px;
+    font-family: 'Fraunces', serif;
+    background: var(--paper);
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .input:focus { border-color: var(--ink-soft); }
+  .input.right { border-color: var(--forest); background: #e8f0e4; }
+  .input.wrong { border-color: var(--bordeaux); background: #f5dede; }
+  .correct-reveal {
+    margin-top: 12px; font-family: 'Fraunces', serif; font-style: italic;
+    color: var(--bordeaux); font-size: 15px;
+  }
+
+  .sentence-prompt {
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: clamp(18px, 3vw, 22px); text-align: center; line-height: 1.4;
+    margin-bottom: 24px;
+  }
+  .sentence-target {
+    min-height: 70px; padding: 14px;
+    background: var(--cream);
+    border: 1px dashed var(--rule);
+    border-radius: 4px;
+    display: flex; flex-wrap: wrap; gap: 8px;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+  .sentence-placeholder {
+    color: #a89876; font-style: italic; font-family: 'Fraunces', serif;
+    margin: auto;
+  }
+  .token {
+    padding: 9px 14px; border-radius: 4px;
+    font-size: 15px; cursor: pointer; font-family: inherit; font-weight: 500;
+    border: 1px solid var(--rule);
+    background: var(--paper); color: var(--ink);
+    transition: transform 0.12s;
+    animation: pop 0.2s ease;
+  }
+  @keyframes pop { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .token:hover:not(:disabled) { transform: translateY(-2px); }
+  .token.picked { background: var(--forest); color: var(--cream); border-color: var(--forest); }
+  .token:disabled { cursor: default; opacity: 0.5; }
+
+  .flash-front { text-align: center; margin-bottom: 16px; }
+  .flash-word {
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+    font-family: 'Fraunces', serif;
+    font-size: clamp(40px, 8vw, 64px);
+    font-weight: 600; letter-spacing: -0.02em; line-height: 1;
+    flex-wrap: wrap;
+  }
+  .flash-back {
+    border-top: 1px solid var(--rule-soft);
+    border-bottom: 1px solid var(--rule-soft);
+    padding: 20px 0; margin: 0 0 20px;
+    animation: revealDown 0.3s ease;
+  }
+  @keyframes revealDown {
+    from { opacity: 0; max-height: 0; padding-top: 0; padding-bottom: 0; }
+    to { opacity: 1; max-height: 600px; padding-top: 20px; padding-bottom: 20px; }
+  }
+  .flash-answer {
+    font-family: 'Fraunces', serif; font-size: 32px; font-weight: 600;
+    text-align: center; margin-bottom: 12px; color: var(--bordeaux);
+  }
+  .definition {
+    font-family: 'Fraunces', serif; font-style: italic;
+    text-align: center; color: var(--ink-soft); font-size: 15px;
+    margin-bottom: 14px;
+  }
+  .example-block {
+    background: var(--cream); padding: 14px 18px;
+    border-left: 3px solid var(--bordeaux);
+    border-radius: 2px;
+  }
+  .example-en { font-family: 'Fraunces', serif; font-size: 15px; margin-bottom: 4px; }
+  .example-de { font-family: 'Fraunces', serif; font-style: italic; font-size: 14px; color: var(--ink-soft); }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 14px 22px;
+    border-radius: 4px; cursor: pointer; font-family: inherit;
+    font-size: 15px; font-weight: 600; letter-spacing: 0.03em;
+    border: none; transition: transform 0.12s, opacity 0.12s;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn-primary { background: var(--bordeaux); color: var(--cream); width: 100%; }
+  .btn-ghost {
+    background: transparent; color: var(--ink);
+    border: 1px solid var(--rule);
+  }
+  .btn-grade {
+    background: var(--paper); border: 2px solid; flex: 1;
+  }
+  .btn-grade.no { color: var(--bordeaux); border-color: var(--bordeaux); }
+  .btn-grade.yes { color: var(--forest); border-color: var(--forest); }
+  .btn-row { display: flex; gap: 12px; }
+  .mt-16 { margin-top: 16px; }
+
+  .result {
+    margin-top: 24px; padding: 20px 22px; border-radius: 4px;
+    color: var(--cream);
+    animation: fadeUp 0.3s ease;
+  }
+  .result.right { background: var(--forest); }
+  .result.wrong { background: var(--bordeaux); }
+  .result-text {
+    font-family: 'Fraunces', serif; font-size: 19px; font-weight: 600;
+    display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+  }
+  .result-example { font-size: 14px; line-height: 1.5; margin-bottom: 14px; }
+  .result-example .de { opacity: 0.78; font-style: italic; }
+  .continue {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 12px 20px;
+    background: var(--cream); color: var(--ink);
+    border: none; border-radius: 4px;
+    font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    cursor: pointer; font-family: inherit; width: 100%;
+  }
+
+  .pool-refresh {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    margin: 24px auto 0; padding: 10px 14px;
+    background: transparent; color: var(--muted);
+    border: none; cursor: pointer; font-family: inherit;
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    width: 100%;
+  }
+  .pool-refresh:hover { color: var(--bordeaux); }
+  .pool-refresh svg { width: 12px; height: 12px; }
+
+  footer.bottom {
+    max-width: 720px; margin: 40px auto 0;
+    padding-top: 16px; border-top: 1px solid var(--rule-soft);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .loading {
+    max-width: 480px; margin: 12vh auto 0; text-align: center; padding: 0 20px;
+  }
+  .loading-icon { color: var(--bordeaux); animation: spin 2s linear infinite; display: inline-block; }
+  @keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+  .loading-title {
+    font-family: 'Fraunces', serif; font-size: 32px; font-weight: 600;
+    letter-spacing: -0.02em; margin: 24px 0 6px;
+  }
+  .loading-sub {
+    font-family: 'Fraunces', serif; font-style: italic;
+    color: var(--muted); margin-bottom: 28px;
+  }
+  .progress-track {
+    height: 6px; background: var(--rule-soft); border-radius: 99px;
+    overflow: hidden; margin-bottom: 12px;
+  }
+  .progress-fill {
+    height: 100%; background: var(--bordeaux);
+    transition: width 0.3s ease;
+  }
+  .loading-count {
+    font-size: 12px; color: var(--muted);
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+
+  .error-box {
+    max-width: 480px; margin: 10vh auto 0; padding: 32px;
+    background: var(--paper); border: 1px solid var(--rule); border-radius: 4px;
+    text-align: center;
+  }
+  .error-title {
+    font-family: 'Fraunces', serif; font-size: 24px; font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .error-msg { color: var(--ink-soft); margin-bottom: 24px; font-size: 14px; }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 540px) {
+    body { padding: 16px 14px 60px; }
+    .card { padding: 24px 18px; }
+    .brand-title { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="loading-view" class="loading">
+  <div class="loading-icon">
+    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+    </svg>
+  </div>
+  <h1 class="loading-title">Lexikon wird geöffnet</h1>
+  <p class="loading-sub">Wörter werden aus dem Äther gesammelt</p>
+  <div class="progress-track"><div id="progress-fill" class="progress-fill" style="width:0%"></div></div>
+  <p class="loading-count"><span id="progress-done">0</span> / <span id="progress-total">15</span> Vokabeln</p>
+</div>
+
+<div id="error-view" class="error-box hidden">
+  <h2 class="error-title">Hmm.</h2>
+  <p class="error-msg" id="error-msg">Die Wörterbuch-Verbindung ist gerade gestört. Vielleicht später erneut versuchen?</p>
+  <button class="btn btn-primary" onclick="init()">Erneut versuchen</button>
+</div>
+
+<div id="app-view" class="wrap hidden">
+  <header class="top">
+    <div class="brand">
+      <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+      </svg>
+      <div>
+        <div class="brand-title">Lexikon</div>
+        <div class="brand-sub">Ein Vokabel-Journal</div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="chip">
+        <svg class="chip-flame" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+        </svg>
+        <span id="streak-val">0</span>
+      </div>
+      <div class="chip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--gold)">
+          <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+          <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+          <path d="M4 22h16"/>
+          <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+          <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+          <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+        </svg>
+        <span>Beste: <span id="best-val">0</span></span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div id="card" class="card"></div>
+    <button class="pool-refresh" onclick="reloadPool()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+        <path d="M21 3v5h-5"/>
+        <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+        <path d="M8 16H3v5"/>
+      </svg>
+      Frische Wörter aus dem Pool ziehen
+    </button>
+  </main>
+
+  <footer class="bottom">
+    <div>Pool: <span id="pool-size">0</span> Vokabeln · live aus öffentlichen APIs</div>
+    <div>Aktuelle Serie: <span id="streak-foot">0</span></div>
+  </footer>
+</div>
+
+<script>
+const RANDOM_WORD_URLS = [
+  n => `https://random-word-api.herokuapp.com/word?number=${n}`,
+  n => `https://random-word-api.vercel.app/api?words=${n}`,
+  n => `https://random-word-api.herokuapp.com/word?number=${n}&swear=0`,
+];
+
+const IS_FILE_PROTOCOL = location.protocol === 'file:';
+
+function fetchWithTimeout(url, ms = 8000) {
+  return Promise.race([
+    fetch(url),
+    new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))
+  ]);
+}
+
+const FALLBACK_POOL = [
+  'house','water','friend','book','morning','street','window','bread',
+  'flower','mountain','river','forest','school','family','music','dream',
+  'letter','garden','kitchen','summer','winter','evening','silver','golden',
+  'travel','silence','laughter','memory','shadow','journey','wisdom','courage',
+  'bridge','candle','autumn','feather','harbor','ladder','meadow','ocean',
+  'pencil','quiet','ribbon','sunrise','thunder','umbrella','village','whisper'
+];
+
+let pool = [];
+let currentQ = null;
+let streak = 0;
+let bestStreak = 0;
+let state = { answered: false, correct: null };
+let sentencePick = [];
+let sentenceBank = [];
+
+async function fetchRandomWords(n) {
+  for (const url of RANDOM_WORD_URLS) {
+    try {
+      const r = await fetch(url(n));
+      if (!r.ok) continue;
+      const data = await r.json();
+      if (Array.isArray(data) && data.length > 0) return data;
+    } catch (e) {}
+  }
+  return [...FALLBACK_POOL].sort(() => Math.random() - 0.5).slice(0, n);
+}
+
+async function fetchDictionary(word) {
+  try {
+    const r = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
+    if (!r.ok) return null;
+    const data = await r.json();
+    if (!Array.isArray(data) || !data[0]) return null;
+    const entry = data[0];
+    let pos = null, definition = null, example = null;
+    for (const m of (entry.meanings || [])) {
+      if (!pos) pos = m.partOfSpeech;
+      for (const d of (m.definitions || [])) {
+        if (!definition) definition = d.definition;
+        if (d.example && !example) { example = d.example; break; }
+      }
+      if (example) break;
+    }
+    return { pos, definition, example };
+  } catch (e) { return null; }
+}
+
+async function translate(text, direction) {
+  try {
+    const pair = direction === 'en-de' ? 'en|de' : 'de|en';
+    const r = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${pair}`);
+    if (!r.ok) return null;
+    const data = await r.json();
+    const t = data?.responseData?.translatedText;
+    if (!t) return null;
+    const tl = t.toLowerCase();
+    if (tl.includes('mymemory warning') || tl.includes('invalid') || tl.includes('please select')) return null;
+    return t.trim();
+  } catch (e) { return null; }
+}
+
+async function buildPool(size) {
+  document.getElementById('progress-total').textContent = size;
+  const words = await fetchRandomWords(Math.ceil(size * 2.2));
+  const newPool = [];
+  for (const raw of words) {
+    if (newPool.length >= size) break;
+    const w = (raw || '').toLowerCase().trim();
+    if (!/^[a-z\-]{3,12}$/.test(w)) continue;
+    const [dict, de] = await Promise.all([fetchDictionary(w), translate(w, 'en-de')]);
+    if (!de) continue;
+    if (de.toLowerCase() === w) continue;
+    let exampleDe = null;
+    if (dict?.example && dict.example.split(/\s+/).length <= 14) {
+      exampleDe = await translate(dict.example, 'en-de');
+    }
+    newPool.push({
+      en: w,
+      de: de,
+      pos: dict?.pos || null,
+      definition: dict?.definition || null,
+      exampleEn: dict?.example || null,
+      exampleDe: exampleDe,
+    });
+    document.getElementById('progress-done').textContent = newPool.length;
+    document.getElementById('progress-fill').style.width = ((newPool.length / size) * 100) + '%';
+  }
+  return newPool;
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pickDistractors(correct, key, n) {
+  const filtered = pool.filter(p => p[key].toLowerCase() !== correct.toLowerCase());
+  return shuffle(filtered).slice(0, n).map(p => p[key]);
+}
+
+function generateQuestion() {
+  const dir = Math.random() < 0.5 ? 'en-de' : 'de-en';
+  const sentenceCapable = pool.filter(w =>
+    w.exampleEn && w.exampleDe &&
+    w.exampleEn.split(/\s+/).length >= 3 &&
+    w.exampleEn.split(/\s+/).length <= 12
+  );
+  const modes = ['choice', 'choice', 'type', 'flash'];
+  if (sentenceCapable.length >= 1) modes.push('sentence', 'sentence');
+  const mode = modes[Math.floor(Math.random() * modes.length)];
+
+  if (mode === 'sentence') {
+    const w = sentenceCapable[Math.floor(Math.random() * sentenceCapable.length)];
+    const sourceLang = dir === 'en-de' ? 'en' : 'de';
+    const targetLang = dir === 'en-de' ? 'de' : 'en';
+    const promptText = sourceLang === 'en' ? w.exampleEn : w.exampleDe;
+    const answerText = targetLang === 'en' ? w.exampleEn : w.exampleDe;
+    const tokens = answerText.replace(/[.,!?;:"]/g, '').split(/\s+/).filter(Boolean);
+    const extraPool = pool.map(p => targetLang === 'en' ? p.en : p.de).filter(t => t && !tokens.includes(t));
+    const extras = shuffle(extraPool).slice(0, Math.min(3, extraPool.length));
+    const bank = shuffle([...tokens, ...extras]).map((text, id) => ({ id, text }));
+    return { mode: 'sentence', dir, sourceLang, targetLang, prompt: promptText, answerTokens: tokens, bank, raw: w };
+  }
+
+  const w = pool[Math.floor(Math.random() * pool.length)];
+  if (mode === 'choice') {
+    const promptKey = dir === 'en-de' ? 'en' : 'de';
+    const answerKey = dir === 'en-de' ? 'de' : 'en';
+    const correct = w[answerKey];
+    const distractors = pickDistractors(correct, answerKey, 3);
+    return { mode: 'choice', dir, prompt: w[promptKey], correct, options: shuffle([correct, ...distractors]), raw: w };
+  }
+  if (mode === 'type') {
+    const promptKey = dir === 'en-de' ? 'en' : 'de';
+    const answerKey = dir === 'en-de' ? 'de' : 'en';
+    return { mode: 'type', dir, prompt: w[promptKey], correct: w[answerKey], raw: w };
+  }
+  return { mode: 'flash', dir, raw: w, promptKey: dir === 'en-de' ? 'en' : 'de', answerKey: dir === 'en-de' ? 'de' : 'en' };
+}
+
+function normalize(s) {
+  return s.toLowerCase().trim().replace(/[.,!?;:"']/g, '').replace(/\s+/g, ' ');
+}
+
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  if (!m) return n; if (!n) return m;
+  const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] : 1 + Math.min(dp[i-1][j-1], dp[i-1][j], dp[i][j-1]);
+    }
+  }
+  return dp[m][n];
+}
+
+function checkTyping(user, correct) {
+  const u = normalize(user), c = normalize(correct);
+  if (u === c) return true;
+  const tolerance = c.length <= 5 ? 1 : c.length <= 10 ? 2 : 3;
+  return levenshtein(u, c) <= tolerance;
+}
+
+function speak(text, lang) {
+  try {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = lang === 'de' ? 'de-DE' : 'en-US';
+    u.rate = 0.9;
+    window.speechSynthesis.speak(u);
+  } catch (e) {}
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function flagEl(lang) {
+  return `<span class="flag flag-${lang}">${lang === 'en' ? '🇬🇧 EN' : '🇩🇪 DE'}</span>`;
+}
+
+function arrowSvg() {
+  return `<svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
+}
+
+function speakerSvg() {
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`;
+}
+
+function checkSvg() {
+  return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+}
+
+function xSvg() {
+  return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+}
+
+function sparkleSvg() {
+  return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>`;
+}
+
+function arrowRightSvg() {
+  return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
+}
+
+function modeLabelText(m) {
+  return { choice: 'Wähle die Übersetzung', type: 'Tippe die Übersetzung', sentence: 'Bilde den Satz', flash: 'Karteikarte' }[m];
+}
+
+function renderQuestion() {
+  const q = currentQ;
+  state = { answered: false, correct: null };
+  const card = document.getElementById('card');
+  card.classList.remove('shake');
+  void card.offsetWidth;
+
+  const fromLang = q.dir === 'en-de' ? 'en' : 'de';
+  const toLang = q.dir === 'en-de' ? 'de' : 'en';
+
+  let body = '';
+  if (q.mode === 'choice') {
+    body = `
+      <div class="prompt-word">
+        <span>${esc(q.prompt)}</span>
+        <button class="speak-btn" onclick="speak(${JSON.stringify(q.prompt)}, '${fromLang}')">${speakerSvg()}</button>
+      </div>
+      ${q.raw.pos ? `<div class="pos">${esc(q.raw.pos)}</div>` : '<div style="height:20px"></div>'}
+      <div class="choice-grid">
+        ${q.options.map((opt, i) => `<button class="choice-btn" data-opt="${i}" onclick="onChoice(${i})">${esc(opt)}</button>`).join('')}
+      </div>
+    `;
+  } else if (q.mode === 'type') {
+    body = `
+      <div class="prompt-word">
+        <span>${esc(q.prompt)}</span>
+        <button class="speak-btn" onclick="speak(${JSON.stringify(q.prompt)}, '${fromLang}')">${speakerSvg()}</button>
+      </div>
+      ${q.raw.pos ? `<div class="pos">${esc(q.raw.pos)}</div>` : '<div style="height:20px"></div>'}
+      <input id="type-input" class="input" placeholder="Übersetzung auf ${toLang === 'de' ? 'Deutsch' : 'Englisch'} …" />
+      <div id="reveal-slot"></div>
+      <button id="check-btn" class="btn btn-primary mt-16" onclick="onTypeCheck()">Prüfen</button>
+    `;
+  } else if (q.mode === 'sentence') {
+    sentencePick = [];
+    sentenceBank = [...q.bank];
+    body = `
+      <div class="sentence-prompt">„${esc(q.prompt)}"</div>
+      <div id="target-zone" class="sentence-target"></div>
+      <div id="bank-zone" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+      <div id="reveal-slot"></div>
+      <button id="check-btn" class="btn btn-primary mt-16" onclick="onSentenceCheck()">Prüfen</button>
+    `;
+  } else {
+    body = `
+      <div class="flash-front">
+        <div class="flash-word">
+          <span>${esc(q.raw[q.promptKey])}</span>
+          <button class="speak-btn" onclick="speak(${JSON.stringify(q.raw[q.promptKey])}, '${q.promptKey}')">${speakerSvg()}</button>
+        </div>
+        ${q.raw.pos ? `<div class="pos">${esc(q.raw.pos)}</div>` : ''}
+      </div>
+      <div id="flash-reveal"></div>
+      <button id="flash-action" class="btn btn-primary" onclick="onFlashReveal()">Aufdecken</button>
+    `;
+  }
+
+  card.innerHTML = `
+    <div class="card-head">
+      <div class="dir-row">${flagEl(fromLang)}${arrowSvg()}${flagEl(toLang)}</div>
+      <div class="mode-label">${modeLabelText(q.mode)}</div>
+    </div>
+    ${body}
+    <div id="result-slot"></div>
+  `;
+
+  if (q.mode === 'type') {
+    const input = document.getElementById('type-input');
+    setTimeout(() => input?.focus(), 60);
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        if (state.answered) nextQuestion();
+        else onTypeCheck();
+      }
+    });
+  }
+  if (q.mode === 'sentence') renderSentence();
+}
+
+function renderSentence() {
+  const target = document.getElementById('target-zone');
+  const bank = document.getElementById('bank-zone');
+  if (!target || !bank) return;
+  if (sentencePick.length === 0) {
+    target.innerHTML = `<span class="sentence-placeholder">Tippe die Wörter unten in der richtigen Reihenfolge an</span>`;
+  } else {
+    target.innerHTML = sentencePick.map(t =>
+      `<button class="token picked" ${state.answered ? 'disabled' : ''} onclick="moveToBank(${t.id})">${esc(t.text)}</button>`
+    ).join('');
+  }
+  bank.innerHTML = sentenceBank.map(t =>
+    `<button class="token" ${state.answered ? 'disabled' : ''} onclick="moveToPick(${t.id})">${esc(t.text)}</button>`
+  ).join('');
+}
+
+function moveToPick(id) {
+  const idx = sentenceBank.findIndex(t => t.id === id);
+  if (idx < 0) return;
+  const [t] = sentenceBank.splice(idx, 1);
+  sentencePick.push(t);
+  renderSentence();
+}
+
+function moveToBank(id) {
+  const idx = sentencePick.findIndex(t => t.id === id);
+  if (idx < 0) return;
+  const [t] = sentencePick.splice(idx, 1);
+  sentenceBank.push(t);
+  renderSentence();
+}
+
+function grade(isRight) {
+  state.answered = true;
+  state.correct = isRight;
+  const card = document.getElementById('card');
+  if (isRight) {
+    streak++;
+    if (streak > bestStreak) bestStreak = streak;
+  } else {
+    streak = 0;
+    card.classList.add('shake');
+    setTimeout(() => card.classList.remove('shake'), 500);
+  }
+  updateStats();
+  showResult();
+}
+
+function updateStats() {
+  document.getElementById('streak-val').textContent = streak;
+  document.getElementById('best-val').textContent = bestStreak;
+  document.getElementById('streak-foot').textContent = streak;
+}
+
+function onChoice(i) {
+  if (state.answered) return;
+  const q = currentQ;
+  const picked = q.options[i];
+  const isRight = picked === q.correct;
+  document.querySelectorAll('.choice-btn').forEach((btn, idx) => {
+    btn.disabled = true;
+    const opt = q.options[idx];
+    if (opt === q.correct) btn.classList.add('correct');
+    else if (idx === i) btn.classList.add('wrong');
+    else btn.classList.add('dim');
+  });
+  grade(isRight);
+}
+
+function onTypeCheck() {
+  if (state.answered) return;
+  const q = currentQ;
+  const input = document.getElementById('type-input');
+  const val = input.value.trim();
+  if (!val) return;
+  const isRight = checkTyping(val, q.correct);
+  input.disabled = true;
+  input.classList.add(isRight ? 'right' : 'wrong');
+  if (!isRight) {
+    document.getElementById('reveal-slot').innerHTML = `<div class="correct-reveal">Richtig: <strong>${esc(q.correct)}</strong></div>`;
+  }
+  document.getElementById('check-btn').remove();
+  grade(isRight);
+}
+
+function onSentenceCheck() {
+  if (state.answered) return;
+  const q = currentQ;
+  if (sentencePick.length === 0) return;
+  const built = sentencePick.map(t => t.text).join(' ');
+  const target = q.answerTokens.join(' ');
+  const isRight = normalize(built) === normalize(target);
+  if (!isRight) {
+    document.getElementById('reveal-slot').innerHTML = `<div class="correct-reveal">Richtig: <strong>${esc(q.answerTokens.join(' '))}</strong></div>`;
+  }
+  document.getElementById('check-btn').remove();
+  renderSentence();
+  grade(isRight);
+}
+
+function onFlashReveal() {
+  const q = currentQ;
+  const slot = document.getElementById('flash-reveal');
+  slot.innerHTML = `
+    <div class="flash-back">
+      <div class="flash-answer">${esc(q.raw[q.answerKey])}</div>
+      ${q.raw.definition ? `<div class="definition">„${esc(q.raw.definition)}"</div>` : ''}
+      ${q.raw.exampleEn ? `
+        <div class="example-block">
+          <div class="example-en">${esc(q.raw.exampleEn)}</div>
+          ${q.raw.exampleDe ? `<div class="example-de">${esc(q.raw.exampleDe)}</div>` : ''}
+        </div>
+      ` : ''}
+    </div>
+  `;
+  const action = document.getElementById('flash-action');
+  action.outerHTML = `
+    <div class="btn-row" id="flash-action">
+      <button class="btn btn-grade no" onclick="onFlashGrade(false)">${xSvg()} Wusste es nicht</button>
+      <button class="btn btn-grade yes" onclick="onFlashGrade(true)">${checkSvg()} Konnte ich</button>
+    </div>
+  `;
+}
+
+function onFlashGrade(knew) {
+  document.getElementById('flash-action').remove();
+  grade(knew);
+}
+
+function showResult() {
+  const q = currentQ;
+  const slot = document.getElementById('result-slot');
+  const showExample = q.raw.exampleEn && q.mode !== 'sentence' && q.mode !== 'flash';
+  slot.innerHTML = `
+    <div class="result ${state.correct ? 'right' : 'wrong'}">
+      <div class="result-text">
+        ${state.correct ? sparkleSvg() + ' Hervorragend' : xSvg() + ' Nicht ganz'}
+      </div>
+      ${showExample ? `
+        <div class="result-example">
+          <div>${esc(q.raw.exampleEn)}</div>
+          ${q.raw.exampleDe ? `<div class="de">${esc(q.raw.exampleDe)}</div>` : ''}
+        </div>
+      ` : ''}
+      <button class="continue" onclick="nextQuestion()">Weiter ${arrowRightSvg()}</button>
+    </div>
+  `;
+}
+
+function nextQuestion() {
+  currentQ = generateQuestion();
+  renderQuestion();
+}
+
+function showView(name) {
+  document.getElementById('loading-view').classList.toggle('hidden', name !== 'loading');
+  document.getElementById('error-view').classList.toggle('hidden', name !== 'error');
+  document.getElementById('app-view').classList.toggle('hidden', name !== 'app');
+}
+
+async function reloadPool() {
+  showView('loading');
+  document.getElementById('progress-done').textContent = 0;
+  document.getElementById('progress-fill').style.width = '0%';
+  try {
+    pool = await buildPool(15);
+    if (pool.length < 4) {
+      document.getElementById('error-msg').textContent = 'Konnte nicht genug Vokabeln laden. Versuch es nochmal in einem Moment.';
+      showView('error');
+      return;
+    }
+    document.getElementById('pool-size').textContent = pool.length;
+    currentQ = generateQuestion();
+    renderQuestion();
+    showView('app');
+  } catch (e) {
+    document.getElementById('error-msg').textContent = 'Etwas ist schiefgegangen: ' + (e?.message || 'unbekannter Fehler');
+    showView('error');
+  }
+}
+
+async function init() {
+  showView('loading');
+  await reloadPool();
+}
+
+init();
+</script>
+</body>
+</html>
