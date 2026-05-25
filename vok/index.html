@@ -317,6 +317,19 @@
   .pool-refresh:hover { color: var(--bordeaux); }
   .pool-refresh svg { width: 12px; height: 12px; }
 
+  .skip-btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    margin: 14px auto 0; padding: 8px 14px;
+    background: transparent; color: var(--muted);
+    border: none; border-bottom: 1px dashed var(--rule);
+    cursor: pointer; font-family: inherit;
+    font-size: 12px; letter-spacing: 0.06em;
+    transition: color 0.15s, border-color 0.15s;
+    align-self: center;
+  }
+  .skip-btn:hover { color: var(--bordeaux); border-bottom-color: var(--bordeaux); }
+  .skip-row { display: flex; justify-content: center; margin-top: 12px; }
+
   footer.bottom {
     max-width: 720px; margin: 40px auto 0;
     padding-top: 16px; border-top: 1px solid var(--rule-soft);
@@ -490,6 +503,59 @@ const COMMON_SEED_WORDS = [
 
 const POOL_SIZE = 10;
 
+const SENTENCE_TEMPLATES = {
+  noun: [
+    { en: ['I see the', 'W', '.'], de: ['Ich sehe den', 'W', '.'] },
+    { en: ['This is my', 'W', '.'], de: ['Das ist mein', 'W', '.'] },
+    { en: ['I have a', 'W', '.'], de: ['Ich habe einen', 'W', '.'] },
+    { en: ['Where is the', 'W', '?'], de: ['Wo ist der', 'W', '?'] },
+    { en: ['The', 'W', 'is here.'], de: ['Der', 'W', 'ist hier.'] },
+    { en: ['I need a', 'W', '.'], de: ['Ich brauche einen', 'W', '.'] },
+    { en: ['She has a', 'W', '.'], de: ['Sie hat einen', 'W', '.'] },
+    { en: ['He likes the', 'W', '.'], de: ['Er mag den', 'W', '.'] },
+  ],
+  verb: [
+    { en: ['I want to', 'W', '.'], de: ['Ich möchte', 'W', '.'] },
+    { en: ['We can', 'W', 'today.'], de: ['Wir können heute', 'W', '.'] },
+    { en: ['She likes to', 'W', '.'], de: ['Sie mag es zu', 'W', '.'] },
+    { en: ['You should', 'W', 'now.'], de: ['Du solltest jetzt', 'W', '.'] },
+    { en: ['They want to', 'W', '.'], de: ['Sie möchten', 'W', '.'] },
+    { en: ['I will', 'W', 'tomorrow.'], de: ['Ich werde morgen', 'W', '.'] },
+  ],
+  adjective: [
+    { en: ['The house is', 'W', '.'], de: ['Das Haus ist', 'W', '.'] },
+    { en: ['She is very', 'W', '.'], de: ['Sie ist sehr', 'W', '.'] },
+    { en: ['This car is', 'W', '.'], de: ['Dieses Auto ist', 'W', '.'] },
+    { en: ['My friend is', 'W', '.'], de: ['Mein Freund ist', 'W', '.'] },
+    { en: ['The day was', 'W', '.'], de: ['Der Tag war', 'W', '.'] },
+    { en: ['He looks', 'W', 'today.'], de: ['Er sieht heute', 'W', 'aus.'] },
+  ],
+  adverb: [
+    { en: ['She speaks', 'W', '.'], de: ['Sie spricht', 'W', '.'] },
+    { en: ['He runs', 'W', '.'], de: ['Er läuft', 'W', '.'] },
+    { en: ['They work', 'W', '.'], de: ['Sie arbeiten', 'W', '.'] },
+  ],
+  default: [
+    { en: ['The word is', 'W', '.'], de: ['Das Wort ist', 'W', '.'] },
+    { en: ['I think of', 'W', '.'], de: ['Ich denke an', 'W', '.'] },
+  ],
+};
+
+function buildTemplateSentence(word, deWord, pos) {
+  const posKey = (pos || '').toLowerCase();
+  let bucket = SENTENCE_TEMPLATES.default;
+  if (posKey.includes('noun')) bucket = SENTENCE_TEMPLATES.noun;
+  else if (posKey.includes('verb')) bucket = SENTENCE_TEMPLATES.verb;
+  else if (posKey.includes('adjective')) bucket = SENTENCE_TEMPLATES.adjective;
+  else if (posKey.includes('adverb')) bucket = SENTENCE_TEMPLATES.adverb;
+  const tpl = bucket[Math.floor(Math.random() * bucket.length)];
+  const enParts = tpl.en.map(p => p === 'W' ? word : p);
+  const deParts = tpl.de.map(p => p === 'W' ? deWord : p);
+  const en = enParts.join(' ').replace(/\s+([.,!?])/g, '$1');
+  const de = deParts.join(' ').replace(/\s+([.,!?])/g, '$1');
+  return { en, de };
+}
+
 let pool = [];
 let phase = 1;
 let phaseQueue = [];
@@ -657,11 +723,11 @@ async function buildPool(size) {
     if (!enAll.includes(w)) enAll.unshift(w);
 
     let exampleDe = null;
-    let exampleEn = dict?.example || null;
-    if (exampleEn) {
-      const ex = await translateSimple(exampleEn, 'en-de');
-      if (ex) exampleDe = ex;
-      else exampleEn = null;
+    let exampleEn = null;
+    const tpl = buildTemplateSentence(w, dePrimary, dict?.pos);
+    if (tpl) {
+      exampleEn = tpl.en;
+      exampleDe = tpl.de;
     }
 
     newPool.push({
@@ -821,11 +887,8 @@ function speak(text, lang) {
   try {
     if (!window.speechSynthesis || !text) return;
     if (!voicesReady) refreshVoices();
-    const voice = voiceCache[lang];
+    const voice = voiceCache.de || voiceCache.en;
     if (!voice) return;
-    const voiceLangLower = voice.lang.toLowerCase();
-    const expectedPrefix = lang === 'de' ? 'de' : 'en';
-    if (!voiceLangLower.startsWith(expectedPrefix)) return;
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
     u.voice = voice;
@@ -870,10 +933,10 @@ function modeLabelText(m) {
 }
 
 function speakerButton(text, lang) {
-  const available = hasVoiceFor(lang);
+  const available = !!(voiceCache.de || voiceCache.en);
   const btn = el('button', {
     class: 'speak-btn',
-    title: available ? 'Aussprechen' : 'Keine ' + (lang === 'de' ? 'deutsche' : 'englische') + ' Stimme installiert',
+    title: available ? 'Aussprechen' : 'Keine TTS-Stimme verfügbar',
     html: SVG_SPEAKER
   });
   if (!available) {
@@ -999,9 +1062,70 @@ function renderQuestion() {
   }
 
   card.appendChild(el('div', { id: 'result-slot' }));
+
+  if (q.mode !== 'flash') {
+    const skipRow = el('div', { class: 'skip-row', id: 'skip-row' });
+    const skipBtn = el('button', { class: 'skip-btn' });
+    skipBtn.textContent = 'Lösung zeigen';
+    skipBtn.addEventListener('click', onSkip);
+    skipRow.appendChild(skipBtn);
+    card.appendChild(skipRow);
+  }
+
   host.appendChild(card);
 
   if (q.mode === 'sentence') renderSentence();
+}
+
+function onSkip() {
+  if (state.answered) return;
+  const q = currentQ;
+
+  if (q.mode === 'choice') {
+    document.querySelectorAll('.choice-btn').forEach((btn, idx) => {
+      btn.disabled = true;
+      const opt = q.options[idx];
+      const acceptedLower = new Set((q.accepted || [q.correct]).map(s => s.toLowerCase()));
+      if (acceptedLower.has(opt.toLowerCase())) btn.classList.add('correct');
+      else btn.classList.add('dim');
+    });
+  } else if (q.mode === 'type') {
+    const input = document.getElementById('type-input');
+    if (input) {
+      input.disabled = true;
+      input.classList.add('wrong');
+    }
+    const reveal = document.getElementById('reveal-slot');
+    if (reveal) {
+      const div = el('div', { class: 'correct-reveal' });
+      const accepted = q.accepted || [q.correct];
+      const label = accepted.length > 1 ? 'Akzeptiert' : 'Richtig';
+      div.innerHTML = label + ': <strong></strong>';
+      div.querySelector('strong').textContent = accepted.join(', ');
+      reveal.appendChild(div);
+    }
+    const checkBtn = document.getElementById('check-btn');
+    if (checkBtn) checkBtn.remove();
+  } else if (q.mode === 'sentence') {
+    sentencePick = q.answerTokens.map((text, id) => ({ id, text }));
+    sentenceBank = [];
+    state.answered = true;
+    renderSentence();
+    state.answered = false;
+    const reveal = document.getElementById('reveal-slot');
+    if (reveal) {
+      const div = el('div', { class: 'correct-reveal' });
+      div.innerHTML = 'Lösung: <strong></strong>';
+      div.querySelector('strong').textContent = q.answerTokens.join(' ');
+      reveal.appendChild(div);
+    }
+    const checkBtn = document.getElementById('check-btn');
+    if (checkBtn) checkBtn.remove();
+  }
+
+  const skipRow = document.getElementById('skip-row');
+  if (skipRow) skipRow.remove();
+  grade(false);
 }
 
 function renderSentence() {
@@ -1053,6 +1177,8 @@ function moveToBank(id) {
 function grade(isRight) {
   state.answered = true;
   state.correct = isRight;
+  const skipRow = document.getElementById('skip-row');
+  if (skipRow) skipRow.remove();
   if (isRight) {
     streak++;
     if (streak > bestStreak) bestStreak = streak;
