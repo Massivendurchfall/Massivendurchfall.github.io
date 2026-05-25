@@ -201,6 +201,23 @@
     font-size: clamp(18px, 3vw, 22px); text-align: center; line-height: 1.4;
     margin-bottom: 24px;
   }
+  .cloze-intro {
+    text-align: center;
+    font-family: 'Fraunces', serif; font-style: italic;
+    color: var(--muted); font-size: 13px;
+    margin-bottom: 10px;
+  }
+  .cloze-blank {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(16px, 2.5vw, 20px);
+    text-align: center; line-height: 1.5;
+    margin-bottom: 24px;
+    padding: 14px 16px;
+    background: var(--cream);
+    border-left: 3px solid var(--bordeaux);
+    border-radius: 2px;
+    color: var(--ink-soft);
+  }
   .sentence-target {
     min-height: 70px; padding: 14px;
     background: var(--cream);
@@ -503,57 +520,62 @@ const COMMON_SEED_WORDS = [
 
 const POOL_SIZE = 10;
 
-const SENTENCE_TEMPLATES = {
+const CLOZE_TEMPLATES = {
   noun: [
-    { en: ['I see the', 'W', '.'], de: ['Ich sehe den', 'W', '.'] },
-    { en: ['This is my', 'W', '.'], de: ['Das ist mein', 'W', '.'] },
-    { en: ['I have a', 'W', '.'], de: ['Ich habe einen', 'W', '.'] },
-    { en: ['Where is the', 'W', '?'], de: ['Wo ist der', 'W', '?'] },
-    { en: ['The', 'W', 'is here.'], de: ['Der', 'W', 'ist hier.'] },
-    { en: ['I need a', 'W', '.'], de: ['Ich brauche einen', 'W', '.'] },
-    { en: ['She has a', 'W', '.'], de: ['Sie hat einen', 'W', '.'] },
-    { en: ['He likes the', 'W', '.'], de: ['Er mag den', 'W', '.'] },
+    { en: ['I see a', '___', 'over there.'], de: ['Ich sehe da drüben einen', '___', '.'] },
+    { en: ['This is my', '___', '.'], de: ['Das ist mein', '___', '.'] },
+    { en: ['She bought a', '___', 'yesterday.'], de: ['Sie hat gestern einen', '___', 'gekauft.'] },
+    { en: ['Where is the', '___', '?'], de: ['Wo ist der', '___', '?'] },
+    { en: ['I have a', '___', 'at home.'], de: ['Ich habe einen', '___', 'zu Hause.'] },
+    { en: ['He needs a new', '___', '.'], de: ['Er braucht einen neuen', '___', '.'] },
+    { en: ['The', '___', 'is broken.'], de: ['Der', '___', 'ist kaputt.'] },
+    { en: ['We talked about the', '___', '.'], de: ['Wir haben über den', '___', 'gesprochen.'] },
   ],
   verb: [
-    { en: ['I want to', 'W', '.'], de: ['Ich möchte', 'W', '.'] },
-    { en: ['We can', 'W', 'today.'], de: ['Wir können heute', 'W', '.'] },
-    { en: ['She likes to', 'W', '.'], de: ['Sie mag es zu', 'W', '.'] },
-    { en: ['You should', 'W', 'now.'], de: ['Du solltest jetzt', 'W', '.'] },
-    { en: ['They want to', 'W', '.'], de: ['Sie möchten', 'W', '.'] },
-    { en: ['I will', 'W', 'tomorrow.'], de: ['Ich werde morgen', 'W', '.'] },
+    { en: ['I want to', '___', 'tomorrow.'], de: ['Ich möchte morgen', '___', '.'] },
+    { en: ['We can', '___', 'together.'], de: ['Wir können zusammen', '___', '.'] },
+    { en: ['She likes to', '___', 'on weekends.'], de: ['Sie mag es, am Wochenende zu', '___', '.'] },
+    { en: ['You should', '___', 'now.'], de: ['Du solltest jetzt', '___', '.'] },
+    { en: ['They will', '___', 'next week.'], de: ['Sie werden nächste Woche', '___', '.'] },
+    { en: ['Let me', '___', 'first.'], de: ['Lass mich zuerst', '___', '.'] },
+    { en: ['I need to', '___', 'today.'], de: ['Ich muss heute', '___', '.'] },
   ],
   adjective: [
-    { en: ['The house is', 'W', '.'], de: ['Das Haus ist', 'W', '.'] },
-    { en: ['She is very', 'W', '.'], de: ['Sie ist sehr', 'W', '.'] },
-    { en: ['This car is', 'W', '.'], de: ['Dieses Auto ist', 'W', '.'] },
-    { en: ['My friend is', 'W', '.'], de: ['Mein Freund ist', 'W', '.'] },
-    { en: ['The day was', 'W', '.'], de: ['Der Tag war', 'W', '.'] },
-    { en: ['He looks', 'W', 'today.'], de: ['Er sieht heute', 'W', 'aus.'] },
+    { en: ['The house is very', '___', '.'], de: ['Das Haus ist sehr', '___', '.'] },
+    { en: ['She looks', '___', 'today.'], de: ['Sie sieht heute', '___', 'aus.'] },
+    { en: ['This car is too', '___', '.'], de: ['Dieses Auto ist zu', '___', '.'] },
+    { en: ['My friend is always', '___', '.'], de: ['Mein Freund ist immer', '___', '.'] },
+    { en: ['The weather was', '___', 'yesterday.'], de: ['Das Wetter war gestern', '___', '.'] },
+    { en: ['He seems', '___', 'right now.'], de: ['Er wirkt gerade', '___', '.'] },
   ],
   adverb: [
-    { en: ['She speaks', 'W', '.'], de: ['Sie spricht', 'W', '.'] },
-    { en: ['He runs', 'W', '.'], de: ['Er läuft', 'W', '.'] },
-    { en: ['They work', 'W', '.'], de: ['Sie arbeiten', 'W', '.'] },
+    { en: ['She speaks', '___', '.'], de: ['Sie spricht', '___', '.'] },
+    { en: ['He runs', '___', 'every morning.'], de: ['Er läuft jeden Morgen', '___', '.'] },
+    { en: ['They work', '___', 'at the office.'], de: ['Sie arbeiten', '___', 'im Büro.'] },
+    { en: ['I answered', '___', '.'], de: ['Ich habe', '___', 'geantwortet.'] },
   ],
   default: [
-    { en: ['The word is', 'W', '.'], de: ['Das Wort ist', 'W', '.'] },
-    { en: ['I think of', 'W', '.'], de: ['Ich denke an', 'W', '.'] },
+    { en: ['The word here is', '___', '.'], de: ['Das Wort hier ist', '___', '.'] },
+    { en: ['I am thinking about', '___', '.'], de: ['Ich denke über', '___', 'nach.'] },
+    { en: ['We talked about', '___', '.'], de: ['Wir haben über', '___', 'gesprochen.'] },
   ],
 };
 
-function buildTemplateSentence(word, deWord, pos) {
-  const posKey = (pos || '').toLowerCase();
-  let bucket = SENTENCE_TEMPLATES.default;
-  if (posKey.includes('noun')) bucket = SENTENCE_TEMPLATES.noun;
-  else if (posKey.includes('verb')) bucket = SENTENCE_TEMPLATES.verb;
-  else if (posKey.includes('adjective')) bucket = SENTENCE_TEMPLATES.adjective;
-  else if (posKey.includes('adverb')) bucket = SENTENCE_TEMPLATES.adverb;
+function getPosKey(pos) {
+  const p = (pos || '').toLowerCase();
+  if (p.includes('noun')) return 'noun';
+  if (p.includes('verb')) return 'verb';
+  if (p.includes('adjective')) return 'adjective';
+  if (p.includes('adverb')) return 'adverb';
+  return 'default';
+}
+
+function buildClozeFor(word, posKey) {
+  const bucket = CLOZE_TEMPLATES[posKey] || CLOZE_TEMPLATES.default;
   const tpl = bucket[Math.floor(Math.random() * bucket.length)];
-  const enParts = tpl.en.map(p => p === 'W' ? word : p);
-  const deParts = tpl.de.map(p => p === 'W' ? deWord : p);
-  const en = enParts.join(' ').replace(/\s+([.,!?])/g, '$1');
-  const de = deParts.join(' ').replace(/\s+([.,!?])/g, '$1');
-  return { en, de };
+  const renderEn = (filler) => tpl.en.map(p => p === '___' ? filler : p).join(' ').replace(/\s+([.,!?])/g, '$1');
+  const renderDe = (filler) => tpl.de.map(p => p === '___' ? filler : p).join(' ').replace(/\s+([.,!?])/g, '$1');
+  return { renderEn, renderDe };
 }
 
 let pool = [];
@@ -565,8 +587,6 @@ let currentQ = null;
 let streak = 0;
 let bestStreak = 0;
 let state = { answered: false, correct: null };
-let sentencePick = [];
-let sentenceBank = [];
 
 function fetchWithTimeout(url, ms = 7000) {
   return Promise.race([
@@ -722,13 +742,7 @@ async function buildPool(size) {
       .map(t => t.toLowerCase());
     if (!enAll.includes(w)) enAll.unshift(w);
 
-    let exampleDe = null;
-    let exampleEn = null;
-    const tpl = buildTemplateSentence(w, dePrimary, dict?.pos);
-    if (tpl) {
-      exampleEn = tpl.en;
-      exampleDe = tpl.de;
-    }
+    const posKey = getPosKey(dict?.pos);
 
     newPool.push({
       en: w,
@@ -736,9 +750,8 @@ async function buildPool(size) {
       deAll: [...new Set([dePrimary, ...deAll])],
       enAll: [...new Set(enAll)],
       pos: dict?.pos || null,
+      posKey,
       definition: dict?.definition || null,
-      exampleEn,
-      exampleDe,
     });
     document.getElementById('progress-done').textContent = newPool.length;
     document.getElementById('progress-fill').style.width = ((newPool.length / size) * 100) + '%';
@@ -778,14 +791,8 @@ function buildPhase1Queue() {
 }
 
 function buildPhase2Queue() {
-  const capable = pool.filter(w =>
-    w.exampleEn && w.exampleDe &&
-    w.exampleEn.split(/\s+/).length >= 3 &&
-    w.exampleEn.split(/\s+/).length <= 10 &&
-    w.exampleDe.split(/\s+/).length >= 3
-  );
   const items = [];
-  for (const w of capable) {
+  for (const w of pool) {
     items.push({ word: w, dir: 'en-de', mode: 'sentence' });
     items.push({ word: w, dir: 'de-en', mode: 'sentence' });
   }
@@ -800,16 +807,39 @@ function generateQuestion(item) {
   if (mode === 'sentence') {
     const sourceLang = dir === 'en-de' ? 'en' : 'de';
     const targetLang = dir === 'en-de' ? 'de' : 'en';
-    const promptText = sourceLang === 'en' ? w.exampleEn : w.exampleDe;
-    const answerText = targetLang === 'en' ? w.exampleEn : w.exampleDe;
-    const tokens = answerText.replace(/[.,!?;:"„"]/g, '').split(/\s+/).filter(Boolean);
-    const tokensLower = new Set(tokens.map(t => t.toLowerCase()));
-    const extraPool = pool
+    const cloze = buildClozeFor(w, w.posKey || 'default');
+
+    const sourceWord = sourceLang === 'en' ? w.en : w.de;
+    const targetWord = targetLang === 'en' ? w.en : w.de;
+    const sourceAccepted = sourceLang === 'en' ? (w.enAll || [w.en]) : (w.deAll || [w.de]);
+    const targetAccepted = targetLang === 'en' ? (w.enAll || [w.en]) : (w.deAll || [w.de]);
+
+    const promptText = sourceLang === 'en' ? cloze.renderEn(sourceWord) : cloze.renderDe(sourceWord);
+    const blankText = targetLang === 'en' ? cloze.renderEn('___') : cloze.renderDe('___');
+
+    const acceptedLower = new Set(targetAccepted.map(s => s.toLowerCase()));
+    const distractorPool = pool
+      .filter(p => p.posKey === w.posKey)
       .map(p => targetLang === 'en' ? p.en : p.de)
-      .filter(t => t && !tokensLower.has(t.toLowerCase()));
-    const extras = shuffle(extraPool).slice(0, Math.min(3, extraPool.length));
-    const bank = shuffle([...tokens, ...extras]).map((text, id) => ({ id, text }));
-    return { mode, dir, sourceLang, targetLang, prompt: promptText, answerTokens: tokens, bank, raw: w };
+      .filter(t => t && !acceptedLower.has(t.toLowerCase()));
+    let distractors = shuffle(distractorPool).slice(0, 3);
+    if (distractors.length < 3) {
+      const fallbackPool = pool
+        .map(p => targetLang === 'en' ? p.en : p.de)
+        .filter(t => t && !acceptedLower.has(t.toLowerCase()) && !distractors.includes(t));
+      distractors = [...distractors, ...shuffle(fallbackPool).slice(0, 3 - distractors.length)];
+    }
+    const options = shuffle([targetWord, ...distractors]);
+
+    return {
+      mode, dir, sourceLang, targetLang,
+      prompt: promptText,
+      blank: blankText,
+      correct: targetWord,
+      accepted: targetAccepted,
+      options,
+      raw: w,
+    };
   }
 
   const promptKey = dir === 'en-de' ? 'en' : 'de';
@@ -1023,8 +1053,6 @@ function renderQuestion() {
     card.appendChild(checkBtn);
     setTimeout(() => input.focus(), 60);
   } else if (q.mode === 'sentence') {
-    sentencePick = [];
-    sentenceBank = [...q.bank];
     const promptEl = el('div', { class: 'sentence-prompt' });
     promptEl.textContent = `„${q.prompt}"`;
     card.appendChild(promptEl);
@@ -1033,13 +1061,22 @@ function renderQuestion() {
     speakerRow.appendChild(speakerButton(q.prompt, q.sourceLang));
     card.appendChild(speakerRow);
 
-    card.appendChild(el('div', { class: 'sentence-target', id: 'target-zone' }));
-    card.appendChild(el('div', { id: 'bank-zone', style: 'display:flex; flex-wrap:wrap; gap:8px;' }));
+    const blankRow = el('div', { class: 'cloze-blank' });
+    const blankIntro = el('div', { class: 'cloze-intro' });
+    blankIntro.textContent = `Welches Wort passt in die Lücke? (${q.targetLang === 'de' ? 'auf Deutsch' : 'auf Englisch'})`;
+    card.appendChild(blankIntro);
+    blankRow.textContent = `„${q.blank}"`;
+    card.appendChild(blankRow);
+
+    const grid = el('div', { class: 'choice-grid' });
+    q.options.forEach((opt, i) => {
+      const btn = el('button', { class: 'choice-btn' });
+      btn.textContent = opt;
+      btn.addEventListener('click', () => onClozeChoice(i, opt));
+      grid.appendChild(btn);
+    });
+    card.appendChild(grid);
     card.appendChild(el('div', { id: 'reveal-slot' }));
-    const checkBtn = el('button', { class: 'btn btn-primary mt-16', id: 'check-btn' });
-    checkBtn.textContent = 'Prüfen';
-    checkBtn.addEventListener('click', onSentenceCheck);
-    card.appendChild(checkBtn);
   } else if (q.mode === 'flash') {
     const front = el('div', { class: 'flash-front' });
     const word = el('div', { class: 'flash-word' });
@@ -1073,8 +1110,6 @@ function renderQuestion() {
   }
 
   host.appendChild(card);
-
-  if (q.mode === 'sentence') renderSentence();
 }
 
 function onSkip() {
@@ -1107,20 +1142,20 @@ function onSkip() {
     const checkBtn = document.getElementById('check-btn');
     if (checkBtn) checkBtn.remove();
   } else if (q.mode === 'sentence') {
-    sentencePick = q.answerTokens.map((text, id) => ({ id, text }));
-    sentenceBank = [];
-    state.answered = true;
-    renderSentence();
-    state.answered = false;
+    document.querySelectorAll('.choice-btn').forEach((btn, idx) => {
+      btn.disabled = true;
+      const opt = q.options[idx];
+      const acceptedLower = new Set((q.accepted || [q.correct]).map(s => s.toLowerCase()));
+      if (acceptedLower.has(opt.toLowerCase())) btn.classList.add('correct');
+      else btn.classList.add('dim');
+    });
     const reveal = document.getElementById('reveal-slot');
     if (reveal) {
       const div = el('div', { class: 'correct-reveal' });
-      div.innerHTML = 'Lösung: <strong></strong>';
-      div.querySelector('strong').textContent = q.answerTokens.join(' ');
+      div.innerHTML = 'Richtig: <strong></strong>';
+      div.querySelector('strong').textContent = q.correct;
       reveal.appendChild(div);
     }
-    const checkBtn = document.getElementById('check-btn');
-    if (checkBtn) checkBtn.remove();
   }
 
   const skipRow = document.getElementById('skip-row');
@@ -1128,50 +1163,28 @@ function onSkip() {
   grade(false);
 }
 
-function renderSentence() {
-  const target = document.getElementById('target-zone');
-  const bank = document.getElementById('bank-zone');
-  if (!target || !bank) return;
-  target.innerHTML = '';
-  bank.innerHTML = '';
-  if (sentencePick.length === 0) {
-    const ph = el('span', { class: 'sentence-placeholder' });
-    ph.textContent = 'Tippe die Wörter unten in der richtigen Reihenfolge an';
-    target.appendChild(ph);
-  } else {
-    sentencePick.forEach(t => {
-      const btn = el('button', { class: 'token picked' });
-      btn.textContent = t.text;
-      if (state.answered) btn.disabled = true;
-      else btn.addEventListener('click', () => moveToBank(t.id));
-      target.appendChild(btn);
-    });
-  }
-  sentenceBank.forEach(t => {
-    const btn = el('button', { class: 'token' });
-    btn.textContent = t.text;
-    if (state.answered) btn.disabled = true;
-    else btn.addEventListener('click', () => moveToPick(t.id));
-    bank.appendChild(btn);
+function onClozeChoice(i, picked) {
+  if (state.answered) return;
+  const q = currentQ;
+  const acceptedLower = new Set((q.accepted || [q.correct]).map(s => s.toLowerCase()));
+  const isRight = acceptedLower.has(picked.toLowerCase());
+  document.querySelectorAll('.choice-btn').forEach((btn, idx) => {
+    btn.disabled = true;
+    const opt = q.options[idx];
+    if (acceptedLower.has(opt.toLowerCase())) btn.classList.add('correct');
+    else if (idx === i) btn.classList.add('wrong');
+    else btn.classList.add('dim');
   });
-}
-
-function moveToPick(id) {
-  if (state.answered) return;
-  const idx = sentenceBank.findIndex(t => t.id === id);
-  if (idx < 0) return;
-  const [t] = sentenceBank.splice(idx, 1);
-  sentencePick.push(t);
-  renderSentence();
-}
-
-function moveToBank(id) {
-  if (state.answered) return;
-  const idx = sentencePick.findIndex(t => t.id === id);
-  if (idx < 0) return;
-  const [t] = sentencePick.splice(idx, 1);
-  sentenceBank.push(t);
-  renderSentence();
+  if (!isRight) {
+    const reveal = document.getElementById('reveal-slot');
+    if (reveal) {
+      const div = el('div', { class: 'correct-reveal' });
+      div.innerHTML = 'Richtig: <strong></strong>';
+      div.querySelector('strong').textContent = q.correct;
+      reveal.appendChild(div);
+    }
+  }
+  grade(isRight);
 }
 
 function grade(isRight) {
@@ -1246,25 +1259,6 @@ function onTypeCheck() {
     reveal.appendChild(div);
   }
   document.getElementById('check-btn').remove();
-  grade(isRight);
-}
-
-function onSentenceCheck() {
-  if (state.answered) return;
-  const q = currentQ;
-  if (sentencePick.length === 0) return;
-  const built = sentencePick.map(t => t.text).join(' ');
-  const target = q.answerTokens.join(' ');
-  const isRight = normalize(built) === normalize(target);
-  if (!isRight) {
-    const reveal = document.getElementById('reveal-slot');
-    const div = el('div', { class: 'correct-reveal' });
-    div.innerHTML = 'Richtig: <strong></strong>';
-    div.querySelector('strong').textContent = q.answerTokens.join(' ');
-    reveal.appendChild(div);
-  }
-  document.getElementById('check-btn').remove();
-  renderSentence();
   grade(isRight);
 }
 
