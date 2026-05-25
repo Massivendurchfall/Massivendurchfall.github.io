@@ -223,6 +223,42 @@
     color: var(--muted); font-size: 16px;
   }
 
+  .cloze-source {
+    background: var(--cream);
+    border-left: 4px solid var(--forest);
+    padding: 20px 24px;
+    border-radius: 2px;
+    margin-bottom: 24px;
+  }
+  .cloze-source-intro {
+    font-family: 'Fraunces', serif; font-style: italic;
+    color: var(--muted); font-size: 13px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .cloze-source-text {
+    font-family: 'Fraunces', serif;
+    font-size: 22px; line-height: 1.4;
+    color: var(--ink);
+  }
+  .cloze-intro {
+    text-align: center;
+    font-family: 'Fraunces', serif; font-style: italic;
+    color: var(--muted); font-size: 15px;
+    margin-bottom: 10px;
+  }
+  .cloze-blank {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    text-align: center; line-height: 1.5;
+    margin-bottom: 24px;
+    padding: 18px 20px;
+    background: var(--paper);
+    border: 1px dashed var(--rule);
+    border-radius: 4px;
+    color: var(--ink);
+  }
+
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     padding: 17px 24px;
@@ -380,6 +416,9 @@
     .def-block { padding: 18px 18px; margin-bottom: 22px; }
     .def-text { font-size: 19px; }
     .def-target { font-size: 15px; }
+    .cloze-source { padding: 16px 18px; margin-bottom: 20px; }
+    .cloze-source-text { font-size: 18px; }
+    .cloze-blank { font-size: 19px; padding: 14px 16px; margin-bottom: 20px; }
     .btn { font-size: 17px; padding: 16px 18px; }
     .continue { font-size: 15px; }
     .pool-refresh { font-size: 13px; line-height: 1.3; }
@@ -487,6 +526,135 @@ const COMMON_SEED_WORDS = [
   'butter','distance','daughter','brother','sister','mother','father','neighbor'
 ];
 
+const SENTENCE_CORPUS = [
+  { en: "The house is very old.", de: "Das Haus ist sehr alt.", word: "house" },
+  { en: "I live in a small house.", de: "Ich wohne in einem kleinen Haus.", word: "house" },
+  { en: "We bought a new car.", de: "Wir haben ein neues Auto gekauft.", word: "car" },
+  { en: "The car is in the garage.", de: "Das Auto steht in der Garage.", word: "car" },
+  { en: "She reads a book every evening.", de: "Sie liest jeden Abend ein Buch.", word: "book" },
+  { en: "This book is very interesting.", de: "Dieses Buch ist sehr interessant.", word: "book" },
+  { en: "I drink water every morning.", de: "Ich trinke jeden Morgen Wasser.", word: "water" },
+  { en: "The water is cold.", de: "Das Wasser ist kalt.", word: "water" },
+  { en: "She is my best friend.", de: "Sie ist meine beste Freundin.", word: "friend" },
+  { en: "He is a good friend.", de: "Er ist ein guter Freund.", word: "friend" },
+  { en: "My family lives in Berlin.", de: "Meine Familie lebt in Berlin.", word: "family" },
+  { en: "We have a big family.", de: "Wir haben eine große Familie.", word: "family" },
+  { en: "The school starts at eight.", de: "Die Schule beginnt um acht.", word: "school" },
+  { en: "I go to school by bike.", de: "Ich fahre mit dem Fahrrad zur Schule.", word: "school" },
+  { en: "I love listening to music.", de: "Ich höre gerne Musik.", word: "music" },
+  { en: "The music is too loud.", de: "Die Musik ist zu laut.", word: "music" },
+  { en: "Every morning I drink coffee.", de: "Jeden Morgen trinke ich Kaffee.", word: "morning" },
+  { en: "The morning was very quiet.", de: "Der Morgen war sehr ruhig.", word: "morning" },
+  { en: "We work in the evening.", de: "Wir arbeiten am Abend.", word: "evening" },
+  { en: "The evening is warm and quiet.", de: "Der Abend ist warm und ruhig.", word: "evening" },
+  { en: "The kitchen is small but bright.", de: "Die Küche ist klein, aber hell.", word: "kitchen" },
+  { en: "I cook in the kitchen.", de: "Ich koche in der Küche.", word: "kitchen" },
+  { en: "Please open the window.", de: "Bitte öffne das Fenster.", word: "window" },
+  { en: "The window is dirty.", de: "Das Fenster ist schmutzig.", word: "window" },
+  { en: "I wrote a letter to my mother.", de: "Ich habe meiner Mutter einen Brief geschrieben.", word: "letter" },
+  { en: "There is a letter for you.", de: "Da ist ein Brief für dich.", word: "letter" },
+  { en: "We have a beautiful garden.", de: "Wir haben einen schönen Garten.", word: "garden" },
+  { en: "The children play in the garden.", de: "Die Kinder spielen im Garten.", word: "garden" },
+  { en: "The flower is red.", de: "Die Blume ist rot.", word: "flower" },
+  { en: "She gave me a flower.", de: "Sie hat mir eine Blume gegeben.", word: "flower" },
+  { en: "The river is wide and deep.", de: "Der Fluss ist breit und tief.", word: "river" },
+  { en: "We swim in the river.", de: "Wir schwimmen im Fluss.", word: "river" },
+  { en: "The mountain is high.", de: "Der Berg ist hoch.", word: "mountain" },
+  { en: "We climb the mountain together.", de: "Wir besteigen den Berg zusammen.", word: "mountain" },
+  { en: "There is a forest behind the house.", de: "Hinter dem Haus ist ein Wald.", word: "forest" },
+  { en: "The forest is dark and cool.", de: "Der Wald ist dunkel und kühl.", word: "forest" },
+  { en: "I love the summer.", de: "Ich liebe den Sommer.", word: "summer" },
+  { en: "The summer was very hot.", de: "Der Sommer war sehr heiß.", word: "summer" },
+  { en: "Winter is my favorite season.", de: "Der Winter ist meine Lieblingsjahreszeit.", word: "winter" },
+  { en: "The winter is cold here.", de: "Der Winter ist hier kalt.", word: "winter" },
+  { en: "I want to travel to Italy.", de: "Ich möchte nach Italien reisen.", word: "travel" },
+  { en: "We travel by train.", de: "Wir reisen mit dem Zug.", word: "travel" },
+  { en: "I had a strange dream last night.", de: "Ich hatte gestern Nacht einen seltsamen Traum.", word: "dream" },
+  { en: "She has a dream of becoming a doctor.", de: "Sie hat den Traum, Ärztin zu werden.", word: "dream" },
+  { en: "I want to remember this day.", de: "Ich möchte mich an diesen Tag erinnern.", word: "remember" },
+  { en: "Try to remember her name.", de: "Versuche, dich an ihren Namen zu erinnern.", word: "remember" },
+  { en: "I bought fresh bread today.", de: "Ich habe heute frisches Brot gekauft.", word: "bread" },
+  { en: "The bread is still warm.", de: "Das Brot ist noch warm.", word: "bread" },
+  { en: "The street is empty at night.", de: "Die Straße ist nachts leer.", word: "street" },
+  { en: "We live on a quiet street.", de: "Wir wohnen in einer ruhigen Straße.", word: "street" },
+  { en: "I have a question for you.", de: "Ich habe eine Frage an dich.", word: "question" },
+  { en: "He answered every question.", de: "Er hat jede Frage beantwortet.", word: "question" },
+  { en: "She gave a clear answer.", de: "Sie gab eine klare Antwort.", word: "answer" },
+  { en: "I do not know the answer.", de: "Ich kenne die Antwort nicht.", word: "answer" },
+  { en: "The picture on the wall is old.", de: "Das Bild an der Wand ist alt.", word: "picture" },
+  { en: "I painted a picture for her.", de: "Ich habe ein Bild für sie gemalt.", word: "picture" },
+  { en: "English is a useful language.", de: "Englisch ist eine nützliche Sprache.", word: "language" },
+  { en: "She speaks three languages.", de: "Sie spricht drei Sprachen.", word: "language" },
+  { en: "We saw a wild animal in the forest.", de: "Wir haben ein wildes Tier im Wald gesehen.", word: "animal" },
+  { en: "The dog is a friendly animal.", de: "Der Hund ist ein freundliches Tier.", word: "animal" },
+  { en: "The library opens at nine.", de: "Die Bibliothek öffnet um neun.", word: "library" },
+  { en: "I study in the library.", de: "Ich lerne in der Bibliothek.", word: "library" },
+  { en: "My mother makes the best cake.", de: "Meine Mutter macht den besten Kuchen.", word: "mother" },
+  { en: "I called my mother yesterday.", de: "Ich habe gestern meine Mutter angerufen.", word: "mother" },
+  { en: "My father works in an office.", de: "Mein Vater arbeitet in einem Büro.", word: "father" },
+  { en: "Your father is very kind.", de: "Dein Vater ist sehr nett.", word: "father" },
+  { en: "My sister is younger than me.", de: "Meine Schwester ist jünger als ich.", word: "sister" },
+  { en: "She has one sister and two brothers.", de: "Sie hat eine Schwester und zwei Brüder.", word: "sister" },
+  { en: "My brother lives in Munich.", de: "Mein Bruder wohnt in München.", word: "brother" },
+  { en: "His brother plays football.", de: "Sein Bruder spielt Fußball.", word: "brother" },
+  { en: "My daughter is six years old.", de: "Meine Tochter ist sechs Jahre alt.", word: "daughter" },
+  { en: "Her daughter goes to school.", de: "Ihre Tochter geht zur Schule.", word: "daughter" },
+  { en: "Our neighbor is very friendly.", de: "Unser Nachbar ist sehr freundlich.", word: "neighbor" },
+  { en: "The neighbor has a dog.", de: "Der Nachbar hat einen Hund.", word: "neighbor" },
+  { en: "The bridge is very long.", de: "Die Brücke ist sehr lang.", word: "bridge" },
+  { en: "We walked across the bridge.", de: "Wir gingen über die Brücke.", word: "bridge" },
+  { en: "Please light the candle.", de: "Bitte zünde die Kerze an.", word: "candle" },
+  { en: "The candle burns slowly.", de: "Die Kerze brennt langsam.", word: "candle" },
+  { en: "Autumn is my favorite time of year.", de: "Der Herbst ist meine Lieblingszeit im Jahr.", word: "autumn" },
+  { en: "The leaves fall in autumn.", de: "Die Blätter fallen im Herbst.", word: "autumn" },
+  { en: "The ocean is calm today.", de: "Das Meer ist heute ruhig.", word: "ocean" },
+  { en: "We swam in the ocean.", de: "Wir schwammen im Meer.", word: "ocean" },
+  { en: "I need a new pencil.", de: "Ich brauche einen neuen Bleistift.", word: "pencil" },
+  { en: "Where is my pencil?", de: "Wo ist mein Bleistift?", word: "pencil" },
+  { en: "The village is small and peaceful.", de: "Das Dorf ist klein und friedlich.", word: "village" },
+  { en: "My grandmother lives in a village.", de: "Meine Großmutter lebt in einem Dorf.", word: "village" },
+  { en: "He often travels for work.", de: "Er reist oft beruflich.", word: "often" },
+  { en: "She often visits us.", de: "Sie besucht uns oft.", word: "often" },
+  { en: "I want to work today.", de: "Ich möchte heute arbeiten.", word: "work" },
+  { en: "He likes his new work.", de: "Er mag seine neue Arbeit.", word: "work" },
+  { en: "I want to learn German.", de: "Ich möchte Deutsch lernen.", word: "learn" },
+  { en: "Children can learn quickly.", de: "Kinder können schnell lernen.", word: "learn" },
+  { en: "I want to speak with you.", de: "Ich möchte mit dir sprechen.", word: "speak" },
+  { en: "You should speak slowly.", de: "Du solltest langsam sprechen.", word: "speak" },
+  { en: "We can watch a movie tonight.", de: "Wir können heute Abend einen Film schauen.", word: "watch" },
+  { en: "I want to watch the game.", de: "Ich möchte das Spiel schauen.", word: "watch" },
+  { en: "I want to write a letter.", de: "Ich möchte einen Brief schreiben.", word: "write" },
+  { en: "She likes to write stories.", de: "Sie mag es, Geschichten zu schreiben.", word: "write" },
+  { en: "I have to think about it.", de: "Ich muss darüber nachdenken.", word: "think" },
+  { en: "You should think first.", de: "Du solltest zuerst nachdenken.", word: "think" },
+  { en: "I need help with my homework.", de: "Ich brauche Hilfe bei meinen Hausaufgaben.", word: "help" },
+  { en: "Can you help me, please?", de: "Kannst du mir bitte helfen?", word: "help" },
+  { en: "The story has a happy ending.", de: "Die Geschichte hat ein glückliches Ende.", word: "story" },
+  { en: "She told us a long story.", de: "Sie erzählte uns eine lange Geschichte.", word: "story" },
+  { en: "The room is bright and warm.", de: "Das Zimmer ist hell und warm.", word: "room" },
+  { en: "My room is on the second floor.", de: "Mein Zimmer ist im zweiten Stock.", word: "room" },
+  { en: "She works as a teacher.", de: "Sie arbeitet als Lehrerin.", word: "teacher" },
+  { en: "The teacher is very patient.", de: "Die Lehrerin ist sehr geduldig.", word: "teacher" },
+  { en: "The child is sleeping.", de: "Das Kind schläft.", word: "child" },
+  { en: "Every child needs love.", de: "Jedes Kind braucht Liebe.", word: "child" },
+  { en: "Please give me a moment.", de: "Bitte gib mir einen Moment.", word: "moment" },
+  { en: "For a moment I was afraid.", de: "Für einen Moment hatte ich Angst.", word: "moment" },
+  { en: "I love this place.", de: "Ich liebe diesen Ort.", word: "place" },
+  { en: "This is a quiet place.", de: "Das ist ein ruhiger Ort.", word: "place" },
+  { en: "Time goes by quickly.", de: "Die Zeit vergeht schnell.", word: "time" },
+  { en: "I have no time today.", de: "Ich habe heute keine Zeit.", word: "time" },
+];
+
+const SENTENCE_BY_WORD = (() => {
+  const m = new Map();
+  for (const s of SENTENCE_CORPUS) {
+    const k = s.word.toLowerCase();
+    if (!m.has(k)) m.set(k, []);
+    m.get(k).push(s);
+  }
+  return m;
+})();
+
 const POOL_SIZE = 20;
 
 const STOP_WORDS = new Set([
@@ -531,11 +699,14 @@ async function loadFrequencyList() {
 }
 
 async function fetchSeedWords(n) {
+  const corpusWords = shuffle([...SENTENCE_BY_WORD.keys()]);
   const list = await loadFrequencyList();
-  if (list && list.length >= n) {
-    return shuffle([...list]).slice(0, n);
-  }
-  return shuffle([...COMMON_SEED_WORDS]).slice(0, n);
+  const fromCorpus = corpusWords.slice(0, Math.ceil(n * 0.7));
+  const corpusSet = new Set(fromCorpus);
+  const extra = list
+    ? shuffle([...list]).filter(w => !corpusSet.has(w)).slice(0, n)
+    : shuffle([...COMMON_SEED_WORDS]).filter(w => !corpusSet.has(w)).slice(0, n);
+  return shuffle([...fromCorpus, ...extra]);
 }
 
 function fetchWithTimeout(url, ms = 7000) {
@@ -636,12 +807,9 @@ async function buildPool(size) {
     if (!enAll.includes(w)) enAll.unshift(w);
 
     let definitionDe = null;
-    if (dict?.definition) {
-      const defTrans = await translate(dict.definition, 'en-de');
-      if (defTrans) definitionDe = defTrans.primary;
-    }
 
     const posKey = getPosKey(dict?.pos);
+    const examples = SENTENCE_BY_WORD.get(w) || [];
 
     newPool.push({
       en: w,
@@ -652,6 +820,7 @@ async function buildPool(size) {
       posKey,
       definition: dict?.definition || null,
       definitionDe,
+      examples,
     });
     document.getElementById('progress-done').textContent = newPool.length;
     document.getElementById('progress-fill').style.width = ((newPool.length / size) * 100) + '%';
@@ -667,6 +836,18 @@ function getPosKey(pos) {
   if (p.includes('adjective')) return 'adjective';
   if (p.includes('adverb')) return 'adverb';
   return 'default';
+}
+
+function buildBlankSentence(sentence, acceptedWords) {
+  const sorted = [...acceptedWords].sort((a, b) => b.length - a.length);
+  for (const word of sorted) {
+    const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const re = new RegExp(`\\b${escaped}\\b`, 'i');
+    if (re.test(sentence)) {
+      return { sentence: sentence.replace(re, '___'), matchedWord: sentence.match(re)[0] };
+    }
+  }
+  return null;
 }
 
 function setDetail(s) {
@@ -712,13 +893,20 @@ function buildPhase1Queue() {
 function buildPhase2Queue() {
   const items = [];
   for (const w of pool) {
-    if (w.definitionDe && w.definition) {
-      items.push({ word: w, dir: 'def-en', mode: 'definition' });
-      items.push({ word: w, dir: 'def-de', mode: 'definition' });
-    } else {
-      items.push({ word: w, dir: 'en-de', mode: 'type' });
-      items.push({ word: w, dir: 'de-en', mode: 'type' });
+    if (!w.examples || w.examples.length === 0) continue;
+
+    // For each direction, check that the target sentence actually contains a usable form of the word
+    let exForEnDe = null;
+    let exForDeEn = null;
+    for (const ex of w.examples) {
+      // dir = 'en-de' → target is DE, blank needs DE
+      if (!exForEnDe && buildBlankSentence(ex.de, w.deAll || [w.de])) exForEnDe = ex;
+      // dir = 'de-en' → target is EN, blank needs EN
+      if (!exForDeEn && buildBlankSentence(ex.en, w.enAll || [w.en])) exForDeEn = ex;
+      if (exForEnDe && exForDeEn) break;
     }
+    if (exForEnDe) items.push({ word: w, dir: 'en-de', mode: 'cloze', example: exForEnDe });
+    if (exForDeEn) items.push({ word: w, dir: 'de-en', mode: 'cloze', example: exForDeEn });
   }
   return shuffle(items);
 }
@@ -727,6 +915,45 @@ function generateQuestion(item) {
   const w = item.word;
   const dir = item.dir;
   const mode = item.mode;
+
+  if (mode === 'cloze') {
+    const sourceLang = dir === 'en-de' ? 'en' : 'de';
+    const targetLang = dir === 'en-de' ? 'de' : 'en';
+    const ex = item.example;
+    const sourceSentence = sourceLang === 'en' ? ex.en : ex.de;
+    const targetSentence = targetLang === 'en' ? ex.en : ex.de;
+    const accepted = targetLang === 'en' ? (w.enAll || [w.en]) : (w.deAll || [w.de]);
+
+    const blankResult = buildBlankSentence(targetSentence, accepted);
+    // buildPhase2Queue already validated, but guard anyway
+    const blankSentence = blankResult ? blankResult.sentence : targetSentence;
+    const targetWord = targetLang === 'en' ? w.en : w.de;
+
+    const acceptedLower = new Set(accepted.map(s => s.toLowerCase()));
+    const distractorPool = pool
+      .filter(p => p.posKey === w.posKey || w.posKey === 'default')
+      .map(p => targetLang === 'en' ? p.en : p.de)
+      .filter(t => t && !acceptedLower.has(t.toLowerCase()));
+    let distractors = shuffle(distractorPool).slice(0, 3);
+    if (distractors.length < 3) {
+      const fallback = pool
+        .map(p => targetLang === 'en' ? p.en : p.de)
+        .filter(t => t && !acceptedLower.has(t.toLowerCase()) && !distractors.includes(t));
+      distractors = [...distractors, ...shuffle(fallback).slice(0, 3 - distractors.length)];
+    }
+    const options = shuffle([targetWord, ...distractors]);
+    return {
+      mode, dir,
+      sourceLang, targetLang,
+      sourceSentence,
+      blankSentence,
+      fullSentence: targetSentence,
+      correct: targetWord,
+      accepted,
+      options,
+      raw: w,
+    };
+  }
 
   if (mode === 'definition') {
     const defLang = dir === 'def-en' ? 'en' : 'de';
@@ -888,6 +1115,7 @@ function modeLabelText(m) {
     choice: 'Wähle die Übersetzung',
     type: 'Tippe die Übersetzung',
     definition: 'Welches Wort wird beschrieben?',
+    cloze: 'Bilde den Satz',
     flash: 'Karteikarte',
   }[m];
 }
@@ -925,6 +1153,13 @@ function renderQuestion() {
     langTag.textContent = q.defLang === 'en' ? '🇺🇸 Definition' : '🇩🇪 Definition';
     tag.appendChild(langTag);
     head.appendChild(tag);
+  } else if (q.mode === 'cloze') {
+    const dirRow = el('div', { class: 'dir-row' });
+    dirRow.appendChild(flagEl(q.sourceLang));
+    const arrow = el('span', { html: SVG_ARROW });
+    dirRow.appendChild(arrow.firstChild);
+    dirRow.appendChild(flagEl(q.targetLang));
+    head.appendChild(dirRow);
   } else {
     const fromLang = q.dir === 'en-de' ? 'en' : 'de';
     const toLang = q.dir === 'en-de' ? 'de' : 'en';
@@ -1018,6 +1253,36 @@ function renderQuestion() {
     });
     card.appendChild(grid);
     card.appendChild(el('div', { id: 'reveal-slot' }));
+  } else if (q.mode === 'cloze') {
+    const sourceBlock = el('div', { class: 'cloze-source' });
+    const sourceIntro = el('div', { class: 'cloze-source-intro' });
+    sourceIntro.textContent = q.sourceLang === 'en' ? 'Englischer Satz' : 'Deutscher Satz';
+    sourceBlock.appendChild(sourceIntro);
+    const sourceText = el('div', { class: 'cloze-source-text' });
+    sourceText.textContent = q.sourceSentence;
+    sourceBlock.appendChild(sourceText);
+    const speakRow = el('div', { style: 'display:flex; justify-content:center; margin-top:12px;' });
+    speakRow.appendChild(speakerButton(q.sourceSentence, q.sourceLang));
+    sourceBlock.appendChild(speakRow);
+    card.appendChild(sourceBlock);
+
+    const blankIntro = el('div', { class: 'cloze-intro' });
+    blankIntro.textContent = `Welches ${q.targetLang === 'en' ? 'englische' : 'deutsche'} Wort passt in die Lücke?`;
+    card.appendChild(blankIntro);
+
+    const blank = el('div', { class: 'cloze-blank' });
+    blank.textContent = `„${q.blankSentence}"`;
+    card.appendChild(blank);
+
+    const grid = el('div', { class: 'choice-grid' });
+    q.options.forEach((opt, i) => {
+      const btn = el('button', { class: 'choice-btn' });
+      btn.textContent = opt;
+      btn.addEventListener('click', () => onClozeChoice(i, opt));
+      grid.appendChild(btn);
+    });
+    card.appendChild(grid);
+    card.appendChild(el('div', { id: 'reveal-slot' }));
   }
 
   card.appendChild(el('div', { id: 'result-slot' }));
@@ -1047,7 +1312,7 @@ function onSkip() {
   if (state.answered) return;
   const q = currentQ;
 
-  if (q.mode === 'choice' || q.mode === 'definition') {
+  if (q.mode === 'choice' || q.mode === 'definition' || q.mode === 'cloze') {
     markAllChoices(q, -1);
     const reveal = document.getElementById('reveal-slot');
     if (reveal) {
@@ -1096,6 +1361,22 @@ function onDefinitionChoice(i, picked) {
   grade(isRight);
 }
 
+function onClozeChoice(i, picked) {
+  if (state.answered) return;
+  const q = currentQ;
+  const acceptedLower = new Set((q.accepted || [q.correct]).map(s => s.toLowerCase()));
+  const isRight = acceptedLower.has(picked.toLowerCase());
+  markAllChoices(q, i);
+  const reveal = document.getElementById('reveal-slot');
+  if (reveal) {
+    const div = el('div', { class: 'correct-reveal' });
+    div.innerHTML = (isRight ? 'Vollständiger Satz: ' : 'Richtig wäre: ') + '<strong></strong>';
+    div.querySelector('strong').textContent = q.fullSentence;
+    reveal.appendChild(div);
+  }
+  grade(isRight);
+}
+
 function grade(isRight) {
   state.answered = true;
   state.correct = isRight;
@@ -1126,7 +1407,7 @@ function updateStats() {
 
 function updatePhaseBar() {
   document.getElementById('phase-num').textContent = phase === 1 ? 'I' : 'II';
-  document.getElementById('phase-name').textContent = phase === 1 ? 'Vokabeln' : 'Definitionen';
+  document.getElementById('phase-name').textContent = phase === 1 ? 'Vokabeln' : 'Sätze';
   document.getElementById('phase-done').textContent = phaseDone;
   document.getElementById('phase-total').textContent = phaseTotal;
   const pct = phaseTotal > 0 ? (phaseDone / phaseTotal) * 100 : 0;
@@ -1217,13 +1498,13 @@ function startPhase2() {
   phaseDone = 0;
   updatePhaseBar();
   if (phaseTotal === 0) {
-    showStageBanner('Keine Definitionen verfügbar', 'Für die geladenen Wörter konnten keine Beschreibungen gefunden werden.', 'Frische Wörter ziehen', reloadPool);
+    showStageBanner('Keine Beispielsätze verfügbar', 'Für die geladenen Wörter wurden keine passenden Beispielsätze gefunden.', 'Frische Wörter ziehen', reloadPool);
     return;
   }
-  const withDefs = pool.filter(p => p.definition && p.definitionDe).length;
+  const wordsWithSentence = pool.filter(p => p.examples && p.examples.length > 0).length;
   showStageBanner(
-    'Phase II — Definitionen',
-    `Du liest eine Definition und wählst das passende Wort. ${withDefs} von ${pool.length} Wörtern haben eine Beschreibung, der Rest wird per Tippen geübt.`,
+    'Phase II — Sätze',
+    `Du siehst einen echten Beispielsatz und wählst das passende Wort für die Lücke. ${wordsWithSentence} von ${pool.length} Wörtern haben einen Satz.`,
     'Weiter',
     () => {
       const next = phaseQueue.shift();
