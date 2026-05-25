@@ -44,10 +44,7 @@
     border-bottom: 1px solid var(--rule);
   }
   .brand { display: flex; align-items: center; gap: 12px; }
-  .brand-icon {
-    width: 26px; height: 26px; color: var(--bordeaux);
-    flex-shrink: 0;
-  }
+  .brand-icon { width: 26px; height: 26px; color: var(--bordeaux); flex-shrink: 0; }
   .brand-title {
     font-family: 'Fraunces', serif;
     font-size: 28px; font-weight: 700; letter-spacing: -0.02em; line-height: 1;
@@ -68,7 +65,30 @@
   .chip svg { width: 16px; height: 16px; }
   .chip-flame { color: var(--ember); }
 
-  main { position: relative; }
+  .phase-bar {
+    max-width: 720px; margin: 0 auto 20px;
+    background: var(--paper); border: 1px solid var(--rule);
+    border-radius: 4px; padding: 12px 16px;
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  }
+  .phase-label {
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: 14px; color: var(--ink-soft); flex-shrink: 0;
+  }
+  .phase-label strong { font-style: normal; color: var(--bordeaux); font-weight: 600; }
+  .phase-track {
+    flex: 1; min-width: 120px; height: 6px;
+    background: var(--rule-soft); border-radius: 99px; overflow: hidden;
+  }
+  .phase-fill {
+    height: 100%; background: var(--bordeaux);
+    transition: width 0.4s ease;
+  }
+  .phase-count {
+    font-size: 12px; color: var(--muted);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    flex-shrink: 0;
+  }
 
   .card {
     background: var(--paper);
@@ -187,7 +207,7 @@
     border: 1px dashed var(--rule);
     border-radius: 4px;
     display: flex; flex-wrap: wrap; gap: 8px;
-    align-items: flex-start;
+    align-items: center;
     margin-bottom: 20px;
   }
   .sentence-placeholder {
@@ -318,6 +338,10 @@
     font-family: 'Fraunces', serif; font-style: italic;
     color: var(--muted); margin-bottom: 28px;
   }
+  .loading-detail {
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted); margin-top: 14px; min-height: 16px;
+  }
   .progress-track {
     height: 6px; background: var(--rule-soft); border-radius: 99px;
     overflow: hidden; margin-bottom: 12px;
@@ -342,6 +366,26 @@
   }
   .error-msg { color: var(--ink-soft); margin-bottom: 24px; font-size: 14px; }
 
+  .stage-banner {
+    background: linear-gradient(135deg, var(--forest) 0%, #2a5341 100%);
+    color: var(--cream);
+    padding: 28px 30px; border-radius: 4px;
+    text-align: center; margin-bottom: 20px;
+    animation: fadeUp 0.4s ease;
+  }
+  .stage-banner h2 {
+    font-family: 'Fraunces', serif; font-size: 24px; font-weight: 600;
+    margin: 0 0 8px; letter-spacing: -0.01em;
+  }
+  .stage-banner p { margin: 0; opacity: 0.85; font-size: 14px; }
+  .stage-banner .stage-btn {
+    margin-top: 18px;
+    background: var(--cream); color: var(--ink);
+    border: none; padding: 10px 20px; border-radius: 4px;
+    font-family: inherit; font-weight: 700; font-size: 13px;
+    letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer;
+  }
+
   .hidden { display: none !important; }
 
   @media (max-width: 540px) {
@@ -363,13 +407,14 @@
   <h1 class="loading-title">Lexikon wird geöffnet</h1>
   <p class="loading-sub">Wörter werden aus dem Äther gesammelt</p>
   <div class="progress-track"><div id="progress-fill" class="progress-fill" style="width:0%"></div></div>
-  <p class="loading-count"><span id="progress-done">0</span> / <span id="progress-total">15</span> Vokabeln</p>
+  <p class="loading-count"><span id="progress-done">0</span> / <span id="progress-total">12</span> Vokabeln</p>
+  <p class="loading-detail" id="loading-detail"></p>
 </div>
 
 <div id="error-view" class="error-box hidden">
   <h2 class="error-title">Hmm.</h2>
   <p class="error-msg" id="error-msg">Die Wörterbuch-Verbindung ist gerade gestört. Vielleicht später erneut versuchen?</p>
-  <button class="btn btn-primary" onclick="init()">Erneut versuchen</button>
+  <button class="btn btn-primary" id="retry-btn">Erneut versuchen</button>
 </div>
 
 <div id="app-view" class="wrap hidden">
@@ -405,9 +450,15 @@
     </div>
   </header>
 
+  <div class="phase-bar">
+    <div class="phase-label">Phase <strong id="phase-num">I</strong> · <span id="phase-name">Vokabeln</span></div>
+    <div class="phase-track"><div id="phase-fill" class="phase-fill" style="width:0%"></div></div>
+    <div class="phase-count"><span id="phase-done">0</span> / <span id="phase-total">0</span></div>
+  </div>
+
   <main>
-    <div id="card" class="card"></div>
-    <button class="pool-refresh" onclick="reloadPool()">
+    <div id="card-host"></div>
+    <button class="pool-refresh" id="refresh-btn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
         <path d="M21 3v5h-5"/>
@@ -425,31 +476,25 @@
 </div>
 
 <script>
-const RANDOM_WORD_URLS = [
-  n => `https://random-word-api.herokuapp.com/word?number=${n}`,
-  n => `https://random-word-api.vercel.app/api?words=${n}`,
-  n => `https://random-word-api.herokuapp.com/word?number=${n}&swear=0`,
+const COMMON_SEED_WORDS = [
+  'forest','river','mountain','window','letter','garden','kitchen','summer','winter','evening',
+  'silver','golden','travel','silence','laughter','memory','shadow','journey','wisdom','courage',
+  'bridge','candle','autumn','feather','harbor','ladder','meadow','ocean','pencil','quiet',
+  'ribbon','sunrise','thunder','umbrella','village','whisper','morning','street','flower','dream',
+  'family','school','music','friend','water','house','book','bread','cloud','beach',
+  'corner','dancer','engine','fabric','glance','helmet','island','jacket','kettle','lantern',
+  'marble','needle','orchard','pillow','quill','rabbit','saddle','tunnel','velvet','wagon',
+  'breakfast','answer','question','journey','picture','language','animal','flower','painting','library',
+  'butter','silver','laughter','distance','daughter','brother','sister','mother','father','neighbor'
 ];
 
-const IS_FILE_PROTOCOL = location.protocol === 'file:';
-
-function fetchWithTimeout(url, ms = 8000) {
-  return Promise.race([
-    fetch(url),
-    new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))
-  ]);
-}
-
-const FALLBACK_POOL = [
-  'house','water','friend','book','morning','street','window','bread',
-  'flower','mountain','river','forest','school','family','music','dream',
-  'letter','garden','kitchen','summer','winter','evening','silver','golden',
-  'travel','silence','laughter','memory','shadow','journey','wisdom','courage',
-  'bridge','candle','autumn','feather','harbor','ladder','meadow','ocean',
-  'pencil','quiet','ribbon','sunrise','thunder','umbrella','village','whisper'
-];
+const POOL_SIZE = 10;
 
 let pool = [];
+let phase = 1;
+let phaseQueue = [];
+let phaseTotal = 0;
+let phaseDone = 0;
 let currentQ = null;
 let streak = 0;
 let bestStreak = 0;
@@ -457,21 +502,70 @@ let state = { answered: false, correct: null };
 let sentencePick = [];
 let sentenceBank = [];
 
-async function fetchRandomWords(n) {
-  for (const url of RANDOM_WORD_URLS) {
+function fetchWithTimeout(url, ms = 7000) {
+  return Promise.race([
+    fetch(url),
+    new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))
+  ]);
+}
+
+const STOP_WORDS = new Set([
+  'the','and','for','are','but','not','you','all','can','had','her','was','one','our','out',
+  'day','get','has','him','his','how','its','may','new','now','old','see','two','way','who',
+  'boy','did','man','men','put','say','she','too','use','any','few','let','own','top','try',
+  'why','yes','far','off','run','set','sit','ten','win','yet','ago','air','arm','art','ask',
+  'bad','bag','bed','big','bit','box','buy','car','cup','cut','dad','die','dog','eat','egg',
+  'end','eye','fix','fly','fun','god','got','gun','guy','hat','hit','hot','ice','job','key',
+  'kid','law','lay','leg','lie','lot','low','map','mom','mrs','net','oil','pay','red','sir',
+  'son','sun','tax','tea','war','yet','add','any','bus','due','low','mid','non','per','via',
+  'tom','jim','bob','sam','joe','ben','ann','sue','him','her','his','its','our','their','your',
+  'this','that','these','those','what','when','where','which','while','with','from','have','will','would',
+  'could','should','about','after','again','also','been','before','being','between','both',
+  'doing','does','down','each','even','from','further','here','into','just','more','most','only',
+  'other','over','same','some','such','than','then','there','they','through','under','until',
+  'very','were','what','where','will','with','would','your','yours','about','above','below',
+  'mister','okay','well','still','quite','already','almost','among'
+]);
+
+const FREQUENCY_LISTS = [
+  'https://raw.githubusercontent.com/first20hours/google-10000-english/master/google-10000-english-usa-no-swears-medium.txt',
+  'https://raw.githubusercontent.com/first20hours/google-10000-english/master/google-10000-english-no-swears.txt',
+];
+
+let cachedFrequencyWords = null;
+
+async function loadFrequencyList() {
+  if (cachedFrequencyWords) return cachedFrequencyWords;
+  for (const url of FREQUENCY_LISTS) {
     try {
-      const r = await fetch(url(n));
+      const r = await fetchWithTimeout(url, 9000);
       if (!r.ok) continue;
-      const data = await r.json();
-      if (Array.isArray(data) && data.length > 0) return data;
+      const txt = await r.text();
+      const lines = txt.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+      const filtered = lines
+        .slice(0, 2500)
+        .filter(w => /^[a-z]{4,9}$/.test(w))
+        .filter(w => !STOP_WORDS.has(w));
+      if (filtered.length > 100) {
+        cachedFrequencyWords = filtered;
+        return filtered;
+      }
     } catch (e) {}
   }
-  return [...FALLBACK_POOL].sort(() => Math.random() - 0.5).slice(0, n);
+  return null;
+}
+
+async function fetchSeedWords(n) {
+  const list = await loadFrequencyList();
+  if (list && list.length >= n) {
+    return shuffle([...list]).slice(0, n);
+  }
+  return shuffle([...COMMON_SEED_WORDS]).slice(0, n);
 }
 
 async function fetchDictionary(word) {
   try {
-    const r = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
+    const r = await fetchWithTimeout(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`, 6000);
     if (!r.ok) return null;
     const data = await r.json();
     if (!Array.isArray(data) || !data[0]) return null;
@@ -481,7 +575,10 @@ async function fetchDictionary(word) {
       if (!pos) pos = m.partOfSpeech;
       for (const d of (m.definitions || [])) {
         if (!definition) definition = d.definition;
-        if (d.example && !example) { example = d.example; break; }
+        if (d.example && !example) {
+          const wc = d.example.split(/\s+/).length;
+          if (wc >= 3 && wc <= 10) { example = d.example; break; }
+        }
       }
       if (example) break;
     }
@@ -492,44 +589,101 @@ async function fetchDictionary(word) {
 async function translate(text, direction) {
   try {
     const pair = direction === 'en-de' ? 'en|de' : 'de|en';
-    const r = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${pair}`);
+    const r = await fetchWithTimeout(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${pair}`, 7000);
     if (!r.ok) return null;
     const data = await r.json();
-    const t = data?.responseData?.translatedText;
-    if (!t) return null;
-    const tl = t.toLowerCase();
-    if (tl.includes('mymemory warning') || tl.includes('invalid') || tl.includes('please select')) return null;
-    return t.trim();
+    const primary = data?.responseData?.translatedText?.trim();
+    if (!primary) return null;
+    const pl = primary.toLowerCase();
+    if (pl.includes('mymemory warning') || pl.includes('invalid') || pl.includes('please select') || pl.includes('quota exceeded')) return null;
+    const all = new Set([primary]);
+    if (Array.isArray(data.matches)) {
+      for (const m of data.matches) {
+        const t = (m.translation || '').trim();
+        if (!t) continue;
+        const tl = t.toLowerCase();
+        if (tl.includes('mymemory warning') || tl.includes('invalid')) continue;
+        if (t.split(/\s+/).length > 3) continue;
+        const q = typeof m.quality === 'string' ? parseInt(m.quality) : m.quality;
+        if (q != null && q < 60) continue;
+        all.add(t);
+      }
+    }
+    return { primary, all: [...all] };
   } catch (e) { return null; }
+}
+
+async function translateSimple(text, direction) {
+  const r = await translate(text, direction);
+  return r ? r.primary : null;
 }
 
 async function buildPool(size) {
   document.getElementById('progress-total').textContent = size;
-  const words = await fetchRandomWords(Math.ceil(size * 2.2));
+  setDetail('Hole englische Wörter…');
+  const words = await fetchSeedWords(Math.ceil(size * 3.5));
+  setDetail('Übersetze und schlage nach…');
   const newPool = [];
+  const seen = new Set();
   for (const raw of words) {
     if (newPool.length >= size) break;
     const w = (raw || '').toLowerCase().trim();
-    if (!/^[a-z\-]{3,12}$/.test(w)) continue;
-    const [dict, de] = await Promise.all([fetchDictionary(w), translate(w, 'en-de')]);
-    if (!de) continue;
-    if (de.toLowerCase() === w) continue;
+    if (!/^[a-z]{4,9}$/.test(w)) continue;
+    if (seen.has(w)) continue;
+    if (STOP_WORDS.has(w)) continue;
+    seen.add(w);
+    setDetail(`„${w}" wird geprüft…`);
+
+    const [dict, deResult] = await Promise.all([fetchDictionary(w), translate(w, 'en-de')]);
+    if (!deResult) continue;
+
+    const dePrimary = deResult.primary;
+    const dePrimaryLower = dePrimary.toLowerCase();
+    if (dePrimaryLower === w) continue;
+    if (dePrimary.split(/\s+/).length > 2) continue;
+    if (!/^[a-zäöüßA-ZÄÖÜ\-]+$/.test(dePrimary)) continue;
+
+    const backResult = await translate(dePrimary, 'de-en');
+    if (!backResult) continue;
+    const backAllLower = backResult.all.map(s => s.toLowerCase());
+    if (!backAllLower.includes(w)) continue;
+
+    const deAll = deResult.all
+      .filter(t => /^[a-zäöüßA-ZÄÖÜ\-]+$/.test(t))
+      .filter(t => t.toLowerCase() !== w);
+    const enAll = backResult.all
+      .filter(t => /^[a-zA-Z\-]+$/.test(t))
+      .map(t => t.toLowerCase());
+    if (!enAll.includes(w)) enAll.unshift(w);
+
     let exampleDe = null;
-    if (dict?.example && dict.example.split(/\s+/).length <= 14) {
-      exampleDe = await translate(dict.example, 'en-de');
+    let exampleEn = dict?.example || null;
+    if (exampleEn) {
+      const ex = await translateSimple(exampleEn, 'en-de');
+      if (ex) exampleDe = ex;
+      else exampleEn = null;
     }
+
     newPool.push({
       en: w,
-      de: de,
+      de: dePrimary,
+      deAll: [...new Set([dePrimary, ...deAll])],
+      enAll: [...new Set(enAll)],
       pos: dict?.pos || null,
       definition: dict?.definition || null,
-      exampleEn: dict?.example || null,
-      exampleDe: exampleDe,
+      exampleEn,
+      exampleDe,
     });
     document.getElementById('progress-done').textContent = newPool.length;
     document.getElementById('progress-fill').style.width = ((newPool.length / size) * 100) + '%';
   }
+  setDetail('');
   return newPool;
+}
+
+function setDetail(s) {
+  const el = document.getElementById('loading-detail');
+  if (el) el.textContent = s;
 }
 
 function shuffle(arr) {
@@ -541,53 +695,74 @@ function shuffle(arr) {
   return a;
 }
 
-function pickDistractors(correct, key, n) {
-  const filtered = pool.filter(p => p[key].toLowerCase() !== correct.toLowerCase());
+function pickDistractors(correctWord, key, allAccepted, n) {
+  const acceptedLower = new Set(allAccepted.map(s => s.toLowerCase()));
+  const filtered = pool.filter(p => !acceptedLower.has(p[key].toLowerCase()));
   return shuffle(filtered).slice(0, n).map(p => p[key]);
 }
 
-function generateQuestion() {
-  const dir = Math.random() < 0.5 ? 'en-de' : 'de-en';
-  const sentenceCapable = pool.filter(w =>
+function buildPhase1Queue() {
+  const modes = ['choice', 'type', 'flash'];
+  const items = [];
+  for (const w of pool) {
+    items.push({ word: w, dir: 'en-de', mode: modes[Math.floor(Math.random() * modes.length)] });
+    items.push({ word: w, dir: 'de-en', mode: modes[Math.floor(Math.random() * modes.length)] });
+  }
+  return shuffle(items);
+}
+
+function buildPhase2Queue() {
+  const capable = pool.filter(w =>
     w.exampleEn && w.exampleDe &&
     w.exampleEn.split(/\s+/).length >= 3 &&
-    w.exampleEn.split(/\s+/).length <= 12
+    w.exampleEn.split(/\s+/).length <= 10 &&
+    w.exampleDe.split(/\s+/).length >= 3
   );
-  const modes = ['choice', 'choice', 'type', 'flash'];
-  if (sentenceCapable.length >= 1) modes.push('sentence', 'sentence');
-  const mode = modes[Math.floor(Math.random() * modes.length)];
+  const items = [];
+  for (const w of capable) {
+    items.push({ word: w, dir: 'en-de', mode: 'sentence' });
+    items.push({ word: w, dir: 'de-en', mode: 'sentence' });
+  }
+  return shuffle(items);
+}
+
+function generateQuestion(item) {
+  const w = item.word;
+  const dir = item.dir;
+  const mode = item.mode;
 
   if (mode === 'sentence') {
-    const w = sentenceCapable[Math.floor(Math.random() * sentenceCapable.length)];
     const sourceLang = dir === 'en-de' ? 'en' : 'de';
     const targetLang = dir === 'en-de' ? 'de' : 'en';
     const promptText = sourceLang === 'en' ? w.exampleEn : w.exampleDe;
     const answerText = targetLang === 'en' ? w.exampleEn : w.exampleDe;
-    const tokens = answerText.replace(/[.,!?;:"]/g, '').split(/\s+/).filter(Boolean);
-    const extraPool = pool.map(p => targetLang === 'en' ? p.en : p.de).filter(t => t && !tokens.includes(t));
+    const tokens = answerText.replace(/[.,!?;:"„"]/g, '').split(/\s+/).filter(Boolean);
+    const tokensLower = new Set(tokens.map(t => t.toLowerCase()));
+    const extraPool = pool
+      .map(p => targetLang === 'en' ? p.en : p.de)
+      .filter(t => t && !tokensLower.has(t.toLowerCase()));
     const extras = shuffle(extraPool).slice(0, Math.min(3, extraPool.length));
     const bank = shuffle([...tokens, ...extras]).map((text, id) => ({ id, text }));
-    return { mode: 'sentence', dir, sourceLang, targetLang, prompt: promptText, answerTokens: tokens, bank, raw: w };
+    return { mode, dir, sourceLang, targetLang, prompt: promptText, answerTokens: tokens, bank, raw: w };
   }
 
-  const w = pool[Math.floor(Math.random() * pool.length)];
+  const promptKey = dir === 'en-de' ? 'en' : 'de';
+  const answerKey = dir === 'en-de' ? 'de' : 'en';
+  const accepted = dir === 'en-de' ? (w.deAll || [w.de]) : (w.enAll || [w.en]);
+  const primary = w[answerKey];
+
   if (mode === 'choice') {
-    const promptKey = dir === 'en-de' ? 'en' : 'de';
-    const answerKey = dir === 'en-de' ? 'de' : 'en';
-    const correct = w[answerKey];
-    const distractors = pickDistractors(correct, answerKey, 3);
-    return { mode: 'choice', dir, prompt: w[promptKey], correct, options: shuffle([correct, ...distractors]), raw: w };
+    const distractors = pickDistractors(primary, answerKey, accepted, 3);
+    return { mode, dir, prompt: w[promptKey], correct: primary, accepted, options: shuffle([primary, ...distractors]), raw: w };
   }
   if (mode === 'type') {
-    const promptKey = dir === 'en-de' ? 'en' : 'de';
-    const answerKey = dir === 'en-de' ? 'de' : 'en';
-    return { mode: 'type', dir, prompt: w[promptKey], correct: w[answerKey], raw: w };
+    return { mode, dir, prompt: w[promptKey], correct: primary, accepted, raw: w };
   }
-  return { mode: 'flash', dir, raw: w, promptKey: dir === 'en-de' ? 'en' : 'de', answerKey: dir === 'en-de' ? 'de' : 'en' };
+  return { mode: 'flash', dir, raw: w, promptKey, answerKey };
 }
 
 function normalize(s) {
-  return s.toLowerCase().trim().replace(/[.,!?;:"']/g, '').replace(/\s+/g, ' ');
+  return s.toLowerCase().trim().replace(/[.,!?;:"'„"]/g, '').replace(/\s+/g, ' ');
 }
 
 function levenshtein(a, b) {
@@ -604,136 +779,228 @@ function levenshtein(a, b) {
   return dp[m][n];
 }
 
-function checkTyping(user, correct) {
-  const u = normalize(user), c = normalize(correct);
-  if (u === c) return true;
-  const tolerance = c.length <= 5 ? 1 : c.length <= 10 ? 2 : 3;
-  return levenshtein(u, c) <= tolerance;
+function checkTyping(user, acceptedList) {
+  const u = normalize(user);
+  const list = Array.isArray(acceptedList) ? acceptedList : [acceptedList];
+  for (const correct of list) {
+    const c = normalize(correct);
+    if (u === c) return true;
+    const tolerance = c.length <= 5 ? 1 : c.length <= 10 ? 2 : 3;
+    if (levenshtein(u, c) <= tolerance) return true;
+  }
+  return false;
+}
+
+let voicesReady = false;
+let voiceCache = { en: null, de: null };
+
+function refreshVoices() {
+  if (!window.speechSynthesis) return;
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices || voices.length === 0) return;
+  voicesReady = true;
+  voiceCache.en =
+    voices.find(v => v.lang === 'en-US') ||
+    voices.find(v => v.lang === 'en_US') ||
+    voices.find(v => /^en[-_]US/i.test(v.lang)) ||
+    voices.find(v => v.lang.toLowerCase().startsWith('en')) ||
+    null;
+  voiceCache.de =
+    voices.find(v => v.lang === 'de-DE') ||
+    voices.find(v => v.lang === 'de_DE') ||
+    voices.find(v => /^de[-_]DE/i.test(v.lang)) ||
+    voices.find(v => v.lang.toLowerCase().startsWith('de')) ||
+    null;
+}
+
+function hasVoiceFor(lang) {
+  return !!voiceCache[lang];
 }
 
 function speak(text, lang) {
   try {
-    if (!window.speechSynthesis) return;
+    if (!window.speechSynthesis || !text) return;
+    if (!voicesReady) refreshVoices();
+    const voice = voiceCache[lang];
+    if (!voice) return;
+    const voiceLangLower = voice.lang.toLowerCase();
+    const expectedPrefix = lang === 'de' ? 'de' : 'en';
+    if (!voiceLangLower.startsWith(expectedPrefix)) return;
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
-    u.lang = lang === 'de' ? 'de-DE' : 'en-US';
+    u.voice = voice;
+    u.lang = voice.lang;
     u.rate = 0.9;
     window.speechSynthesis.speak(u);
   } catch (e) {}
 }
 
-function esc(s) {
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function el(tag, attrs = {}, ...children) {
+  const node = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === 'class') node.className = v;
+    else if (k === 'style') node.setAttribute('style', v);
+    else if (k.startsWith('on')) node.addEventListener(k.slice(2).toLowerCase(), v);
+    else if (k === 'html') node.innerHTML = v;
+    else node.setAttribute(k, v);
+  }
+  for (const c of children) {
+    if (c == null) continue;
+    if (typeof c === 'string') node.appendChild(document.createTextNode(c));
+    else node.appendChild(c);
+  }
+  return node;
 }
+
+const SVG_ARROW = `<svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
+const SVG_SPEAKER = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`;
+const SVG_CHECK = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+const SVG_X = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+const SVG_SPARK = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>`;
+const SVG_RIGHT = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
 
 function flagEl(lang) {
-  return `<span class="flag flag-${lang}">${lang === 'en' ? '🇬🇧 EN' : '🇩🇪 DE'}</span>`;
-}
-
-function arrowSvg() {
-  return `<svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
-}
-
-function speakerSvg() {
-  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`;
-}
-
-function checkSvg() {
-  return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
-}
-
-function xSvg() {
-  return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
-}
-
-function sparkleSvg() {
-  return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>`;
-}
-
-function arrowRightSvg() {
-  return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
+  const flag = el('span', { class: `flag flag-${lang}` });
+  flag.textContent = lang === 'en' ? '🇺🇸 US' : '🇩🇪 DE';
+  return flag;
 }
 
 function modeLabelText(m) {
   return { choice: 'Wähle die Übersetzung', type: 'Tippe die Übersetzung', sentence: 'Bilde den Satz', flash: 'Karteikarte' }[m];
 }
 
+function speakerButton(text, lang) {
+  const available = hasVoiceFor(lang);
+  const btn = el('button', {
+    class: 'speak-btn',
+    title: available ? 'Aussprechen' : 'Keine ' + (lang === 'de' ? 'deutsche' : 'englische') + ' Stimme installiert',
+    html: SVG_SPEAKER
+  });
+  if (!available) {
+    btn.disabled = true;
+    btn.style.opacity = '0.35';
+    btn.style.cursor = 'not-allowed';
+  } else {
+    btn.addEventListener('click', () => speak(text, lang));
+  }
+  return btn;
+}
+
 function renderQuestion() {
   const q = currentQ;
   state = { answered: false, correct: null };
-  const card = document.getElementById('card');
-  card.classList.remove('shake');
-  void card.offsetWidth;
+  const host = document.getElementById('card-host');
+  host.innerHTML = '';
 
   const fromLang = q.dir === 'en-de' ? 'en' : 'de';
   const toLang = q.dir === 'en-de' ? 'de' : 'en';
 
-  let body = '';
+  const card = el('div', { class: 'card', id: 'card' });
+
+  const head = el('div', { class: 'card-head' });
+  const dirRow = el('div', { class: 'dir-row' });
+  dirRow.appendChild(flagEl(fromLang));
+  const arrow = el('span', { html: SVG_ARROW });
+  dirRow.appendChild(arrow.firstChild);
+  dirRow.appendChild(flagEl(toLang));
+  head.appendChild(dirRow);
+  const modeLabel = el('div', { class: 'mode-label' });
+  modeLabel.textContent = modeLabelText(q.mode);
+  head.appendChild(modeLabel);
+  card.appendChild(head);
+
   if (q.mode === 'choice') {
-    body = `
-      <div class="prompt-word">
-        <span>${esc(q.prompt)}</span>
-        <button class="speak-btn" onclick="speak(${JSON.stringify(q.prompt)}, '${fromLang}')">${speakerSvg()}</button>
-      </div>
-      ${q.raw.pos ? `<div class="pos">${esc(q.raw.pos)}</div>` : '<div style="height:20px"></div>'}
-      <div class="choice-grid">
-        ${q.options.map((opt, i) => `<button class="choice-btn" data-opt="${i}" onclick="onChoice(${i})">${esc(opt)}</button>`).join('')}
-      </div>
-    `;
+    const promptWord = el('div', { class: 'prompt-word' });
+    const span = el('span');
+    span.textContent = q.prompt;
+    promptWord.appendChild(span);
+    promptWord.appendChild(speakerButton(q.prompt, fromLang));
+    card.appendChild(promptWord);
+    if (q.raw.pos) {
+      const pos = el('div', { class: 'pos' });
+      pos.textContent = q.raw.pos;
+      card.appendChild(pos);
+    } else {
+      card.appendChild(el('div', { style: 'height:20px' }));
+    }
+    const grid = el('div', { class: 'choice-grid' });
+    q.options.forEach((opt, i) => {
+      const btn = el('button', { class: 'choice-btn' });
+      btn.textContent = opt;
+      btn.addEventListener('click', () => onChoice(i, btn));
+      grid.appendChild(btn);
+    });
+    card.appendChild(grid);
   } else if (q.mode === 'type') {
-    body = `
-      <div class="prompt-word">
-        <span>${esc(q.prompt)}</span>
-        <button class="speak-btn" onclick="speak(${JSON.stringify(q.prompt)}, '${fromLang}')">${speakerSvg()}</button>
-      </div>
-      ${q.raw.pos ? `<div class="pos">${esc(q.raw.pos)}</div>` : '<div style="height:20px"></div>'}
-      <input id="type-input" class="input" placeholder="Übersetzung auf ${toLang === 'de' ? 'Deutsch' : 'Englisch'} …" />
-      <div id="reveal-slot"></div>
-      <button id="check-btn" class="btn btn-primary mt-16" onclick="onTypeCheck()">Prüfen</button>
-    `;
-  } else if (q.mode === 'sentence') {
-    sentencePick = [];
-    sentenceBank = [...q.bank];
-    body = `
-      <div class="sentence-prompt">„${esc(q.prompt)}"</div>
-      <div id="target-zone" class="sentence-target"></div>
-      <div id="bank-zone" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
-      <div id="reveal-slot"></div>
-      <button id="check-btn" class="btn btn-primary mt-16" onclick="onSentenceCheck()">Prüfen</button>
-    `;
-  } else {
-    body = `
-      <div class="flash-front">
-        <div class="flash-word">
-          <span>${esc(q.raw[q.promptKey])}</span>
-          <button class="speak-btn" onclick="speak(${JSON.stringify(q.raw[q.promptKey])}, '${q.promptKey}')">${speakerSvg()}</button>
-        </div>
-        ${q.raw.pos ? `<div class="pos">${esc(q.raw.pos)}</div>` : ''}
-      </div>
-      <div id="flash-reveal"></div>
-      <button id="flash-action" class="btn btn-primary" onclick="onFlashReveal()">Aufdecken</button>
-    `;
-  }
-
-  card.innerHTML = `
-    <div class="card-head">
-      <div class="dir-row">${flagEl(fromLang)}${arrowSvg()}${flagEl(toLang)}</div>
-      <div class="mode-label">${modeLabelText(q.mode)}</div>
-    </div>
-    ${body}
-    <div id="result-slot"></div>
-  `;
-
-  if (q.mode === 'type') {
-    const input = document.getElementById('type-input');
-    setTimeout(() => input?.focus(), 60);
+    const promptWord = el('div', { class: 'prompt-word' });
+    const span = el('span');
+    span.textContent = q.prompt;
+    promptWord.appendChild(span);
+    promptWord.appendChild(speakerButton(q.prompt, fromLang));
+    card.appendChild(promptWord);
+    if (q.raw.pos) {
+      const pos = el('div', { class: 'pos' });
+      pos.textContent = q.raw.pos;
+      card.appendChild(pos);
+    } else {
+      card.appendChild(el('div', { style: 'height:20px' }));
+    }
+    const input = el('input', { class: 'input', id: 'type-input', placeholder: `Übersetzung auf ${toLang === 'de' ? 'Deutsch' : 'Englisch'} …` });
     input.addEventListener('keydown', e => {
       if (e.key === 'Enter') {
-        if (state.answered) nextQuestion();
+        if (state.answered) advance();
         else onTypeCheck();
       }
     });
+    card.appendChild(input);
+    card.appendChild(el('div', { id: 'reveal-slot' }));
+    const checkBtn = el('button', { class: 'btn btn-primary mt-16', id: 'check-btn' });
+    checkBtn.textContent = 'Prüfen';
+    checkBtn.addEventListener('click', onTypeCheck);
+    card.appendChild(checkBtn);
+    setTimeout(() => input.focus(), 60);
+  } else if (q.mode === 'sentence') {
+    sentencePick = [];
+    sentenceBank = [...q.bank];
+    const promptEl = el('div', { class: 'sentence-prompt' });
+    promptEl.textContent = `„${q.prompt}"`;
+    card.appendChild(promptEl);
+
+    const speakerRow = el('div', { style: 'display:flex; justify-content:center; margin-bottom:18px;' });
+    speakerRow.appendChild(speakerButton(q.prompt, q.sourceLang));
+    card.appendChild(speakerRow);
+
+    card.appendChild(el('div', { class: 'sentence-target', id: 'target-zone' }));
+    card.appendChild(el('div', { id: 'bank-zone', style: 'display:flex; flex-wrap:wrap; gap:8px;' }));
+    card.appendChild(el('div', { id: 'reveal-slot' }));
+    const checkBtn = el('button', { class: 'btn btn-primary mt-16', id: 'check-btn' });
+    checkBtn.textContent = 'Prüfen';
+    checkBtn.addEventListener('click', onSentenceCheck);
+    card.appendChild(checkBtn);
+  } else if (q.mode === 'flash') {
+    const front = el('div', { class: 'flash-front' });
+    const word = el('div', { class: 'flash-word' });
+    const span = el('span');
+    span.textContent = q.raw[q.promptKey];
+    word.appendChild(span);
+    word.appendChild(speakerButton(q.raw[q.promptKey], q.promptKey));
+    front.appendChild(word);
+    if (q.raw.pos) {
+      const pos = el('div', { class: 'pos' });
+      pos.textContent = q.raw.pos;
+      front.appendChild(pos);
+    }
+    card.appendChild(front);
+    card.appendChild(el('div', { id: 'flash-reveal' }));
+    const actionBtn = el('button', { class: 'btn btn-primary', id: 'flash-action' });
+    actionBtn.textContent = 'Aufdecken';
+    actionBtn.addEventListener('click', onFlashReveal);
+    card.appendChild(actionBtn);
   }
+
+  card.appendChild(el('div', { id: 'result-slot' }));
+  host.appendChild(card);
+
   if (q.mode === 'sentence') renderSentence();
 }
 
@@ -741,19 +1008,32 @@ function renderSentence() {
   const target = document.getElementById('target-zone');
   const bank = document.getElementById('bank-zone');
   if (!target || !bank) return;
+  target.innerHTML = '';
+  bank.innerHTML = '';
   if (sentencePick.length === 0) {
-    target.innerHTML = `<span class="sentence-placeholder">Tippe die Wörter unten in der richtigen Reihenfolge an</span>`;
+    const ph = el('span', { class: 'sentence-placeholder' });
+    ph.textContent = 'Tippe die Wörter unten in der richtigen Reihenfolge an';
+    target.appendChild(ph);
   } else {
-    target.innerHTML = sentencePick.map(t =>
-      `<button class="token picked" ${state.answered ? 'disabled' : ''} onclick="moveToBank(${t.id})">${esc(t.text)}</button>`
-    ).join('');
+    sentencePick.forEach(t => {
+      const btn = el('button', { class: 'token picked' });
+      btn.textContent = t.text;
+      if (state.answered) btn.disabled = true;
+      else btn.addEventListener('click', () => moveToBank(t.id));
+      target.appendChild(btn);
+    });
   }
-  bank.innerHTML = sentenceBank.map(t =>
-    `<button class="token" ${state.answered ? 'disabled' : ''} onclick="moveToPick(${t.id})">${esc(t.text)}</button>`
-  ).join('');
+  sentenceBank.forEach(t => {
+    const btn = el('button', { class: 'token' });
+    btn.textContent = t.text;
+    if (state.answered) btn.disabled = true;
+    else btn.addEventListener('click', () => moveToPick(t.id));
+    bank.appendChild(btn);
+  });
 }
 
 function moveToPick(id) {
+  if (state.answered) return;
   const idx = sentenceBank.findIndex(t => t.id === id);
   if (idx < 0) return;
   const [t] = sentenceBank.splice(idx, 1);
@@ -762,6 +1042,7 @@ function moveToPick(id) {
 }
 
 function moveToBank(id) {
+  if (state.answered) return;
   const idx = sentencePick.findIndex(t => t.id === id);
   if (idx < 0) return;
   const [t] = sentencePick.splice(idx, 1);
@@ -772,16 +1053,20 @@ function moveToBank(id) {
 function grade(isRight) {
   state.answered = true;
   state.correct = isRight;
-  const card = document.getElementById('card');
   if (isRight) {
     streak++;
     if (streak > bestStreak) bestStreak = streak;
+    phaseDone++;
   } else {
     streak = 0;
-    card.classList.add('shake');
-    setTimeout(() => card.classList.remove('shake'), 500);
+    const card = document.getElementById('card');
+    if (card) {
+      card.classList.add('shake');
+      setTimeout(() => card.classList.remove('shake'), 500);
+    }
   }
   updateStats();
+  updatePhaseBar();
   showResult();
 }
 
@@ -791,15 +1076,25 @@ function updateStats() {
   document.getElementById('streak-foot').textContent = streak;
 }
 
-function onChoice(i) {
+function updatePhaseBar() {
+  document.getElementById('phase-num').textContent = phase === 1 ? 'I' : 'II';
+  document.getElementById('phase-name').textContent = phase === 1 ? 'Vokabeln' : 'Sätze';
+  document.getElementById('phase-done').textContent = phaseDone;
+  document.getElementById('phase-total').textContent = phaseTotal;
+  const pct = phaseTotal > 0 ? (phaseDone / phaseTotal) * 100 : 0;
+  document.getElementById('phase-fill').style.width = pct + '%';
+}
+
+function onChoice(i, btnEl) {
   if (state.answered) return;
   const q = currentQ;
   const picked = q.options[i];
-  const isRight = picked === q.correct;
+  const acceptedLower = new Set((q.accepted || [q.correct]).map(s => s.toLowerCase()));
+  const isRight = acceptedLower.has(picked.toLowerCase());
   document.querySelectorAll('.choice-btn').forEach((btn, idx) => {
     btn.disabled = true;
     const opt = q.options[idx];
-    if (opt === q.correct) btn.classList.add('correct');
+    if (acceptedLower.has(opt.toLowerCase())) btn.classList.add('correct');
     else if (idx === i) btn.classList.add('wrong');
     else btn.classList.add('dim');
   });
@@ -812,11 +1107,17 @@ function onTypeCheck() {
   const input = document.getElementById('type-input');
   const val = input.value.trim();
   if (!val) return;
-  const isRight = checkTyping(val, q.correct);
+  const isRight = checkTyping(val, q.accepted || [q.correct]);
   input.disabled = true;
   input.classList.add(isRight ? 'right' : 'wrong');
   if (!isRight) {
-    document.getElementById('reveal-slot').innerHTML = `<div class="correct-reveal">Richtig: <strong>${esc(q.correct)}</strong></div>`;
+    const reveal = document.getElementById('reveal-slot');
+    const div = el('div', { class: 'correct-reveal' });
+    const accepted = q.accepted || [q.correct];
+    const label = accepted.length > 1 ? 'Akzeptiert' : 'Richtig';
+    div.innerHTML = label + ': <strong></strong>';
+    div.querySelector('strong').textContent = accepted.join(', ');
+    reveal.appendChild(div);
   }
   document.getElementById('check-btn').remove();
   grade(isRight);
@@ -830,7 +1131,11 @@ function onSentenceCheck() {
   const target = q.answerTokens.join(' ');
   const isRight = normalize(built) === normalize(target);
   if (!isRight) {
-    document.getElementById('reveal-slot').innerHTML = `<div class="correct-reveal">Richtig: <strong>${esc(q.answerTokens.join(' '))}</strong></div>`;
+    const reveal = document.getElementById('reveal-slot');
+    const div = el('div', { class: 'correct-reveal' });
+    div.innerHTML = 'Richtig: <strong></strong>';
+    div.querySelector('strong').textContent = q.answerTokens.join(' ');
+    reveal.appendChild(div);
   }
   document.getElementById('check-btn').remove();
   renderSentence();
@@ -840,29 +1145,43 @@ function onSentenceCheck() {
 function onFlashReveal() {
   const q = currentQ;
   const slot = document.getElementById('flash-reveal');
-  slot.innerHTML = `
-    <div class="flash-back">
-      <div class="flash-answer">${esc(q.raw[q.answerKey])}</div>
-      ${q.raw.definition ? `<div class="definition">„${esc(q.raw.definition)}"</div>` : ''}
-      ${q.raw.exampleEn ? `
-        <div class="example-block">
-          <div class="example-en">${esc(q.raw.exampleEn)}</div>
-          ${q.raw.exampleDe ? `<div class="example-de">${esc(q.raw.exampleDe)}</div>` : ''}
-        </div>
-      ` : ''}
-    </div>
-  `;
+  const back = el('div', { class: 'flash-back' });
+  const ans = el('div', { class: 'flash-answer' });
+  ans.textContent = q.raw[q.answerKey];
+  back.appendChild(ans);
+  if (q.raw.definition) {
+    const def = el('div', { class: 'definition' });
+    def.textContent = `„${q.raw.definition}"`;
+    back.appendChild(def);
+  }
+  if (q.raw.exampleEn) {
+    const block = el('div', { class: 'example-block' });
+    const en = el('div', { class: 'example-en' });
+    en.textContent = q.raw.exampleEn;
+    block.appendChild(en);
+    if (q.raw.exampleDe) {
+      const de = el('div', { class: 'example-de' });
+      de.textContent = q.raw.exampleDe;
+      block.appendChild(de);
+    }
+    back.appendChild(block);
+  }
+  slot.appendChild(back);
+
   const action = document.getElementById('flash-action');
-  action.outerHTML = `
-    <div class="btn-row" id="flash-action">
-      <button class="btn btn-grade no" onclick="onFlashGrade(false)">${xSvg()} Wusste es nicht</button>
-      <button class="btn btn-grade yes" onclick="onFlashGrade(true)">${checkSvg()} Konnte ich</button>
-    </div>
-  `;
+  const row = el('div', { class: 'btn-row', id: 'flash-action' });
+  const noBtn = el('button', { class: 'btn btn-grade no', html: SVG_X + ' Wusste es nicht' });
+  noBtn.addEventListener('click', () => onFlashGrade(false));
+  const yesBtn = el('button', { class: 'btn btn-grade yes', html: SVG_CHECK + ' Konnte ich' });
+  yesBtn.addEventListener('click', () => onFlashGrade(true));
+  row.appendChild(noBtn);
+  row.appendChild(yesBtn);
+  action.replaceWith(row);
 }
 
 function onFlashGrade(knew) {
-  document.getElementById('flash-action').remove();
+  const action = document.getElementById('flash-action');
+  if (action) action.remove();
   grade(knew);
 }
 
@@ -870,25 +1189,105 @@ function showResult() {
   const q = currentQ;
   const slot = document.getElementById('result-slot');
   const showExample = q.raw.exampleEn && q.mode !== 'sentence' && q.mode !== 'flash';
-  slot.innerHTML = `
-    <div class="result ${state.correct ? 'right' : 'wrong'}">
-      <div class="result-text">
-        ${state.correct ? sparkleSvg() + ' Hervorragend' : xSvg() + ' Nicht ganz'}
-      </div>
-      ${showExample ? `
-        <div class="result-example">
-          <div>${esc(q.raw.exampleEn)}</div>
-          ${q.raw.exampleDe ? `<div class="de">${esc(q.raw.exampleDe)}</div>` : ''}
-        </div>
-      ` : ''}
-      <button class="continue" onclick="nextQuestion()">Weiter ${arrowRightSvg()}</button>
-    </div>
-  `;
+  const result = el('div', { class: `result ${state.correct ? 'right' : 'wrong'}` });
+  const text = el('div', { class: 'result-text' });
+  text.innerHTML = state.correct ? SVG_SPARK + ' Hervorragend' : SVG_X + ' Nicht ganz';
+  result.appendChild(text);
+  if (showExample) {
+    const ex = el('div', { class: 'result-example' });
+    const en = el('div');
+    en.textContent = q.raw.exampleEn;
+    ex.appendChild(en);
+    if (q.raw.exampleDe) {
+      const de = el('div', { class: 'de' });
+      de.textContent = q.raw.exampleDe;
+      ex.appendChild(de);
+    }
+    result.appendChild(ex);
+  }
+  const cont = el('button', { class: 'continue' });
+  cont.innerHTML = 'Weiter ' + SVG_RIGHT;
+  cont.addEventListener('click', advance);
+  result.appendChild(cont);
+  slot.appendChild(result);
 }
 
-function nextQuestion() {
-  currentQ = generateQuestion();
+function advance() {
+  if (phaseQueue.length === 0) {
+    if (phase === 1) {
+      startPhase2();
+    } else {
+      showFinish();
+    }
+    return;
+  }
+  const next = phaseQueue.shift();
+  currentQ = generateQuestion(next);
   renderQuestion();
+}
+
+function startPhase1() {
+  phase = 1;
+  phaseQueue = buildPhase1Queue();
+  phaseTotal = phaseQueue.length;
+  phaseDone = 0;
+  updatePhaseBar();
+  showStageBanner('Phase I — Vokabeln', `Jedes der ${pool.length} Wörter wird in beide Richtungen geprüft, mit Auswahl, Tippen und Karteikarten.`, 'Los geht\'s', () => {
+    const next = phaseQueue.shift();
+    currentQ = generateQuestion(next);
+    renderQuestion();
+  });
+}
+
+function startPhase2() {
+  phase = 2;
+  phaseQueue = buildPhase2Queue();
+  phaseTotal = phaseQueue.length;
+  phaseDone = 0;
+  updatePhaseBar();
+  if (phaseTotal === 0) {
+    showStageBanner('Keine Beispielsätze verfügbar', 'Für die geladenen Wörter konnten keine geeigneten Beispielsätze gefunden werden.', 'Frische Wörter ziehen', reloadPool);
+    return;
+  }
+  showStageBanner('Phase II — Sätze bauen', `Jetzt baust du ${phaseTotal} Sätze zusammen — in beide Richtungen, aus den Wörtern die du gerade gelernt hast.`, 'Weiter', () => {
+    const next = phaseQueue.shift();
+    currentQ = generateQuestion(next);
+    renderQuestion();
+  });
+}
+
+function showFinish() {
+  const host = document.getElementById('card-host');
+  host.innerHTML = '';
+  const banner = el('div', { class: 'stage-banner' });
+  const h2 = el('h2');
+  h2.textContent = 'Sitzung abgeschlossen';
+  banner.appendChild(h2);
+  const p = el('p');
+  p.textContent = `Beste Serie diese Sitzung: ${bestStreak}. Lade frische Wörter für eine neue Runde.`;
+  banner.appendChild(p);
+  const btn = el('button', { class: 'stage-btn' });
+  btn.textContent = 'Frische Wörter laden';
+  btn.addEventListener('click', reloadPool);
+  banner.appendChild(btn);
+  host.appendChild(banner);
+}
+
+function showStageBanner(title, message, btnText, onClick) {
+  const host = document.getElementById('card-host');
+  host.innerHTML = '';
+  const banner = el('div', { class: 'stage-banner' });
+  const h2 = el('h2');
+  h2.textContent = title;
+  banner.appendChild(h2);
+  const p = el('p');
+  p.textContent = message;
+  banner.appendChild(p);
+  const btn = el('button', { class: 'stage-btn' });
+  btn.textContent = btnText;
+  btn.addEventListener('click', onClick);
+  banner.appendChild(btn);
+  host.appendChild(banner);
 }
 
 function showView(name) {
@@ -901,17 +1300,19 @@ async function reloadPool() {
   showView('loading');
   document.getElementById('progress-done').textContent = 0;
   document.getElementById('progress-fill').style.width = '0%';
+  setDetail('');
   try {
-    pool = await buildPool(15);
+    pool = await buildPool(POOL_SIZE);
     if (pool.length < 4) {
-      document.getElementById('error-msg').textContent = 'Konnte nicht genug Vokabeln laden. Versuch es nochmal in einem Moment.';
+      document.getElementById('error-msg').textContent = 'Konnte nicht genug Vokabeln laden. APIs scheinen langsam zu sein oder von hier blockiert. Erneut versuchen?';
       showView('error');
       return;
     }
     document.getElementById('pool-size').textContent = pool.length;
-    currentQ = generateQuestion();
-    renderQuestion();
     showView('app');
+    streak = 0;
+    updateStats();
+    startPhase1();
   } catch (e) {
     document.getElementById('error-msg').textContent = 'Etwas ist schiefgegangen: ' + (e?.message || 'unbekannter Fehler');
     showView('error');
@@ -920,6 +1321,12 @@ async function reloadPool() {
 
 async function init() {
   showView('loading');
+  document.getElementById('retry-btn').addEventListener('click', init);
+  document.getElementById('refresh-btn').addEventListener('click', reloadPool);
+  if (window.speechSynthesis) {
+    window.speechSynthesis.onvoiceschanged = () => { voicesReady = false; refreshVoices(); };
+    refreshVoices();
+  }
   await reloadPool();
 }
 
