@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Interaktives Blackjack-Card-Counting-Training für das Hi-Lo-System mit Running Count, True Count und Fortschrittsanalyse.">
+  <meta name="theme-color" content="#071a17">
+  <title>Blackjack Count Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#dashboard" aria-label="Blackjack Count Lab Startseite">
+        <span class="brand-mark">21</span>
+        <span>
+          <strong>COUNT LAB</strong>
+          <small>BLACKJACK TRAINING</small>
+        </span>
+      </a>
+      <nav class="main-nav" aria-label="Hauptnavigation">
+        <a href="#dashboard" data-route="dashboard" class="active">
+          <span class="nav-icon">⌂</span>
+          <span>Übersicht</span>
+        </a>
+        <a href="#learn" data-route="learn">
+          <span class="nav-icon">◫</span>
+          <span>Lernpfad</span>
+        </a>
+        <a href="#practice" data-route="practice">
+          <span class="nav-icon">◆</span>
+          <span>Trainieren</span>
+        </a>
+        <a href="#reference" data-route="reference">
+          <span class="nav-icon">≡</span>
+          <span>Spickzettel</span>
+        </a>
+        <a href="#stats" data-route="stats">
+          <span class="nav-icon">↗</span>
+          <span>Statistik</span>
+        </a>
+      </nav>
+      <div class="sidebar-level">
+        <div class="level-row">
+          <span>Level <b data-level>1</b></span>
+          <span><b data-xp-current>0</b> / 250 XP</span>
+        </div>
+        <div class="progress-track"><span data-level-progress></span></div>
+        <small data-level-name>Neuling</small>
+      </div>
+      <div class="sidebar-note">
+        <span class="status-dot"></span>
+        <p>Dein Fortschritt bleibt lokal auf diesem Gerät gespeichert.</p>
+      </div>
+    </aside>
+
+    <header class="mobile-header">
+      <a class="brand" href="#dashboard">
+        <span class="brand-mark">21</span>
+        <span><strong>COUNT LAB</strong></span>
+      </a>
+      <button class="icon-button" id="menuToggle" aria-label="Menü öffnen" aria-expanded="false">☰</button>
+    </header>
+
+    <main class="main-content">
+      <section class="screen active" id="dashboard" data-screen="dashboard">
+        <div class="page-heading dashboard-heading">
+          <div>
+            <span class="eyebrow">DEIN TRAININGSCENTER</span>
+            <h1>Der Count läuft.</h1>
+            <p>Baue Präzision auf, steigere dein Tempo und verwandle Kartenwerte in Reflexe.</p>
+          </div>
+          <div class="heading-chip"><span>●</span> Hi-Lo System</div>
+        </div>
+
+        <div class="dashboard-grid">
+          <article class="panel quick-start-panel">
+            <div class="panel-header">
+              <div>
+                <span class="section-kicker">SCHNELLSTART</span>
+                <h2>Was willst du schärfen?</h2>
+              </div>
+              <span class="keyboard-hint">Tastatur bereit</span>
+            </div>
+            <div class="quick-actions">
+              <button class="quick-action accent" data-open-drill="card-values">
+                <span class="quick-icon card-mini">A♠</span>
+                <span><b>Kartenwerte</b><small>+1, 0 oder −1 in Sekundenbruchteilen</small></span>
+                <span class="arrow">→</span>
+              </button>
+              <button class="quick-action" data-open-drill="running-count">
+                <span class="quick-icon">∑</span>
+                <span><b>Running Count</b><small>Eine Kartenfolge lückenlos mitzählen</small></span>
+                <span class="arrow">→</span>
+              </button>
+              <button class="quick-action" data-open-drill="true-count">
+                <span class="quick-icon">÷</span>
+                <span><b>True Count</b><small>Count durch verbleibende Decks teilen</small></span>
+                <span class="arrow">→</span>
+              </button>
+              <button class="quick-action" data-open-drill="deck-estimation">
+                <span class="quick-icon">▥</span>
+                <span><b>Deckschätzung</b><small>Verbleibende Kartenmenge visuell lesen</small></span>
+                <span class="arrow">→</span>
+              </button>
+            </div>
+          </article>
+
+          <article class="panel pulse-panel">
+            <div class="panel-header">
+              <div>
+                <span class="section-kicker">TRAININGSPULS</span>
+                <h2>Heute</h2>
+              </div>
+              <span class="date-badge" id="todayLabel"></span>
+            </div>
+            <div class="daily-ring" id="dailyRing">
+              <div><strong data-daily-percent>0%</strong><small>Tagesziel</small></div>
+            </div>
+            <p class="challenge-copy">Bewerte heute <b>20 Karten</b> mit mindestens 90 % Genauigkeit.</p>
+            <div class="challenge-stats">
+              <span><b data-daily-attempts>0</b> / 20 Karten</span>
+              <span><b data-daily-accuracy>0%</b> korrekt</span>
+            </div>
+            <button class="button secondary full" data-open-drill="card-values">Challenge starten</button>
+          </article>
+
+          <article class="metric-card">
+            <span class="metric-icon">◎</span>
+            <div><small>Gesamtgenauigkeit</small><strong data-overall-accuracy>0%</strong></div>
+            <span class="metric-note">Alle Übungen</span>
+          </article>
+          <article class="metric-card">
+            <span class="metric-icon">ϟ</span>
+            <div><small>Beste Serie</small><strong data-best-streak>0</strong></div>
+            <span class="metric-note">Richtige in Folge</span>
+          </article>
+          <article class="metric-card">
+            <span class="metric-icon">✓</span>
+            <div><small>Lernfortschritt</small><strong data-lesson-percent>0%</strong></div>
+            <span class="metric-note"><span data-lessons-complete>0</span> von 8 Modulen</span>
+          </article>
+        </div>
+
+        <div class="dashboard-bottom">
+          <article class="panel next-lesson-panel">
+            <div>
+              <span class="section-kicker">NÄCHSTER SCHRITT</span>
+              <h2 data-next-lesson-title>1. Das Hi-Lo-Prinzip</h2>
+              <p data-next-lesson-copy>Verstehe, warum kleine Karten den Count erhöhen und hohe Karten ihn senken.</p>
+            </div>
+            <button class="button primary" id="continueLearning">Weiterlernen <span>→</span></button>
+          </article>
+          <article class="panel recent-panel">
+            <div class="panel-header">
+              <div><span class="section-kicker">LETZTE AKTIVITÄT</span><h2>Training</h2></div>
+            </div>
+            <div id="recentActivity" class="recent-list"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="screen" id="learn" data-screen="learn">
+        <div class="page-heading">
+          <div>
+            <span class="eyebrow">8 MODULE · VON NULL BIS AUTOMATISIERT</span>
+            <h1>Der Lernpfad</h1>
+            <p>Lerne in der richtigen Reihenfolge. Jedes Modul verbindet Theorie mit einem klaren Trainingsziel.</p>
+          </div>
+          <div class="large-progress">
+            <strong data-lesson-percent>0%</strong>
+            <span>abgeschlossen</span>
+          </div>
+        </div>
+        <div class="learn-layout">
+          <div class="lesson-timeline" id="lessonTimeline"></div>
+          <aside class="panel study-plan">
+            <span class="section-kicker">EMPFOHLENE ROUTINE</span>
+            <h2>15 Minuten pro Tag</h2>
+            <ol>
+              <li><b>3 Min.</b><span>Kartenwerte aufwärmen</span></li>
+              <li><b>5 Min.</b><span>Running-Count-Sprints</span></li>
+              <li><b>4 Min.</b><span>True-Count-Aufgaben</span></li>
+              <li><b>3 Min.</b><span>Fehler gezielt wiederholen</span></li>
+            </ol>
+            <p>Tempo erst erhöhen, wenn du dreimal nacheinander mindestens 90 % erreichst.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="screen" id="practice" data-screen="practice">
+        <div class="page-heading practice-heading">
+          <div>
+            <span class="eyebrow">INTERAKTIVES LABOR</span>
+            <h1>Trainingsraum</h1>
+            <p>Vier Kernfähigkeiten, direktes Feedback und steigender Schwierigkeitsgrad.</p>
+          </div>
+        </div>
+        <div class="drill-tabs" role="tablist" aria-label="Trainingsmodi">
+          <button role="tab" class="active" data-drill="card-values">Kartenwerte</button>
+          <button role="tab" data-drill="running-count">Running Count</button>
+          <button role="tab" data-drill="true-count">True Count</button>
+          <button role="tab" data-drill="deck-estimation">Deckschätzung</button>
+          <button role="tab" data-drill="shoe-simulator">Schuh-Simulator</button>
+          <button role="tab" data-drill="knowledge-quiz">Wissenstest</button>
+        </div>
+
+        <div class="drill-view active" data-drill-view="card-values">
+          <article class="training-stage">
+            <div class="stage-topbar">
+              <div><span>MODUS</span><b>Kartenwerte</b></div>
+              <div class="live-stats">
+                <span><small>Serie</small><b id="cardStreak">0</b></span>
+                <span><small>Richtig</small><b id="cardAccuracy">0%</b></span>
+                <span><small>Zeit</small><b id="cardTime">0.0s</b></span>
+              </div>
+            </div>
+            <div class="card-stage">
+              <p>Welchen Hi-Lo-Wert hat diese Karte?</p>
+              <div class="playing-card red" id="valueCard" aria-live="polite">
+                <span class="card-corner top"><b>?</b><i>◆</i></span>
+                <strong>?</strong>
+                <span class="card-corner bottom"><b>?</b><i>◆</i></span>
+              </div>
+              <div class="answer-buttons three">
+                <button data-card-answer="1"><kbd>1</kbd><b>+1</b><small>2 bis 6</small></button>
+                <button data-card-answer="0"><kbd>0</kbd><b>0</b><small>7 bis 9</small></button>
+                <button data-card-answer="-1"><kbd>−</kbd><b>−1</b><small>10 bis Ass</small></button>
+              </div>
+              <div class="feedback-line" id="cardFeedback" aria-live="assertive">Wähle den passenden Wert.</div>
+            </div>
+          </article>
+          <aside class="training-help">
+            <span class="section-kicker">MERKBILD</span>
+            <h3>Klein hilft. Groß kostet.</h3>
+            <div class="value-legend">
+              <div class="positive"><b>2 3 4 5 6</b><span>+1</span></div>
+              <div class="neutral"><b>7 8 9</b><span>0</span></div>
+              <div class="negative"><b>10 J Q K A</b><span>−1</span></div>
+            </div>
+            <p>Ein positiver Count bedeutet: Im Reststapel sind relativ mehr hohe Karten übrig.</p>
+          </aside>
+        </div>
+
+        <div class="drill-view" data-drill-view="running-count">
+          <article class="training-stage">
+            <div class="stage-topbar">
+              <div><span>MODUS</span><b>Running-Count-Sprint</b></div>
+              <div class="live-stats"><span><small>Beste Serie</small><b data-running-best>0</b></span><span><small>Versuche</small><b data-running-attempts>0</b></span></div>
+            </div>
+            <div class="sprint-stage">
+              <div class="sprint-settings">
+                <label>Karten
+                  <select id="sprintLength"><option value="10">10</option><option value="20" selected>20</option><option value="30">30</option><option value="52">52</option></select>
+                </label>
+                <label>Tempo
+                  <select id="sprintSpeed"><option value="1200">Ruhig</option><option value="800" selected>Normal</option><option value="500">Schnell</option><option value="300">Profi</option></select>
+                </label>
+              </div>
+              <div class="sprint-counter"><span id="sprintPosition">0</span> / <span id="sprintTotal">20</span></div>
+              <div class="playing-card compact" id="sprintCard">
+                <span class="card-corner top"><b>21</b><i>♠</i></span>
+                <strong>START</strong>
+                <span class="card-corner bottom"><b>21</b><i>♠</i></span>
+              </div>
+              <p class="sprint-status" id="sprintStatus">Zähle ab null. Die Karten erscheinen nacheinander.</p>
+              <button class="button primary" id="startSprint">Sprint starten</button>
+              <form class="count-answer hidden" id="countAnswerForm">
+                <label for="countAnswer">Dein finaler Running Count</label>
+                <div><input id="countAnswer" type="number" inputmode="numeric" autocomplete="off" required><button class="button primary" type="submit">Prüfen</button></div>
+              </form>
+            </div>
+          </article>
+          <aside class="training-help">
+            <span class="section-kicker">COUNT-TECHNIK</span>
+            <h3>Paare statt Einzelkarten</h3>
+            <p>Suche sofort nach Aufhebungen: Eine 5 (+1) und ein König (−1) ergeben zusammen null.</p>
+            <div class="mini-example"><span>5♥</span><b>+</b><span>K♣</span><b>= 0</b></div>
+            <p>Halte den Count innerlich als Zahl, nicht als gesprochenen Satz. Das spart Zeit.</p>
+          </aside>
+        </div>
+
+        <div class="drill-view" data-drill-view="true-count">
+          <article class="training-stage">
+            <div class="stage-topbar">
+              <div><span>MODUS</span><b>True-Count-Rechner</b></div>
+              <div class="live-stats"><span><small>Beste Serie</small><b data-true-best>0</b></span><span><small>Genauigkeit</small><b data-true-accuracy>0%</b></span></div>
+            </div>
+            <div class="true-stage">
+              <p>Berechne den True Count. Runde in dieser Übung zur Null.</p>
+              <div class="equation-card">
+                <div><small>RUNNING COUNT</small><strong id="trueRunning">+8</strong></div>
+                <span>÷</span>
+                <div><small>DECKS ÜBRIG</small><strong id="trueDecks">4</strong></div>
+                <span>=</span>
+                <div class="unknown"><small>TRUE COUNT</small><strong>?</strong></div>
+              </div>
+              <div class="deck-meter" id="trueDeckMeter"></div>
+              <div class="answer-buttons four" id="trueOptions"></div>
+              <div class="feedback-line" id="trueFeedback" aria-live="assertive">Wähle das Ergebnis.</div>
+            </div>
+          </article>
+          <aside class="training-help">
+            <span class="section-kicker">FORMEL</span>
+            <h3>RC ÷ Restdecks = TC</h3>
+            <div class="formula-example"><span>+12</span><i>÷</i><span>3</span><i>=</i><b>+4</b></div>
+            <p>Verschiedene Trainingssysteme nutzen unterschiedliche Rundungsregeln. Hier wird konsequent zur Null gerundet.</p>
+          </aside>
+        </div>
+
+        <div class="drill-view" data-drill-view="deck-estimation">
+          <article class="training-stage">
+            <div class="stage-topbar">
+              <div><span>MODUS</span><b>Deckschätzung · 6 Decks</b></div>
+              <div class="live-stats"><span><small>Beste Serie</small><b data-deck-best>0</b></span><span><small>Genauigkeit</small><b data-deck-accuracy>0%</b></span></div>
+            </div>
+            <div class="estimate-stage">
+              <p>Wie viele Decks sind noch im Schuh?</p>
+              <div class="shoe-wrap">
+                <div class="shoe-labels"><span>6 Decks</span><span>leer</span></div>
+                <div class="shoe"><div class="shoe-cards" id="shoeCards"></div><div class="shoe-cut"></div></div>
+              </div>
+              <div class="range-row">
+                <input type="range" id="deckGuess" min="0.5" max="6" value="3" step="0.25">
+                <output id="deckGuessOutput">3 Decks</output>
+              </div>
+              <button class="button primary" id="checkDeckGuess">Schätzung prüfen</button>
+              <button class="button secondary hidden" id="nextDeckEstimate">Nächste Schätzung</button>
+              <div class="feedback-line" id="deckFeedback" aria-live="assertive">Nutze Vierteldecks als Einheit.</div>
+            </div>
+          </article>
+          <aside class="training-help">
+            <span class="section-kicker">VISUELLER ANKER</span>
+            <h3>52 Karten = ein Deck</h3>
+            <p>Präge dir zuerst volle und halbe Deckhöhen ein. Vierteldecks kommen erst danach.</p>
+            <div class="anchor-grid"><span><i style="height:100%"></i><b>1</b></span><span><i style="height:50%"></i><b>½</b></span><span><i style="height:25%"></i><b>¼</b></span></div>
+          </aside>
+        </div>
+
+        <div class="drill-view" data-drill-view="shoe-simulator">
+          <article class="training-stage simulator-stage-wrap">
+            <div class="stage-topbar">
+              <div><span>MODUS</span><b>6-Deck-Schuh-Simulator</b></div>
+              <div class="live-stats">
+                <span><small>Karten</small><b id="simCardsDealt">0</b></span>
+                <span><small>Restdecks</small><b id="simDecksLeft">6.0</b></span>
+                <span><small>True Count</small><b id="simTrueCount">0</b></span>
+              </div>
+            </div>
+            <div class="simulator-stage">
+              <div class="simulator-toolbar">
+                <button class="button secondary" id="shuffleShoe">Neu mischen</button>
+                <label class="switch-label"><input type="checkbox" id="hideSimCount"><span></span> Count verdecken</label>
+                <label>Penetration
+                  <select id="simPenetration"><option value="0.65">65 %</option><option value="0.75" selected>75 %</option><option value="0.8">80 %</option></select>
+                </label>
+              </div>
+              <div class="simulator-table">
+                <div class="sim-shoe-box">
+                  <span>SCHUH</span>
+                  <div class="sim-shoe-fill" id="simShoeFill"></div>
+                  <i id="simCutCard"></i>
+                </div>
+                <div class="playing-card compact" id="simCurrentCard">
+                  <span class="card-corner top"><b>?</b><i>♠</i></span>
+                  <strong>READY</strong>
+                  <span class="card-corner bottom"><b>?</b><i>♠</i></span>
+                </div>
+                <div class="sim-count-board">
+                  <small>RUNNING COUNT</small>
+                  <strong id="simRunningCount">0</strong>
+                  <span id="simCountDelta">Noch keine Karte</span>
+                </div>
+              </div>
+              <div class="sim-actions">
+                <button class="button primary" id="dealOne">Eine Karte geben</button>
+                <button class="button secondary" id="dealRound">Runde geben · 6 Karten</button>
+              </div>
+              <div class="discard-area">
+                <div class="discard-heading"><span>LETZTE KARTEN</span><b id="simStatus">Bereit</b></div>
+                <div class="discard-tray" id="discardTray"></div>
+              </div>
+              <form class="sim-check-form" id="simCheckForm">
+                <label for="simCountGuess">Dein Running Count</label>
+                <input id="simCountGuess" type="number" inputmode="numeric" autocomplete="off" placeholder="0">
+                <button class="button secondary" type="submit">Count prüfen</button>
+              </form>
+            </div>
+          </article>
+          <aside class="training-help">
+            <span class="section-kicker">ECHTE ÜBUNG</span>
+            <h3>Wie am Tisch</h3>
+            <p>Verdecke den Count, gib ganze Runden und prüfe dich erst nach mehreren Karten.</p>
+            <div class="sim-guide">
+              <div><b>1</b><span>Schuh mischen</span></div>
+              <div><b>2</b><span>Count verdecken</span></div>
+              <div><b>3</b><span>Runden zählen</span></div>
+              <div><b>4</b><span>Count prüfen</span></div>
+            </div>
+            <p>Die rote Cut Card beendet den Durchgang automatisch bei der gewählten Penetration.</p>
+          </aside>
+        </div>
+
+        <div class="drill-view" data-drill-view="knowledge-quiz">
+          <article class="training-stage quiz-stage-wrap">
+            <div class="stage-topbar">
+              <div><span>MODUS</span><b>Wissenstest</b></div>
+              <div class="live-stats"><span><small>Frage</small><b><span id="quizNumber">1</span> / 10</b></span><span><small>Punkte</small><b id="quizScore">0</b></span></div>
+            </div>
+            <div class="quiz-stage">
+              <span class="quiz-topic" id="quizTopic">GRUNDLAGEN</span>
+              <h2 id="quizQuestion"></h2>
+              <div id="quizOptions" class="quiz-options"></div>
+              <div class="quiz-explanation hidden" id="quizExplanation"></div>
+              <button class="button primary hidden" id="nextQuizQuestion">Nächste Frage</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="screen" id="reference" data-screen="reference">
+        <div class="page-heading">
+          <div>
+            <span class="eyebrow">ALLES AUF EINEN BLICK</span>
+            <h1>Hi-Lo-Spickzettel</h1>
+            <p>Die wichtigsten Werte, Formeln und Denkmodelle für dein tägliches Training.</p>
+          </div>
+          <button class="button secondary" id="printReference">Spickzettel drucken</button>
+        </div>
+        <div class="reference-grid">
+          <article class="panel reference-values wide">
+            <div class="panel-header"><div><span class="section-kicker">KERNREGEL</span><h2>Kartenwerte</h2></div></div>
+            <div class="reference-value-row plus"><strong>+1</strong><div><b>2 · 3 · 4 · 5 · 6</b><span>Kleine Karten verlassen den Schuh</span></div></div>
+            <div class="reference-value-row zero"><strong>0</strong><div><b>7 · 8 · 9</b><span>Neutrale Karten verändern den Count nicht</span></div></div>
+            <div class="reference-value-row minus"><strong>−1</strong><div><b>10 · J · Q · K · A</b><span>Hohe Karten verlassen den Schuh</span></div></div>
+          </article>
+          <article class="panel formula-panel">
+            <span class="section-kicker">UMRECHNUNG</span>
+            <h2>True Count</h2>
+            <div class="big-formula"><span>Running Count</span><i>÷</i><span>Restdecks</span><i>=</i><b>True Count</b></div>
+            <p>Beispiel: +9 bei 3 verbleibenden Decks ergibt einen True Count von +3.</p>
+          </article>
+          <article class="panel count-meaning">
+            <span class="section-kicker">INTERPRETATION</span>
+            <h2>Was die Zahl bedeutet</h2>
+            <div><b class="positive-text">TC positiv</b><span>Relativ mehr Zehner und Asse verbleiben.</span></div>
+            <div><b>TC nahe null</b><span>Die Kartenmischung ist ungefähr ausgeglichen.</span></div>
+            <div><b class="negative-text">TC negativ</b><span>Relativ mehr kleine Karten verbleiben.</span></div>
+          </article>
+          <article class="panel deviation-panel wide">
+            <div class="panel-header">
+              <div><span class="section-kicker">FORTGESCHRITTEN</span><h2>Beispielhafte Index-Abweichungen</h2></div>
+              <span class="caution-badge">Regelabhängig</span>
+            </div>
+            <p class="panel-intro">Diese häufig gelehrten Hi-Lo-Beispiele dienen dem Verständnis. Exakte Indizes ändern sich je nach Regeln, Deckzahl und Rundungsmethode.</p>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Spielerhand</th><th>Dealer</th><th>Index</th><th>Aktion ab Index</th></tr></thead>
+                <tbody>
+                  <tr><td>Versicherung</td><td>Ass</td><td>TC +3</td><td>Versicherung erwägen</td></tr>
+                  <tr><td>16</td><td>10</td><td>TC 0</td><td>Stehen statt ziehen</td></tr>
+                  <tr><td>15</td><td>10</td><td>TC +4</td><td>Stehen statt ziehen</td></tr>
+                  <tr><td>12</td><td>3</td><td>TC +2</td><td>Stehen statt ziehen</td></tr>
+                  <tr><td>12</td><td>2</td><td>TC +3</td><td>Stehen statt ziehen</td></tr>
+                  <tr><td>10</td><td>10</td><td>TC +4</td><td>Verdoppeln, wenn erlaubt</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+          <article class="panel mistakes-panel">
+            <span class="section-kicker">FEHLERQUELLEN</span>
+            <h2>Die vier Klassiker</h2>
+            <ul class="check-list">
+              <li><span>01</span><div><b>Running und True Count verwechseln</b><small>Nur der True Count ist zwischen Schuhgrößen vergleichbar.</small></div></li>
+              <li><span>02</span><div><b>Zu früh auf Tempo gehen</b><small>Präzision wird vor Geschwindigkeit automatisiert.</small></div></li>
+              <li><span>03</span><div><b>Restdecks zu grob schätzen</b><small>Bei wenigen Karten wächst der Rundungsfehler.</small></div></li>
+              <li><span>04</span><div><b>Grundstrategie nicht beherrschen</b><small>Counting ergänzt korrektes Basisspiel, es ersetzt es nicht.</small></div></li>
+            </ul>
+          </article>
+          <article class="panel glossary-panel">
+            <span class="section-kicker">GLOSSAR</span>
+            <h2>Wichtige Begriffe</h2>
+            <dl>
+              <div><dt>Running Count</dt><dd>Laufende Summe der gesehenen Kartenwerte.</dd></div>
+              <div><dt>True Count</dt><dd>Running Count normiert auf die verbleibenden Decks.</dd></div>
+              <div><dt>Penetration</dt><dd>Anteil des Schuhs, der vor dem Mischen ausgespielt wird.</dd></div>
+              <div><dt>Index</dt><dd>Count-Schwelle für eine Abweichung von der Grundstrategie.</dd></div>
+            </dl>
+          </article>
+        </div>
+      </section>
+
+      <section class="screen" id="stats" data-screen="stats">
+        <div class="page-heading">
+          <div>
+            <span class="eyebrow">DEINE DATEN · DEIN TEMPO</span>
+            <h1>Fortschrittsanalyse</h1>
+            <p>Erkenne Stärken, finde Engpässe und entscheide, was du als Nächstes trainierst.</p>
+          </div>
+          <button class="button danger-ghost" id="resetProgress">Fortschritt zurücksetzen</button>
+        </div>
+        <div class="stats-overview">
+          <article><small>GESAMT-XP</small><strong data-total-xp>0</strong><span>Erfahrungspunkte</span></article>
+          <article><small>AUFGABEN</small><strong data-total-attempts>0</strong><span>beantwortet</span></article>
+          <article><small>RICHTIG</small><strong data-total-correct>0</strong><span>Antworten</span></article>
+          <article><small>GENAUIGKEIT</small><strong data-overall-accuracy>0%</strong><span>über alle Modi</span></article>
+        </div>
+        <div class="stats-grid">
+          <article class="panel skill-chart-panel">
+            <div class="panel-header"><div><span class="section-kicker">FÄHIGKEITSPROFIL</span><h2>Genauigkeit nach Modus</h2></div></div>
+            <div class="skill-bars" id="skillBars"></div>
+          </article>
+          <article class="panel recommendation-panel">
+            <span class="section-kicker">EMPFEHLUNG</span>
+            <h2 id="recommendationTitle">Starte mit Kartenwerten</h2>
+            <p id="recommendationCopy">Baue zuerst eine sichere Zuordnung für jede Karte auf.</p>
+            <button class="button primary" id="recommendationButton">Jetzt trainieren</button>
+          </article>
+          <article class="panel history-panel wide">
+            <div class="panel-header"><div><span class="section-kicker">VERLAUF</span><h2>Letzte Einheiten</h2></div></div>
+            <div class="history-table" id="historyTable"></div>
+          </article>
+        </div>
+      </section>
+
+      <footer>
+        <p><b>Trainingshinweis:</b> Card Counting reduziert weder Varianz noch Verlustrisiko. Diese Website vermittelt Mathematik und mentale Fertigkeiten, keine Gewinnzusage. Beachte Hausregeln und lokale Vorschriften.</p>
+        <span>Blackjack Count Lab · Fortschritt wird lokal gespeichert</span>
+      </footer>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <dialog id="resetDialog">
+    <div class="dialog-card">
+      <span class="dialog-icon">↺</span>
+      <h2>Fortschritt zurücksetzen?</h2>
+      <p>Alle XP, Statistiken und abgeschlossenen Module werden auf diesem Gerät gelöscht.</p>
+      <div><button class="button secondary" id="cancelReset">Abbrechen</button><button class="button danger" id="confirmReset">Alles löschen</button></div>
+    </div>
+  </dialog>
+</body>
+</html>
