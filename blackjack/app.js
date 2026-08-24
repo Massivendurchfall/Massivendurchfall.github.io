@@ -18,6 +18,25 @@ const initialState = {
     attempts: 0,
     correct: 0
   },
+  blackjack: {
+    bankroll: 1000,
+    handsPlayed: 0,
+    wins: 0,
+    losses: 0,
+    pushes: 0,
+    profit: 0,
+    bestBankroll: 1000,
+    decisions: 0,
+    correctDecisions: 0,
+    history: []
+  },
+  gameRules: {
+    decks: 6,
+    dealerHitsSoft17: false,
+    payout: 1.5,
+    penetration: 0.75,
+    surrender: true
+  },
   recent: []
 };
 
@@ -222,7 +241,8 @@ const modeLabels = {
   trueCount: "True Count",
   deckEstimation: "Deckschätzung",
   shoeSimulator: "Schuh-Simulator",
-  knowledgeQuiz: "Wissenstest"
+  knowledgeQuiz: "Wissenstest",
+  blackjack: "Blackjack-Tisch"
 };
 
 const drillByMode = {
@@ -250,6 +270,8 @@ function loadState() {
     merged.xp = Number(saved.xp) || 0;
     merged.completedLessons = Array.isArray(saved.completedLessons) ? saved.completedLessons : [];
     merged.daily = { ...merged.daily, ...(saved.daily || {}) };
+    merged.blackjack = { ...merged.blackjack, ...(saved.blackjack || {}) };
+    merged.gameRules = { ...merged.gameRules, ...(saved.gameRules || {}) };
     merged.recent = Array.isArray(saved.recent) ? saved.recent.slice(0, 30) : [];
     Object.keys(merged.stats).forEach((key) => {
       merged.stats[key] = { ...merged.stats[key], ...((saved.stats || {})[key] || {}) };
@@ -547,7 +569,7 @@ function openLesson(id) {
 }
 
 function setRoute(route) {
-  const allowed = ["dashboard", "learn", "practice", "reference", "stats"];
+  const allowed = ["dashboard", "play", "learn", "practice", "reference", "stats"];
   const target = allowed.includes(route) ? route : "dashboard";
   document.querySelectorAll("[data-screen]").forEach((screen) => screen.classList.toggle("active", screen.dataset.screen === target));
   document.querySelectorAll("[data-route]").forEach((link) => link.classList.toggle("active", link.dataset.route === target));
@@ -918,6 +940,607 @@ function checkSimulatorCount(event) {
   input.select();
 }
 
+const gameActionLabels = {
+  hit: "Hit",
+  stand: "Stand",
+  double: "Double",
+  split: "Split",
+  surrender: "Surrender",
+  insurance: "Insurance",
+  "no-insurance": "Keine Insurance"
+};
+
+let gameShoe = [];
+let gameShoePosition = 0;
+let gameRunningCount = 0;
+let gameBet = 25;
+let gameRound = {
+  phase: "betting",
+  dealer: [],
+  hands: [],
+  activeHand: 0,
+  roundStartBankroll: 1000,
+  insuranceBet: 0,
+  lastCoach: ""
+};
+
+function gameRules() {
+  return state.gameRules;
+}
+
+function gameCutPosition() {
+  return Math.floor(gameShoe.length * gameRules().penetration);
+}
+
+function gameDecksLeft() {
+  return Math.max(0.25, (gameShoe.length - gameShoePosition) / 52);
+}
+
+function gameTrueCount() {
+  return Math.trunc(gameRunningCount / gameDecksLeft());
+}
+
+function formatChips(value) {
+  return new Intl.NumberFormat("de-DE", { maximumFractionDigits: 1 }).format(value);
+}
+
+function cardPointValue(rank) {
+  if (rank === "A") return 11;
+  if (["J", "Q", "K"].includes(rank)) return 10;
+  return Number(rank);
+}
+
+function handValue(cards) {
+  let total = cards.reduce((sum, card) => sum + cardPointValue(card.rank), 0);
+  let aces = cards.filter((card) => card.rank === "A").length;
+  while (total > 21 && aces > 0) {
+    total -= 10;
+    aces -= 1;
+  }
+  return { total, soft: aces > 0 };
+}
+
+function isNatural(hand) {
+  return hand.cards.length === 2 && handValue(hand.cards).total === 21 && !hand.fromSplit;
+}
+
+function sameSplitValue(cards) {
+  return cards.length === 2 && cardPointValue(cards[0].rank) === cardPointValue(cards[1].rank);
+}
+
+function prepareGameShoe() {
+  gameShoe = createShoe(gameRules().decks);
+  gameShoePosition = 0;
+  gameRunningCount = 0;
+}
+
+function drawGameCard(exposed = true) {
+  if (!gameShoe.length || gameShoePosition >= gameShoe.length) prepareGameShoe();
+  const source = gameShoe[gameShoePosition];
+  gameShoePosition += 1;
+  const card = { ...source, counted: exposed };
+  if (exposed) gameRunningCount += hiLoValue(card.rank);
+  return card;
+}
+
+function revealGameCard(card) {
+  if (!card.counted) {
+    card.counted = true;
+    gameRunningCount += hiLoValue(card.rank);
+  }
+}
+
+function gameCardMarkup(card, hidden, index) {
+  if (hidden) return `<div class="game-card face-down" style="--card-rotation:${index % 2 ? 1.5 : -1.5}deg"></div>`;
+  return `<div class="game-card ${redSuits.has(card.suit) ? "red" : ""}" style="--card-rotation:${index % 2 ? 1.5 : -1.5}deg"><span>${card.rank}<i>${card.suit}</i></span><b>${card.suit}</b></div>`;
+}
+
+function currentGameHand() {
+  return gameRound.hands[gameRound.activeHand] || null;
+}
+
+function canGameDouble(hand = currentGameHand()) {
+  return Boolean(hand && hand.state === "playing" && hand.cards.length === 2 && state.blackjack.bankroll >= hand.bet && !hand.splitAces);
+}
+
+function canGameSplit(hand = currentGameHand()) {
+  return Boolean(hand && hand.state === "playing" && hand.cards.length === 2 && sameSplitValue(hand.cards) && gameRound.hands.length < 4 && state.blackjack.bankroll >= hand.bet && !hand.splitAces);
+}
+
+function canGameSurrender(hand = currentGameHand()) {
+  return Boolean(hand && gameRules().surrender && hand.state === "playing" && hand.cards.length === 2 && !hand.fromSplit);
+}
+
+function dealerUpValue() {
+  return gameRound.dealer.length ? cardPointValue(gameRound.dealer[0].rank) : 0;
+}
+
+function strategyForHand(hand = currentGameHand()) {
+  if (!hand || !gameRound.dealer.length) return { action: "stand", reason: "Keine aktive Hand." };
+  const dealer = dealerUpValue();
+  const value = handValue(hand.cards);
+  const total = value.total;
+  const trueCount = gameTrueCount();
+  const pairValue = sameSplitValue(hand.cards) ? cardPointValue(hand.cards[0].rank) : null;
+  if (gameRound.phase === "insurance") {
+    if (trueCount >= 3) return { action: "insurance", reason: `Hi-Lo-Index: Insurance ab TC +3. Aktuell ${formatSigned(trueCount)}.` };
+    return { action: "no-insurance", reason: `Insurance wird erst ab TC +3 interessant. Aktuell ${formatSigned(trueCount)}.` };
+  }
+  if (canGameSurrender(hand)) {
+    if (total === 17 && dealer === 11 && gameRules().dealerHitsSoft17) return { action: "surrender", reason: "H17-Regel: Hard 17 gegen Ass aufgeben." };
+    if (pairValue === 8 && dealer === 11 && gameRules().dealerHitsSoft17) return { action: "surrender", reason: "H17-Regel: 8,8 gegen Ass aufgeben." };
+    if (total === 16 && pairValue !== 8 && [9, 10, 11].includes(dealer)) return { action: "surrender", reason: "Hard 16 gegen starke Dealerkarte aufgeben." };
+    if (total === 15 && dealer === 10) return { action: "surrender", reason: "Hard 15 gegen 10 aufgeben." };
+  }
+  if (!value.soft && pairValue === null) {
+    if (total === 16 && dealer === 10 && trueCount >= 0) return { action: "stand", reason: `Hi-Lo-Abweichung: 16 gegen 10 ab TC 0 stehen. Aktuell ${formatSigned(trueCount)}.` };
+    if (total === 15 && dealer === 10 && trueCount >= 4) return { action: "stand", reason: `Hi-Lo-Abweichung: 15 gegen 10 ab TC +4 stehen. Aktuell ${formatSigned(trueCount)}.` };
+    if (total === 12 && dealer === 3 && trueCount >= 2) return { action: "stand", reason: `Hi-Lo-Abweichung: 12 gegen 3 ab TC +2 stehen. Aktuell ${formatSigned(trueCount)}.` };
+    if (total === 12 && dealer === 2 && trueCount >= 3) return { action: "stand", reason: `Hi-Lo-Abweichung: 12 gegen 2 ab TC +3 stehen. Aktuell ${formatSigned(trueCount)}.` };
+    if (total === 10 && dealer === 10 && trueCount >= 4 && canGameDouble(hand)) return { action: "double", reason: `Hi-Lo-Abweichung: 10 gegen 10 ab TC +4 verdoppeln. Aktuell ${formatSigned(trueCount)}.` };
+  }
+  if (pairValue !== null && canGameSplit(hand)) {
+    if (pairValue === 11) return { action: "split", reason: "Asse werden immer geteilt." };
+    if (pairValue === 10) return { action: "stand", reason: "Zehnerpaare bleiben als starke 20 zusammen." };
+    if (pairValue === 9) return { action: [2, 3, 4, 5, 6, 8, 9].includes(dealer) ? "split" : "stand", reason: "9,9 wird gegen 2–6, 8 und 9 geteilt." };
+    if (pairValue === 8) return { action: "split", reason: "Achter werden geteilt." };
+    if (pairValue === 7) return { action: dealer <= 7 ? "split" : "hit", reason: "7,7 wird gegen 2–7 geteilt." };
+    if (pairValue === 6) return { action: dealer <= 6 ? "split" : "hit", reason: "6,6 wird mit DAS gegen 2–6 geteilt." };
+    if (pairValue === 4) return { action: [5, 6].includes(dealer) ? "split" : "hit", reason: "4,4 wird mit DAS nur gegen 5 oder 6 geteilt." };
+    if ([2, 3].includes(pairValue)) return { action: dealer <= 7 ? "split" : "hit", reason: "2,2 und 3,3 werden mit DAS gegen 2–7 geteilt." };
+  }
+  if (value.soft) {
+    if (total >= 20) return { action: "stand", reason: `Soft ${total} ist eine starke Hand.` };
+    if (total === 19) {
+      if (dealer === 6 && gameRules().dealerHitsSoft17 && canGameDouble(hand)) return { action: "double", reason: "Soft 19 gegen 6 im H17-Spiel verdoppeln." };
+      return { action: "stand", reason: "Soft 19 wird normalerweise gehalten." };
+    }
+    if (total === 18) {
+      const doubleRange = gameRules().dealerHitsSoft17 ? [2, 3, 4, 5, 6] : [3, 4, 5, 6];
+      if (doubleRange.includes(dealer) && canGameDouble(hand)) return { action: "double", reason: `Soft 18 gegen ${dealer} verdoppeln.` };
+      if ([2, 7, 8].includes(dealer)) return { action: "stand", reason: `Soft 18 gegen ${dealer} halten.` };
+      return { action: "hit", reason: "Soft 18 gegen 9, 10 oder Ass ziehen." };
+    }
+    if (total === 17 && [3, 4, 5, 6].includes(dealer) && canGameDouble(hand)) return { action: "double", reason: "Soft 17 gegen 3–6 verdoppeln." };
+    if ([15, 16].includes(total) && [4, 5, 6].includes(dealer) && canGameDouble(hand)) return { action: "double", reason: `Soft ${total} gegen 4–6 verdoppeln.` };
+    if ([13, 14].includes(total) && [5, 6].includes(dealer) && canGameDouble(hand)) return { action: "double", reason: `Soft ${total} gegen 5–6 verdoppeln.` };
+    return { action: "hit", reason: `Soft ${total} braucht eine weitere Karte.` };
+  }
+  if (total >= 17) return { action: "stand", reason: `Hard ${total} wird gehalten.` };
+  if (total >= 13) return { action: dealer <= 6 ? "stand" : "hit", reason: `Hard ${total}: gegen 2–6 stehen, sonst ziehen.` };
+  if (total === 12) return { action: [4, 5, 6].includes(dealer) ? "stand" : "hit", reason: "Hard 12 steht nur gegen 4–6." };
+  if (total === 11 && canGameDouble(hand)) return { action: "double", reason: "Hard 11 wird verdoppelt." };
+  if (total === 10 && dealer <= 9 && canGameDouble(hand)) return { action: "double", reason: "Hard 10 wird gegen 2–9 verdoppelt." };
+  if (total === 9 && [3, 4, 5, 6].includes(dealer) && canGameDouble(hand)) return { action: "double", reason: "Hard 9 wird gegen 3–6 verdoppelt." };
+  return { action: "hit", reason: `Hard ${total} braucht eine weitere Karte.` };
+}
+
+function renderGameHand(hand, index) {
+  const value = handValue(hand.cards);
+  const active = gameRound.phase === "player" && gameRound.activeHand === index;
+  const resultClass = hand.outcome === "win" ? "result-win" : hand.outcome === "loss" ? "result-loss" : "";
+  const label = gameRound.hands.length > 1 ? `HAND ${index + 1}` : "SPIELER";
+  const totalLabel = value.total > 21 ? "BUST" : value.soft && value.total < 21 ? `SOFT ${value.total}` : value.total;
+  return `
+    <div class="player-hand ${active ? "active" : ""} ${resultClass}">
+      <div class="hand-label"><span>${label}</span><b>${totalLabel}</b><span>${formatChips(hand.bet)} Chips</span></div>
+      <div class="table-hand">${hand.cards.map((card, cardIndex) => gameCardMarkup(card, false, cardIndex)).join("")}</div>
+      <div class="hand-result">${hand.resultText || ""}</div>
+    </div>
+  `;
+}
+
+function updateGameStatsUi() {
+  const data = state.blackjack;
+  document.getElementById("gameBankroll").textContent = formatChips(data.bankroll);
+  document.getElementById("gameHandsPlayed").textContent = data.handsPlayed;
+  document.getElementById("gameWins").textContent = data.wins;
+  document.getElementById("gameProfit").textContent = `${data.profit > 0 ? "+" : ""}${formatChips(data.profit)}`;
+  document.getElementById("gameProfit").style.color = data.profit > 0 ? "var(--lime)" : data.profit < 0 ? "#ef9999" : "var(--text)";
+  const decisionAccuracy = data.decisions ? Math.round((data.correctDecisions / data.decisions) * 100) : 0;
+  document.getElementById("gameDecisionAccuracy").textContent = `${decisionAccuracy}%`;
+  const history = data.history || [];
+  document.getElementById("gameHistory").innerHTML = history.slice(0, 5).map((item) => `
+    <div class="game-history-row"><span>${escapeHtml(item.label)}</span><b class="${item.profit > 0 ? "win" : item.profit < 0 ? "loss" : ""}">${item.profit > 0 ? "+" : ""}${formatChips(item.profit)}</b></div>
+  `).join("") || '<div class="empty-activity">Noch keine gespielte Runde.</div>';
+}
+
+function updateGameRecommendation() {
+  const box = document.getElementById("strategyRecommendation");
+  const show = document.getElementById("showGameCoach").checked;
+  if (!show) {
+    box.innerHTML = '<small>COACH AUS</small><strong>Selbst entscheiden</strong><span>Aktiviere den Coach, um die Empfehlung vor deiner Aktion zu sehen.</span>';
+    return;
+  }
+  if (!["player", "insurance"].includes(gameRound.phase)) {
+    box.innerHTML = '<small>EMPFEHLUNG</small><strong>Warte auf die Karten</strong><span>Der Coach erscheint, sobald eine Entscheidung ansteht.</span>';
+    return;
+  }
+  const recommendation = strategyForHand();
+  box.innerHTML = `<small>EMPFEHLUNG</small><strong>${gameActionLabels[recommendation.action]}</strong><span>${recommendation.reason}</span>`;
+}
+
+function updateGameUi() {
+  const rules = gameRules();
+  const activeRound = ["player", "dealer", "insurance", "dealing"].includes(gameRound.phase);
+  const controlsOpen = !activeRound;
+  const remainingCards = Math.max(0, gameShoe.length - gameShoePosition);
+  const remainingRatio = gameShoe.length ? remainingCards / gameShoe.length : 1;
+  document.getElementById("gameBet").textContent = formatChips(gameBet);
+  document.getElementById("gameShoeProgress").style.width = `${remainingRatio * 100}%`;
+  document.getElementById("gameCutMarker").style.left = `${rules.penetration * 100}%`;
+  document.getElementById("gameCardsRemaining").textContent = `${remainingCards} Karten`;
+  document.getElementById("tableRuleSummary").textContent = `${rules.decks} ${rules.decks === 1 ? "Deck" : "Decks"} · ${rules.dealerHitsSoft17 ? "H17" : "S17"} · ${rules.payout === 1.5 ? "3:2" : "6:5"} · ${rules.surrender ? "LS" : "kein LS"}`;
+  document.querySelector(".table-logo b").textContent = `PAYS ${rules.payout === 1.5 ? "3 TO 2" : "6 TO 5"}`;
+  document.querySelector(".table-logo small").textContent = rules.dealerHitsSoft17 ? "DEALER HITS SOFT 17" : "DEALER STANDS ON ALL 17";
+  const hideCount = document.getElementById("hideGameCount").checked;
+  document.getElementById("gameRunningCount").textContent = hideCount ? "••" : formatSigned(gameRunningCount);
+  document.getElementById("gameTrueCount").textContent = hideCount ? "••" : formatSigned(gameTrueCount());
+  document.getElementById("gameDecksLeft").textContent = gameDecksLeft().toFixed(1);
+  const dealerHidden = gameRound.dealer.length > 1 && !gameRound.dealer[1].counted;
+  document.getElementById("dealerHand").innerHTML = gameRound.dealer.map((card, index) => gameCardMarkup(card, index === 1 && dealerHidden, index)).join("");
+  if (!gameRound.dealer.length) {
+    document.getElementById("dealerTotal").textContent = "–";
+  } else if (dealerHidden) {
+    document.getElementById("dealerTotal").textContent = cardPointValue(gameRound.dealer[0].rank);
+  } else {
+    const dealerValue = handValue(gameRound.dealer).total;
+    document.getElementById("dealerTotal").textContent = dealerValue > 21 ? "BUST" : dealerValue;
+  }
+  document.getElementById("playerHands").innerHTML = gameRound.hands.map(renderGameHand).join("") || '<div class="empty-seat">Einsatz platzieren</div>';
+  const standardButtons = ["gameHit", "gameStand", "gameDouble", "gameSplit", "gameSurrender"];
+  standardButtons.forEach((id) => document.getElementById(id).classList.toggle("hidden", gameRound.phase !== "player"));
+  document.getElementById("gameInsurance").classList.toggle("hidden", gameRound.phase !== "insurance");
+  document.getElementById("gameNoInsurance").classList.toggle("hidden", gameRound.phase !== "insurance");
+  if (gameRound.phase === "player") {
+    document.getElementById("gameHit").disabled = false;
+    document.getElementById("gameStand").disabled = false;
+    document.getElementById("gameDouble").disabled = !canGameDouble();
+    document.getElementById("gameSplit").disabled = !canGameSplit();
+    document.getElementById("gameSurrender").disabled = !canGameSurrender();
+  }
+  document.getElementById("gameInsurance").disabled = gameRound.phase !== "insurance" || state.blackjack.bankroll < gameBet / 2;
+  document.querySelectorAll("[data-chip]").forEach((button) => { button.disabled = !controlsOpen; });
+  document.getElementById("clearGameBet").disabled = !controlsOpen;
+  const dealButton = document.getElementById("dealGameRound");
+  dealButton.disabled = !controlsOpen || gameBet <= 0 || gameBet > state.blackjack.bankroll;
+  dealButton.textContent = gameRound.phase === "settled" ? "Nächste Runde" : gameRound.phase === "betting" ? "Karten geben" : "Runde läuft";
+  ["gameRuleDecks", "gameRuleSoft17", "gameRulePayout", "gameRulePenetration", "gameRuleSurrender"].forEach((id) => {
+    document.getElementById(id).disabled = activeRound;
+  });
+  updateGameRecommendation();
+  updateGameStatsUi();
+}
+
+function setRoundMessage(message, tone = "") {
+  const element = document.getElementById("roundMessage");
+  element.textContent = message;
+  element.className = `round-message ${tone}`.trim();
+}
+
+function dealerHasNatural() {
+  return gameRound.dealer.length === 2 && handValue(gameRound.dealer).total === 21;
+}
+
+function beginPlayerPhase() {
+  if (isNatural(gameRound.hands[0])) {
+    settleGameRound(false);
+    return;
+  }
+  gameRound.phase = "player";
+  gameRound.activeHand = 0;
+  setRoundMessage("Deine Entscheidung.");
+  updateGameUi();
+}
+
+function beginGameRound() {
+  if (!["betting", "settled"].includes(gameRound.phase)) return;
+  if (gameBet <= 0 || gameBet > state.blackjack.bankroll) {
+    showToast("Wähle einen gültigen Einsatz.");
+    return;
+  }
+  if (!gameShoe.length || gameShoePosition >= gameCutPosition()) {
+    prepareGameShoe();
+    showToast("Cut Card erreicht · neuer Schuh gemischt.");
+  }
+  const roundStartBankroll = state.blackjack.bankroll;
+  state.blackjack.bankroll -= gameBet;
+  gameRound = {
+    phase: "dealing",
+    dealer: [],
+    hands: [{ cards: [], bet: gameBet, state: "playing", fromSplit: false, splitAces: false, resultText: "", outcome: "" }],
+    activeHand: 0,
+    roundStartBankroll,
+    insuranceBet: 0,
+    lastCoach: ""
+  };
+  const hand = gameRound.hands[0];
+  hand.cards.push(drawGameCard(true));
+  gameRound.dealer.push(drawGameCard(true));
+  hand.cards.push(drawGameCard(true));
+  gameRound.dealer.push(drawGameCard(false));
+  if (dealerUpValue() === 11) {
+    gameRound.phase = "insurance";
+    setRoundMessage("Dealer zeigt Ass. Insurance wählen oder ablehnen.");
+  } else if (dealerUpValue() === 10 && dealerHasNatural()) {
+    revealGameCard(gameRound.dealer[1]);
+    settleGameRound(true);
+    return;
+  } else {
+    beginPlayerPhase();
+    return;
+  }
+  saveState();
+  updateGameUi();
+}
+
+function handleGameInsurance(takeInsurance) {
+  if (gameRound.phase !== "insurance") return;
+  const recommendation = strategyForHand();
+  evaluateGameDecision(takeInsurance ? "insurance" : "no-insurance", recommendation);
+  if (takeInsurance) {
+    const insuranceBet = gameBet / 2;
+    if (state.blackjack.bankroll < insuranceBet) {
+      showToast("Nicht genug Guthaben für Insurance.");
+      return;
+    }
+    state.blackjack.bankroll -= insuranceBet;
+    gameRound.insuranceBet = insuranceBet;
+  }
+  if (dealerHasNatural()) {
+    if (gameRound.insuranceBet) state.blackjack.bankroll += gameRound.insuranceBet * 3;
+    revealGameCard(gameRound.dealer[1]);
+    settleGameRound(true);
+    return;
+  }
+  setRoundMessage(gameRound.insuranceBet ? "Keine Dealer-Blackjack. Insurance verloren." : "Keine Dealer-Blackjack. Runde läuft weiter.");
+  beginPlayerPhase();
+}
+
+function evaluateGameDecision(action, recommendation = strategyForHand()) {
+  if (!["hit", "stand", "double", "split", "surrender", "insurance", "no-insurance"].includes(action)) return;
+  const correct = action === recommendation.action;
+  state.blackjack.decisions += 1;
+  if (correct) {
+    state.blackjack.correctDecisions += 1;
+    state.xp += 1;
+  }
+  gameRound.lastCoach = correct ? `Strategisch korrekt: ${gameActionLabels[action]}.` : `Coach: ${gameActionLabels[recommendation.action]} wäre empfohlen.`;
+  const coachMessage = document.getElementById("coachMessage");
+  coachMessage.textContent = gameRound.lastCoach;
+  coachMessage.classList.toggle("hidden", !document.getElementById("showGameCoach").checked);
+  saveState();
+}
+
+function advanceGameHand() {
+  let next = gameRound.activeHand + 1;
+  while (next < gameRound.hands.length && gameRound.hands[next].state !== "playing") next += 1;
+  if (next < gameRound.hands.length) {
+    gameRound.activeHand = next;
+    setRoundMessage(`Hand ${next + 1} ist aktiv.`);
+    updateGameUi();
+    return;
+  }
+  const liveHand = gameRound.hands.some((hand) => !["bust", "surrendered"].includes(hand.state));
+  if (liveHand) playGameDealer();
+  else settleGameRound(false);
+}
+
+function gameHit() {
+  if (gameRound.phase !== "player") return;
+  evaluateGameDecision("hit");
+  const hand = currentGameHand();
+  hand.cards.push(drawGameCard(true));
+  const total = handValue(hand.cards).total;
+  if (total > 21) {
+    hand.state = "bust";
+    hand.resultText = "Bust";
+    advanceGameHand();
+  } else if (total === 21) {
+    hand.state = "stood";
+    hand.resultText = "21";
+    advanceGameHand();
+  } else {
+    setRoundMessage(`Hand steht bei ${total}.`);
+    updateGameUi();
+  }
+}
+
+function gameStand() {
+  if (gameRound.phase !== "player") return;
+  evaluateGameDecision("stand");
+  const hand = currentGameHand();
+  hand.state = "stood";
+  hand.resultText = `Steht bei ${handValue(hand.cards).total}`;
+  advanceGameHand();
+}
+
+function gameDouble() {
+  const hand = currentGameHand();
+  if (gameRound.phase !== "player" || !canGameDouble(hand)) return;
+  evaluateGameDecision("double");
+  state.blackjack.bankroll -= hand.bet;
+  hand.bet *= 2;
+  hand.cards.push(drawGameCard(true));
+  const total = handValue(hand.cards).total;
+  hand.state = total > 21 ? "bust" : "stood";
+  hand.resultText = total > 21 ? "Double · Bust" : `Double · ${total}`;
+  advanceGameHand();
+}
+
+function gameSplit() {
+  const hand = currentGameHand();
+  if (gameRound.phase !== "player" || !canGameSplit(hand)) return;
+  evaluateGameDecision("split");
+  state.blackjack.bankroll -= hand.bet;
+  const splittingAces = hand.cards[0].rank === "A" && hand.cards[1].rank === "A";
+  const first = { cards: [hand.cards[0], drawGameCard(true)], bet: hand.bet, state: splittingAces ? "stood" : "playing", fromSplit: true, splitAces: splittingAces, resultText: splittingAces ? "Split-Ass" : "", outcome: "" };
+  const second = { cards: [hand.cards[1], drawGameCard(true)], bet: hand.bet, state: splittingAces ? "stood" : "playing", fromSplit: true, splitAces: splittingAces, resultText: splittingAces ? "Split-Ass" : "", outcome: "" };
+  gameRound.hands.splice(gameRound.activeHand, 1, first, second);
+  if (splittingAces) advanceGameHand();
+  else {
+    setRoundMessage(`Hand ${gameRound.activeHand + 1} ist aktiv.`);
+    updateGameUi();
+  }
+}
+
+function gameSurrender() {
+  const hand = currentGameHand();
+  if (gameRound.phase !== "player" || !canGameSurrender(hand)) return;
+  evaluateGameDecision("surrender");
+  hand.state = "surrendered";
+  hand.resultText = "Aufgegeben · ½ Einsatz zurück";
+  state.blackjack.bankroll += hand.bet / 2;
+  advanceGameHand();
+}
+
+function playGameDealer() {
+  gameRound.phase = "dealer";
+  revealGameCard(gameRound.dealer[1]);
+  let value = handValue(gameRound.dealer);
+  while (value.total < 17 || (value.total === 17 && value.soft && gameRules().dealerHitsSoft17)) {
+    gameRound.dealer.push(drawGameCard(true));
+    value = handValue(gameRound.dealer);
+  }
+  settleGameRound(false);
+}
+
+function settleGameRound(dealerBlackjack) {
+  const dealerValue = handValue(gameRound.dealer).total;
+  const dealerBust = dealerValue > 21;
+  let wins = 0;
+  let losses = 0;
+  let pushes = 0;
+  gameRound.hands.forEach((hand) => {
+    const playerValue = handValue(hand.cards).total;
+    if (hand.state === "surrendered") {
+      hand.outcome = "loss";
+      losses += 1;
+      return;
+    }
+    if (hand.state === "bust" || playerValue > 21) {
+      hand.outcome = "loss";
+      hand.resultText = "Verloren · Bust";
+      losses += 1;
+      return;
+    }
+    if (dealerBlackjack) {
+      if (isNatural(hand)) {
+        state.blackjack.bankroll += hand.bet;
+        hand.outcome = "push";
+        hand.resultText = "Push · beide Blackjack";
+        pushes += 1;
+      } else {
+        hand.outcome = "loss";
+        hand.resultText = "Dealer Blackjack";
+        losses += 1;
+      }
+      return;
+    }
+    if (isNatural(hand)) {
+      state.blackjack.bankroll += hand.bet * (1 + gameRules().payout);
+      hand.outcome = "win";
+      hand.resultText = `Blackjack · ${gameRules().payout === 1.5 ? "3:2" : "6:5"}`;
+      wins += 1;
+      return;
+    }
+    if (dealerBust || playerValue > dealerValue) {
+      state.blackjack.bankroll += hand.bet * 2;
+      hand.outcome = "win";
+      hand.resultText = dealerBust ? "Gewonnen · Dealer Bust" : `Gewonnen · ${playerValue} zu ${dealerValue}`;
+      wins += 1;
+    } else if (playerValue === dealerValue) {
+      state.blackjack.bankroll += hand.bet;
+      hand.outcome = "push";
+      hand.resultText = `Push · ${playerValue}`;
+      pushes += 1;
+    } else {
+      hand.outcome = "loss";
+      hand.resultText = `Verloren · ${playerValue} zu ${dealerValue}`;
+      losses += 1;
+    }
+  });
+  const roundProfit = state.blackjack.bankroll - gameRound.roundStartBankroll;
+  state.blackjack.handsPlayed += gameRound.hands.length;
+  state.blackjack.wins += wins;
+  state.blackjack.losses += losses;
+  state.blackjack.pushes += pushes;
+  state.blackjack.profit += roundProfit;
+  state.blackjack.bestBankroll = Math.max(state.blackjack.bestBankroll, state.blackjack.bankroll);
+  const label = wins ? `${wins}× gewonnen` : pushes && !losses ? "Push" : "Verloren";
+  state.blackjack.history.unshift({ label, profit: roundProfit, timestamp: Date.now() });
+  state.blackjack.history = state.blackjack.history.slice(0, 12);
+  state.xp += Math.max(1, wins * 3);
+  state.recent.unshift({ mode: "blackjack", correct: roundProfit >= 0, detail: `${label} · ${roundProfit > 0 ? "+" : ""}${formatChips(roundProfit)} Chips`, xp: Math.max(1, wins * 3), timestamp: Date.now() });
+  state.recent = state.recent.slice(0, 30);
+  gameRound.phase = "settled";
+  const message = roundProfit > 0 ? `Runde gewonnen: +${formatChips(roundProfit)} Chips.` : roundProfit < 0 ? `Runde beendet: ${formatChips(roundProfit)} Chips.` : "Runde endet unentschieden.";
+  setRoundMessage(message, roundProfit > 0 ? "win" : roundProfit < 0 ? "loss" : "");
+  gameBet = Math.min(gameBet, state.blackjack.bankroll);
+  saveState();
+  updateAllStats();
+  updateGameUi();
+}
+
+function addGameChip(amount) {
+  if (!["betting", "settled"].includes(gameRound.phase)) return;
+  gameBet = Math.min(state.blackjack.bankroll, gameBet + amount);
+  updateGameUi();
+}
+
+function applyGameRules() {
+  state.gameRules = {
+    decks: Number(document.getElementById("gameRuleDecks").value),
+    dealerHitsSoft17: document.getElementById("gameRuleSoft17").value === "hit",
+    payout: Number(document.getElementById("gameRulePayout").value),
+    penetration: Number(document.getElementById("gameRulePenetration").value),
+    surrender: document.getElementById("gameRuleSurrender").checked
+  };
+  prepareGameShoe();
+  gameRound = { phase: "betting", dealer: [], hands: [], activeHand: 0, roundStartBankroll: state.blackjack.bankroll, insuranceBet: 0, lastCoach: "" };
+  setRoundMessage("Regeln übernommen. Neuer Schuh gemischt.");
+  saveState();
+  updateGameUi();
+}
+
+function resetGameSession() {
+  state.blackjack = clone(initialState.blackjack);
+  gameBet = 25;
+  prepareGameShoe();
+  gameRound = { phase: "betting", dealer: [], hands: [], activeHand: 0, roundStartBankroll: 1000, insuranceBet: 0, lastCoach: "" };
+  setRoundMessage("Neue Session. Einsatz wählen und Karten geben.");
+  saveState();
+  updateAllStats();
+  updateGameUi();
+}
+
+function checkGameCount(event) {
+  event.preventDefault();
+  const input = document.getElementById("gameCountGuess");
+  if (input.value.trim() === "") return;
+  const guess = Number(input.value);
+  const correct = guess === gameRunningCount;
+  if (correct) {
+    state.xp += 3;
+    saveState();
+    updateAllStats();
+  }
+  showToast(correct ? `Count stimmt: ${formatSigned(gameRunningCount)} · +3 XP` : `Korrekt ist ${formatSigned(gameRunningCount)}.`);
+  input.select();
+}
+
+function initializeBlackjackGame() {
+  document.getElementById("gameRuleDecks").value = String(gameRules().decks);
+  document.getElementById("gameRuleSoft17").value = gameRules().dealerHitsSoft17 ? "hit" : "stand";
+  document.getElementById("gameRulePayout").value = String(gameRules().payout);
+  document.getElementById("gameRulePenetration").value = String(gameRules().penetration);
+  document.getElementById("gameRuleSurrender").checked = gameRules().surrender;
+  prepareGameShoe();
+  gameBet = Math.min(25, state.blackjack.bankroll);
+  gameRound = { phase: "betting", dealer: [], hands: [], activeHand: 0, roundStartBankroll: state.blackjack.bankroll, insuranceBet: 0, lastCoach: "" };
+  updateGameUi();
+}
+
 function initializeEvents() {
   window.addEventListener("hashchange", () => setRoute(location.hash.slice(1)));
   document.getElementById("menuToggle").addEventListener("click", () => {
@@ -933,6 +1556,33 @@ function initializeEvents() {
   });
   document.getElementById("recommendationButton").addEventListener("click", (event) => openDrill(event.currentTarget.dataset.targetDrill));
   document.getElementById("continueLearning").addEventListener("click", (event) => openLesson(Number(event.currentTarget.dataset.lessonId)));
+  document.querySelectorAll("[data-chip]").forEach((button) => {
+    button.addEventListener("click", () => addGameChip(Number(button.dataset.chip)));
+  });
+  document.getElementById("clearGameBet").addEventListener("click", () => {
+    gameBet = 0;
+    updateGameUi();
+  });
+  document.getElementById("dealGameRound").addEventListener("click", beginGameRound);
+  document.getElementById("gameHit").addEventListener("click", gameHit);
+  document.getElementById("gameStand").addEventListener("click", gameStand);
+  document.getElementById("gameDouble").addEventListener("click", gameDouble);
+  document.getElementById("gameSplit").addEventListener("click", gameSplit);
+  document.getElementById("gameSurrender").addEventListener("click", gameSurrender);
+  document.getElementById("gameInsurance").addEventListener("click", () => handleGameInsurance(true));
+  document.getElementById("gameNoInsurance").addEventListener("click", () => handleGameInsurance(false));
+  document.getElementById("hideGameCount").addEventListener("change", updateGameUi);
+  document.getElementById("showGameCoach").addEventListener("change", () => {
+    document.getElementById("coachMessage").classList.toggle("hidden", !document.getElementById("showGameCoach").checked || !gameRound.lastCoach);
+    updateGameRecommendation();
+  });
+  document.getElementById("gameCountCheck").addEventListener("submit", checkGameCount);
+  ["gameRuleDecks", "gameRuleSoft17", "gameRulePayout", "gameRulePenetration", "gameRuleSurrender"].forEach((id) => {
+    document.getElementById(id).addEventListener("change", applyGameRules);
+  });
+  document.getElementById("resetGameBankroll").addEventListener("click", () => {
+    if (window.confirm("Neue Session starten und das virtuelle Guthaben auf 1.000 setzen?")) resetGameSession();
+  });
   document.getElementById("lessonTimeline").addEventListener("click", (event) => {
     const toggle = event.target.closest("[data-lesson-toggle]");
     if (toggle) {
@@ -975,6 +1625,16 @@ function initializeEvents() {
     if (event.key === "0") answerValueCard(0);
     if (event.key === "-" || event.key === "−") answerValueCard(-1);
   });
+  document.addEventListener("keydown", (event) => {
+    const playActive = document.querySelector('[data-screen="play"]').classList.contains("active");
+    if (!playActive || gameRound.phase !== "player" || ["INPUT", "SELECT"].includes(document.activeElement.tagName)) return;
+    const key = event.key.toLowerCase();
+    if (key === "h") gameHit();
+    if (key === "s") gameStand();
+    if (key === "d" && canGameDouble()) gameDouble();
+    if (key === "p" && canGameSplit()) gameSplit();
+    if (key === "r" && canGameSurrender()) gameSurrender();
+  });
   document.getElementById("startSprint").addEventListener("click", startSprint);
   document.getElementById("countAnswerForm").addEventListener("submit", submitSprint);
   document.getElementById("sprintLength").addEventListener("change", (event) => {
@@ -1016,6 +1676,7 @@ function initializeEvents() {
     state = clone(initialState);
     ensureDailyState();
     renderLessons();
+    initializeBlackjackGame();
     updateAllStats();
     resetDialog.close();
     showToast("Fortschritt wurde zurückgesetzt.");
@@ -1026,6 +1687,7 @@ function initialize() {
   ensureDailyState();
   renderLessons();
   initializeEvents();
+  initializeBlackjackGame();
   nextValueCard();
   generateTrueQuestion();
   generateDeckEstimate();

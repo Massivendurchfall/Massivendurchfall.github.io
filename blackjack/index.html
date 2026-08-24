@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Interaktives Blackjack-Card-Counting-Training für das Hi-Lo-System mit Running Count, True Count und Fortschrittsanalyse.">
+  <meta name="description" content="Blackjack spielen und Card Counting lernen: vollständiger Tisch, Hi-Lo-Training, Running Count, True Count, Strategie-Coach und Fortschrittsanalyse.">
   <meta name="theme-color" content="#071a17">
   <title>Blackjack Count Lab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,6 +26,10 @@
         <a href="#dashboard" data-route="dashboard" class="active">
           <span class="nav-icon">⌂</span>
           <span>Übersicht</span>
+        </a>
+        <a href="#play" data-route="play">
+          <span class="nav-icon">♠</span>
+          <span>Blackjack spielen</span>
         </a>
         <a href="#learn" data-route="learn">
           <span class="nav-icon">◫</span>
@@ -74,7 +78,10 @@
             <h1>Der Count läuft.</h1>
             <p>Baue Präzision auf, steigere dein Tempo und verwandle Kartenwerte in Reflexe.</p>
           </div>
-          <div class="heading-chip"><span>●</span> Hi-Lo System</div>
+          <div class="heading-actions">
+            <div class="heading-chip"><span>●</span> Hi-Lo System</div>
+            <a class="button primary" href="#play">Blackjack spielen <span>→</span></a>
+          </div>
         </div>
 
         <div class="dashboard-grid">
@@ -161,6 +168,128 @@
             </div>
             <div id="recentActivity" class="recent-list"></div>
           </article>
+        </div>
+      </section>
+
+      <section class="screen" id="play" data-screen="play">
+        <div class="page-heading game-page-heading">
+          <div>
+            <span class="eyebrow">SPIELEN · ENTSCHEIDEN · ZÄHLEN</span>
+            <h1>Blackjack-Tisch</h1>
+            <p>Normales Blackjack mit virtuellem Guthaben und optionalem Strategie- und Count-Coach.</p>
+          </div>
+          <div class="game-bankroll-card">
+            <small>GUTHABEN</small>
+            <strong id="gameBankroll">1.000</strong>
+            <span>virtuelle Chips</span>
+          </div>
+        </div>
+
+        <div class="game-layout">
+          <article class="blackjack-table-panel">
+            <div class="table-statusbar">
+              <div class="table-rule-summary" id="tableRuleSummary">6 Decks · S17 · 3:2 · LS</div>
+              <div class="shoe-progress-wrap">
+                <span>SCHUH</span>
+                <div class="shoe-progress"><i id="gameShoeProgress"></i><b id="gameCutMarker"></b></div>
+                <small id="gameCardsRemaining">312 Karten</small>
+              </div>
+            </div>
+
+            <div class="blackjack-felt">
+              <div class="dealer-zone">
+                <div class="hand-label"><span>DEALER</span><b id="dealerTotal">–</b></div>
+                <div class="table-hand" id="dealerHand"></div>
+              </div>
+
+              <div class="table-center">
+                <div class="table-logo"><span>BLACKJACK</span><b>PAYS 3 TO 2</b><small>DEALER STANDS ON ALL 17</small></div>
+                <div class="round-message" id="roundMessage" aria-live="polite">Einsatz wählen und Karten geben.</div>
+                <div class="coach-message hidden" id="coachMessage"></div>
+              </div>
+
+              <div class="player-zone">
+                <div class="player-hands" id="playerHands"></div>
+                <div class="game-actions" id="gameActions">
+                  <button class="game-action" id="gameHit" data-game-action="hit"><span>＋</span><b>Hit</b><kbd>H</kbd></button>
+                  <button class="game-action" id="gameStand" data-game-action="stand"><span>■</span><b>Stand</b><kbd>S</kbd></button>
+                  <button class="game-action" id="gameDouble" data-game-action="double"><span>×2</span><b>Double</b><kbd>D</kbd></button>
+                  <button class="game-action" id="gameSplit" data-game-action="split"><span>Ⅱ</span><b>Split</b><kbd>P</kbd></button>
+                  <button class="game-action" id="gameSurrender" data-game-action="surrender"><span>½</span><b>Surrender</b><kbd>R</kbd></button>
+                  <button class="game-action insurance hidden" id="gameInsurance" data-game-action="insurance"><span>2:1</span><b>Insurance</b></button>
+                  <button class="game-action hidden" id="gameNoInsurance" data-game-action="no-insurance"><span>×</span><b>Ablehnen</b></button>
+                </div>
+              </div>
+
+              <div class="betting-rail">
+                <div class="bet-display">
+                  <small>EINSATZ</small>
+                  <strong id="gameBet">25</strong>
+                </div>
+                <div class="chip-rack" aria-label="Einsatzchips">
+                  <button class="bet-chip chip-5" data-chip="5">5</button>
+                  <button class="bet-chip chip-10" data-chip="10">10</button>
+                  <button class="bet-chip chip-25" data-chip="25">25</button>
+                  <button class="bet-chip chip-100" data-chip="100">100</button>
+                </div>
+                <button class="clear-bet" id="clearGameBet">Löschen</button>
+                <button class="deal-button" id="dealGameRound">Karten geben</button>
+              </div>
+            </div>
+          </article>
+
+          <aside class="game-sidebar">
+            <article class="panel count-console">
+              <div class="console-heading">
+                <div><span class="section-kicker">COUNT-KONSOLE</span><h2>Live-Schuh</h2></div>
+                <label class="switch-label"><input type="checkbox" id="hideGameCount"><span></span> Verdecken</label>
+              </div>
+              <div class="count-console-grid">
+                <div><small>RUNNING</small><strong id="gameRunningCount">0</strong></div>
+                <div><small>TRUE</small><strong id="gameTrueCount">0</strong></div>
+                <div><small>RESTDECKS</small><strong id="gameDecksLeft">6.0</strong></div>
+              </div>
+              <form id="gameCountCheck" class="count-check-row">
+                <input id="gameCountGuess" type="number" inputmode="numeric" placeholder="Dein RC" aria-label="Eigenen Running Count eingeben">
+                <button class="button secondary" type="submit">Prüfen</button>
+              </form>
+            </article>
+
+            <article class="panel strategy-console">
+              <div class="console-heading">
+                <div><span class="section-kicker">BASIC STRATEGY</span><h2>Entscheidungs-Coach</h2></div>
+                <label class="switch-label"><input type="checkbox" id="showGameCoach"><span></span> Anzeigen</label>
+              </div>
+              <div class="strategy-recommendation" id="strategyRecommendation">
+                <small>EMPFEHLUNG</small>
+                <strong>Warte auf die Karten</strong>
+                <span>Der Coach berücksichtigt Hand, Dealerkarte und wichtige Hi-Lo-Indizes.</span>
+              </div>
+              <div class="coach-score"><span>Entscheidungen korrekt</span><b id="gameDecisionAccuracy">0%</b></div>
+            </article>
+
+            <article class="panel rules-console">
+              <div class="console-heading"><div><span class="section-kicker">TISCHREGELN</span><h2>Simulation</h2></div></div>
+              <div class="rule-controls">
+                <label>Decks<select id="gameRuleDecks"><option value="1">1</option><option value="2">2</option><option value="6" selected>6</option><option value="8">8</option></select></label>
+                <label>Soft 17<select id="gameRuleSoft17"><option value="stand" selected>Dealer steht</option><option value="hit">Dealer zieht</option></select></label>
+                <label>Blackjack<select id="gameRulePayout"><option value="1.5" selected>3 zu 2</option><option value="1.2">6 zu 5</option></select></label>
+                <label>Penetration<select id="gameRulePenetration"><option value="0.65">65 %</option><option value="0.75" selected>75 %</option><option value="0.8">80 %</option></select></label>
+                <label class="rule-check"><input type="checkbox" id="gameRuleSurrender" checked> Late Surrender</label>
+              </div>
+              <button class="button secondary full" id="resetGameBankroll">Neue Session · 1.000 Chips</button>
+            </article>
+
+            <article class="panel game-session-card">
+              <span class="section-kicker">SESSION</span>
+              <div class="game-session-stats">
+                <div><small>Hände</small><b id="gameHandsPlayed">0</b></div>
+                <div><small>Gewonnen</small><b id="gameWins">0</b></div>
+                <div><small>Profit</small><b id="gameProfit">0</b></div>
+              </div>
+              <div class="game-history" id="gameHistory"></div>
+            </article>
+          </aside>
         </div>
       </section>
 

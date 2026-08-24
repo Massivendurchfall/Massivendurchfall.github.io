@@ -9,6 +9,10 @@ Start
 Enthalten
 
 - Acht Lernmodule zum Hi-Lo-System
+- Vollständiges Blackjack-Spiel mit virtuellem Guthaben
+- Hit, Stand, Double, Split, Surrender und Insurance
+- Einstellbare Deckzahl, Soft-17-Regel, Auszahlung und Penetration
+- Optionaler Basic-Strategy- und Count-Coach
 - Kartenwert-Training mit Tastatursteuerung
 - Running-Count-Sprints mit vier Geschwindigkeiten
 - True-Count-Aufgaben mit Restdeckanzeige
