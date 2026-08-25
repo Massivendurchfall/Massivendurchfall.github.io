@@ -43,6 +43,10 @@
           <span class="nav-icon">≡</span>
           <span>Spickzettel</span>
         </a>
+        <a href="#toolbox" data-route="toolbox">
+          <span class="nav-icon">▦</span>
+          <span>Count Toolbox</span>
+        </a>
         <a href="#stats" data-route="stats">
           <span class="nav-icon">↗</span>
           <span>Statistik</span>
@@ -335,6 +339,8 @@
           <button role="tab" data-drill="true-count">True Count</button>
           <button role="tab" data-drill="deck-estimation">Deckschätzung</button>
           <button role="tab" data-drill="shoe-simulator">Schuh-Simulator</button>
+          <button role="tab" data-drill="basic-strategy">Basic Strategy</button>
+          <button role="tab" data-drill="deviations">Abweichungen</button>
           <button role="tab" data-drill="knowledge-quiz">Wissenstest</button>
         </div>
 
@@ -534,6 +540,74 @@
           </aside>
         </div>
 
+        <div class="drill-view" data-drill-view="basic-strategy">
+          <article class="training-stage strategy-drill-stage">
+            <div class="stage-topbar">
+              <div><span>MODUS</span><b>Basic-Strategy-Drill</b></div>
+              <div class="live-stats"><span><small>Beste Serie</small><b data-basic-best>0</b></span><span><small>Genauigkeit</small><b data-basic-accuracy>0%</b></span></div>
+            </div>
+            <div class="decision-stage">
+              <div class="decision-settings">
+                <label>Regel<select id="basicRule"><option value="s17" selected>S17</option><option value="h17">H17</option></select></label>
+                <label><input type="checkbox" id="basicSurrender" checked> Late Surrender</label>
+              </div>
+              <div class="decision-table">
+                <div><small>DEALER</small><div class="decision-cards" id="basicDealerCard"></div></div>
+                <span class="decision-vs">VS</span>
+                <div><small>SPIELER</small><div class="decision-cards" id="basicPlayerHand"></div><b id="basicHandTotal"></b></div>
+              </div>
+              <p>Was ist die korrekte Grundstrategie?</p>
+              <div class="decision-actions" id="basicActions">
+                <button data-basic-action="surrender"><span>½</span>Surrender</button>
+                <button data-basic-action="split"><span>Ⅱ</span>Split</button>
+                <button data-basic-action="double"><span>×2</span>Double</button>
+                <button data-basic-action="hit"><span>＋</span>Hit</button>
+                <button data-basic-action="stand"><span>■</span>Stand</button>
+              </div>
+              <div class="feedback-line" id="basicFeedback">Wähle die optimale Aktion.</div>
+            </div>
+          </article>
+          <aside class="training-help">
+            <span class="section-kicker">REIHENFOLGE</span>
+            <h3>Erst Sonderaktionen</h3>
+            <div class="sim-guide">
+              <div><b>1</b><span>Surrender prüfen</span></div>
+              <div><b>2</b><span>Split prüfen</span></div>
+              <div><b>3</b><span>Double prüfen</span></div>
+              <div><b>4</b><span>Hit oder Stand</span></div>
+            </div>
+            <p>Die Übung verwendet Mehrdeck-Strategie mit Double After Split.</p>
+          </aside>
+        </div>
+
+        <div class="drill-view" data-drill-view="deviations">
+          <article class="training-stage strategy-drill-stage">
+            <div class="stage-topbar">
+              <div><span>MODUS</span><b>Hi-Lo-Abweichungen</b></div>
+              <div class="live-stats"><span><small>Beste Serie</small><b data-deviation-best>0</b></span><span><small>Genauigkeit</small><b data-deviation-accuracy>0%</b></span></div>
+            </div>
+            <div class="deviation-stage">
+              <span class="quiz-topic">INDEX-ENTSCHEIDUNG</span>
+              <div class="deviation-situation">
+                <div><small>HAND</small><strong id="deviationHand">16</strong></div>
+                <div><small>DEALER</small><strong id="deviationDealer">10</strong></div>
+                <div><small>TRUE COUNT</small><strong id="deviationTrueCount">+1</strong></div>
+              </div>
+              <h2 id="deviationQuestion">Welche Aktion ist jetzt korrekt?</h2>
+              <div class="decision-actions compact" id="deviationActions"></div>
+              <div class="quiz-explanation hidden" id="deviationExplanation"></div>
+              <button class="button primary hidden" id="nextDeviation">Nächste Situation</button>
+            </div>
+          </article>
+          <aside class="training-help">
+            <span class="section-kicker">INDEXLOGIK</span>
+            <h3>Ab Schwelle wechseln</h3>
+            <p>Liegt der True Count am oder über dem Index, nutzt du die Abweichungsaktion. Darunter bleibt die Grundstrategie.</p>
+            <div class="formula-example"><span>TC</span><i>≥</i><span>Index</span><i>=</i><b>Abweichung</b></div>
+            <p>Die verwendeten Hi-Lo-Indizes sind ein verbreitetes H17/DAS-Trainingsset und können je nach Regelwerk abweichen.</p>
+          </aside>
+        </div>
+
         <div class="drill-view" data-drill-view="knowledge-quiz">
           <article class="training-stage quiz-stage-wrap">
             <div class="stage-topbar">
@@ -620,6 +694,197 @@
               <div><dt>Index</dt><dd>Count-Schwelle für eine Abweichung von der Grundstrategie.</dd></div>
             </dl>
           </article>
+        </div>
+      </section>
+
+      <section class="screen" id="toolbox" data-screen="toolbox">
+        <div class="page-heading toolbox-heading">
+          <div>
+            <span class="eyebrow">PLANEN · TRACKEN · SIMULIEREN</span>
+            <h1>Count Toolbox</h1>
+            <p>Lokale Werkzeuge für Sessions, Bankroll, Spielbedingungen, EV und Karrierefortschritt.</p>
+          </div>
+          <div class="toolbox-local-badge"><span>●</span> Daten bleiben auf diesem Gerät</div>
+        </div>
+
+        <div class="toolbox-tabs" role="tablist" aria-label="Count Toolbox Bereiche">
+          <button class="active" data-tool="tool-overview">Übersicht</button>
+          <button data-tool="tool-sessions">Result Tracker</button>
+          <button data-tool="tool-ev">EV & Risk</button>
+          <button data-tool="tool-monte-carlo">Monte Carlo</button>
+          <button data-tool="tool-directory">Game Directory</button>
+          <button data-tool="tool-team">Team & Career</button>
+        </div>
+
+        <div class="tool-view active" data-tool-view="tool-overview">
+          <div class="tool-summary-grid">
+            <article><small>GESAMTERGEBNIS</small><strong id="trackerTotalResult">0</strong><span>virtuelle Einheiten</span></article>
+            <article><small>GETRACKTE STUNDEN</small><strong id="trackerTotalHours">0</strong><span>Stunden</span></article>
+            <article><small>STUNDENRATE</small><strong id="trackerHourlyRate">0</strong><span>Einheiten pro Stunde</span></article>
+            <article><small>MAX. DRAWDOWN</small><strong id="trackerDrawdown">0</strong><span>aus Sessions</span></article>
+          </div>
+          <div class="tool-launch-grid">
+            <button data-open-tool="tool-sessions"><span>↗</span><div><b>Result Tracker</b><small>Sessions, EV, Stunden und Notizen erfassen</small></div></button>
+            <button data-open-tool="tool-ev"><span>∑</span><div><b>EV & Risk</b><small>Bet Spread und theoretisches Risiko modellieren</small></div></button>
+            <button data-open-tool="tool-monte-carlo"><span>⌁</span><div><b>Monte Carlo</b><small>Viele mögliche Bankroll-Verläufe simulieren</small></div></button>
+            <button data-open-tool="tool-directory"><span>⌖</span><div><b>Game Directory</b><small>Eigene Spielbedingungen lokal katalogisieren</small></div></button>
+            <button data-open-tool="tool-team"><span>◎</span><div><b>Team & Career</b><small>Bankroll-Pools, Notizen und Missionen verwalten</small></div></button>
+          </div>
+          <article class="panel tracker-chart-panel">
+            <div class="panel-header"><div><span class="section-kicker">BANKROLL-VERLAUF</span><h2>Getrackte Ergebnisse</h2></div></div>
+            <div class="tracker-chart" id="trackerChart"></div>
+          </article>
+        </div>
+
+        <div class="tool-view" data-tool-view="tool-sessions">
+          <div class="tool-two-column">
+            <form class="panel tool-form" id="sessionForm">
+              <div class="panel-header"><div><span class="section-kicker">NEUER EINTRAG</span><h2>Session erfassen</h2></div></div>
+              <div class="form-grid">
+                <label>Datum<input id="sessionDate" type="date" required></label>
+                <label>Ort / Casino<input id="sessionVenue" type="text" maxlength="60" placeholder="Eigener Name" required></label>
+                <label>Spiel<select id="sessionGame"><option>Blackjack</option><option>Poker</option><option>Sports Betting</option><option>Sonstiges</option></select></label>
+                <label>Stunden<input id="sessionHours" type="number" min="0.1" max="48" step="0.1" value="2" required></label>
+                <label>Ergebnis<input id="sessionResult" type="number" step="0.5" placeholder="z. B. 250" required></label>
+                <label>Theoretischer EV<input id="sessionEv" type="number" step="0.5" placeholder="optional"></label>
+                <label class="full-field">Notizen<textarea id="sessionNotes" maxlength="300" placeholder="Regeln, Penetration, Besonderheiten"></textarea></label>
+              </div>
+              <button class="button primary full" type="submit">Session speichern</button>
+            </form>
+            <article class="panel tool-insight-card">
+              <span class="section-kicker">SESSION-ANALYSE</span>
+              <h2 id="sessionInsightTitle">Noch keine Daten</h2>
+              <p id="sessionInsightCopy">Erfasse deine erste Session, um Ergebnis, EV-Abweichung und Stundenrate zu sehen.</p>
+              <div class="session-mini-metrics"><div><small>SESSIONS</small><b id="sessionCount">0</b></div><div><small>GEGEN EV</small><b id="sessionVsEv">0</b></div><div><small>BESTE SESSION</small><b id="sessionBest">0</b></div></div>
+            </article>
+          </div>
+          <article class="panel tool-table-panel">
+            <div class="panel-header">
+              <div><span class="section-kicker">VERLAUF</span><h2>Alle Sessions</h2></div>
+              <div class="table-actions"><button class="button secondary" id="exportSessions">CSV exportieren</button><button class="button secondary" id="importSessionsButton">CSV importieren</button><input class="hidden" id="importSessionsFile" type="file" accept=".csv,text/csv"></div>
+            </div>
+            <div class="table-wrap"><table><thead><tr><th>Datum</th><th>Ort</th><th>Spiel</th><th>Stunden</th><th>Ergebnis</th><th>EV</th><th></th></tr></thead><tbody id="sessionTableBody"></tbody></table></div>
+          </article>
+        </div>
+
+        <div class="tool-view" data-tool-view="tool-ev">
+          <div class="tool-two-column ev-layout">
+            <form class="panel tool-form" id="evForm">
+              <div class="panel-header"><div><span class="section-kicker">MODELL</span><h2>Bet-Spread-Rechner</h2></div></div>
+              <div class="form-grid">
+                <label>Bankroll<input id="evBankroll" type="number" min="100" step="100" value="10000"></label>
+                <label>Einheit<input id="evUnit" type="number" min="1" step="1" value="10"></label>
+                <label>Hände / Stunde<input id="evHandsHour" type="number" min="20" max="300" value="100"></label>
+                <label>Spielstunden<input id="evHours" type="number" min="1" max="1000" value="100"></label>
+                <label>Edge bei TC 0 (%)<input id="evBaseEdge" type="number" step="0.05" value="-0.5"></label>
+                <label>Edge pro TC (%)<input id="evPerTc" type="number" step="0.05" value="0.5"></label>
+              </div>
+              <div class="spread-editor">
+                <div class="spread-row head"><span>COUNT</span><span>HÄUFIGKEIT</span><span>EINSATZ</span></div>
+                <div class="spread-row"><b>≤ 0</b><label><input data-spread-frequency="0" type="number" min="0" max="100" value="70">%</label><label><input data-spread-bet="0" type="number" min="0" max="100" value="1">×</label></div>
+                <div class="spread-row"><b>+1</b><label><input data-spread-frequency="1" type="number" min="0" max="100" value="12">%</label><label><input data-spread-bet="1" type="number" min="0" max="100" value="1">×</label></div>
+                <div class="spread-row"><b>+2</b><label><input data-spread-frequency="2" type="number" min="0" max="100" value="8">%</label><label><input data-spread-bet="2" type="number" min="0" max="100" value="2">×</label></div>
+                <div class="spread-row"><b>+3</b><label><input data-spread-frequency="3" type="number" min="0" max="100" value="6">%</label><label><input data-spread-bet="3" type="number" min="0" max="100" value="4">×</label></div>
+                <div class="spread-row"><b>+4+</b><label><input data-spread-frequency="4" type="number" min="0" max="100" value="4">%</label><label><input data-spread-bet="4" type="number" min="0" max="100" value="8">×</label></div>
+              </div>
+              <button class="button primary full" type="submit">Modell berechnen</button>
+            </form>
+            <div class="ev-results">
+              <article class="ev-hero-result"><small>STÜNDLICHER EV</small><strong id="evHourlyResult">0</strong><span>Einheiten pro Stunde</span></article>
+              <div class="ev-result-grid">
+                <article><small>Gesamt-EV</small><strong id="evTotalResult">0</strong></article>
+                <article><small>Ø Einsatz</small><strong id="evAverageBet">0</strong></article>
+                <article><small>Standardabw. / Std.</small><strong id="evHourlySd">0</strong></article>
+                <article><small>Risk of Ruin</small><strong id="evRiskRuin">0%</strong></article>
+                <article><small>N₀</small><strong id="evNZero">–</strong></article>
+                <article><small>Trip im Minus</small><strong id="evTripLoss">0%</strong></article>
+              </div>
+              <article class="panel ev-note"><b>Modellhinweis</b><p>Die Berechnung nutzt vereinfachte Count-Häufigkeiten und eine Normal-/Diffusionsnäherung. Sie ist zum Vergleichen von Szenarien gedacht, nicht als Gewinnprognose.</p></article>
+            </div>
+          </div>
+        </div>
+
+        <div class="tool-view" data-tool-view="tool-monte-carlo">
+          <div class="tool-two-column monte-layout">
+            <form class="panel tool-form" id="monteCarloForm">
+              <div class="panel-header"><div><span class="section-kicker">VARIANZ</span><h2>Monte-Carlo-Simulator</h2></div></div>
+              <div class="form-grid one-column">
+                <label>Startbankroll<input id="mcBankroll" type="number" min="100" value="10000"></label>
+                <label>Anzahl Hände<input id="mcHands" type="number" min="100" max="1000000" value="50000"></label>
+                <label>Ø Einsatz<input id="mcAverageBet" type="number" min="1" value="25"></label>
+                <label>Spielervorteil (%)<input id="mcEdge" type="number" step="0.05" value="0.5"></label>
+                <label>Standardabw. je Hand<input id="mcSd" type="number" min="0.5" max="3" step="0.05" value="1.15"></label>
+                <label>Simulationen<input id="mcTrials" type="number" min="100" max="5000" step="100" value="1000"></label>
+              </div>
+              <button class="button primary full" type="submit">Simulation starten</button>
+            </form>
+            <div class="monte-results">
+              <div class="mc-metrics"><article><small>MEDIAN ENDE</small><strong id="mcMedian">–</strong></article><article><small>CHANCE PROFIT</small><strong id="mcProfitChance">–</strong></article><article><small>20 % DRAWDOWN</small><strong id="mcDrawdownChance">–</strong></article></div>
+              <article class="panel mc-chart-card">
+                <div class="panel-header"><div><span class="section-kicker">PERZENTIL-BAND</span><h2>Mögliche Bankroll-Verläufe</h2></div><span class="chart-legend"><i></i> 10.–90. Perzentil</span></div>
+                <div class="mc-chart" id="mcChart"><div class="empty-chart">Simulation starten</div></div>
+              </article>
+              <p class="model-disclaimer">Zufallssimulation auf Basis der eingegebenen Edge und Standardabweichung. Reale Ergebnisse können deutlich abweichen.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="tool-view" data-tool-view="tool-directory">
+          <div class="tool-two-column directory-layout">
+            <form class="panel tool-form" id="directoryForm">
+              <div class="panel-header"><div><span class="section-kicker">EIGENE DATENBANK</span><h2>Spiel hinzufügen</h2></div></div>
+              <div class="form-grid">
+                <label>Ort / Casino<input id="directoryVenue" type="text" maxlength="60" required></label>
+                <label>Stadt<input id="directoryCity" type="text" maxlength="40" required></label>
+                <label>Decks<select id="directoryDecks"><option>1</option><option>2</option><option selected>6</option><option>8</option></select></label>
+                <label>Mindesteinsatz<input id="directoryMinBet" type="number" min="1" value="10"></label>
+                <label>Penetration (%)<input id="directoryPenetration" type="number" min="30" max="95" value="75"></label>
+                <label>Regeln<select id="directoryRules"><option>S17 · DAS · LS</option><option>H17 · DAS · LS</option><option>S17 · DAS</option><option>H17 · DAS</option></select></label>
+                <label>Bewertung<select id="directoryRating"><option value="5">5 · Stark</option><option value="4">4 · Gut</option><option value="3" selected>3 · Okay</option><option value="2">2 · Schwach</option><option value="1">1 · Meiden</option></select></label>
+                <label class="full-field">Notizen<textarea id="directoryNotes" maxlength="240" placeholder="Cut, Limits, Bedingungen"></textarea></label>
+              </div>
+              <button class="button primary full" type="submit">Spiel speichern</button>
+            </form>
+            <article class="panel directory-score-card">
+              <span class="section-kicker">GAME SCORE</span>
+              <h2>Qualität schnell erfassen</h2>
+              <div class="directory-score-example"><span>Penetration</span><b>40 %</b><span>Regeln</span><b>25 %</b><span>Limits</span><b>20 %</b><span>Eigene Bewertung</span><b>15 %</b></div>
+              <p>Der Score priorisiert tiefe Penetration und gute Regeln. Deine Einträge bleiben privat auf dem Gerät.</p>
+            </article>
+          </div>
+          <article class="panel tool-table-panel">
+            <div class="panel-header"><div><span class="section-kicker">GESPEICHERTE SPIELE</span><h2>Game Directory</h2></div><input class="table-search" id="directorySearch" type="search" placeholder="Ort oder Stadt suchen"></div>
+            <div id="directoryList" class="directory-list"></div>
+          </article>
+        </div>
+
+        <div class="tool-view" data-tool-view="tool-team">
+          <div class="team-career-grid">
+            <div class="team-column">
+              <form class="panel tool-form compact-form" id="bankrollPoolForm">
+                <div class="panel-header"><div><span class="section-kicker">BANKROLL-POOLS</span><h2>Pool hinzufügen</h2></div></div>
+                <div class="form-grid">
+                  <label>Name<input id="poolName" type="text" maxlength="40" required></label>
+                  <label>Owner / Team<input id="poolOwner" type="text" maxlength="40" required></label>
+                  <label>Bankroll<input id="poolBalance" type="number" min="0" required></label>
+                  <label>Dein Anteil (%)<input id="poolShare" type="number" min="0" max="100" value="100" required></label>
+                </div>
+                <button class="button primary full" type="submit">Pool speichern</button>
+              </form>
+              <article class="panel pool-list-card"><div class="panel-header"><div><span class="section-kicker">ÜBERSICHT</span><h2>Team-Bankrolls</h2></div><strong id="poolOwnedTotal">0</strong></div><div id="poolList" class="pool-list"></div></article>
+              <form class="panel tool-form compact-form" id="teamNoteForm">
+                <div class="panel-header"><div><span class="section-kicker">LOKALES BOARD</span><h2>Team-Notiz</h2></div></div>
+                <div class="form-grid one-column"><label>Name<input id="teamNoteAuthor" type="text" maxlength="30" required></label><label>Notiz<textarea id="teamNoteMessage" maxlength="300" required></textarea></label></div>
+                <button class="button secondary full" type="submit">Notiz ablegen</button>
+              </form>
+              <div id="teamNotes" class="team-notes"></div>
+            </div>
+            <article class="panel career-card">
+              <div class="career-header"><div><span class="section-kicker">CAREER MODE</span><h2>Vom Rookie zum Pro</h2></div><div class="career-progress-ring" id="careerRing"><strong id="careerPercent">0%</strong></div></div>
+              <div class="career-rank"><span>AKTUELLER RANG</span><strong id="careerRank">Rookie</strong><small id="careerNext">Schließe die ersten Missionen ab.</small></div>
+              <div class="career-missions" id="careerMissions"></div>
+            </article>
+          </div>
         </div>
       </section>
 

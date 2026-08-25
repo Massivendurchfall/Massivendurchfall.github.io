@@ -11,6 +11,8 @@ const initialState = {
     trueCount: statTemplate(),
     deckEstimation: statTemplate(),
     shoeSimulator: statTemplate(),
+    basicStrategy: statTemplate(),
+    deviations: statTemplate(),
     knowledgeQuiz: statTemplate()
   },
   daily: {
@@ -36,6 +38,14 @@ const initialState = {
     payout: 1.5,
     penetration: 0.75,
     surrender: true
+  },
+  sessions: [],
+  gameDirectory: [],
+  bankrollPools: [],
+  teamNotes: [],
+  toolUsage: {
+    evCalculations: 0,
+    simulations: 0
   },
   recent: []
 };
@@ -241,6 +251,8 @@ const modeLabels = {
   trueCount: "True Count",
   deckEstimation: "Deckschätzung",
   shoeSimulator: "Schuh-Simulator",
+  basicStrategy: "Basic Strategy",
+  deviations: "Abweichungen",
   knowledgeQuiz: "Wissenstest",
   blackjack: "Blackjack-Tisch"
 };
@@ -251,6 +263,8 @@ const drillByMode = {
   trueCount: "true-count",
   deckEstimation: "deck-estimation",
   shoeSimulator: "shoe-simulator",
+  basicStrategy: "basic-strategy",
+  deviations: "deviations",
   knowledgeQuiz: "knowledge-quiz"
 };
 
@@ -272,6 +286,11 @@ function loadState() {
     merged.daily = { ...merged.daily, ...(saved.daily || {}) };
     merged.blackjack = { ...merged.blackjack, ...(saved.blackjack || {}) };
     merged.gameRules = { ...merged.gameRules, ...(saved.gameRules || {}) };
+    merged.sessions = Array.isArray(saved.sessions) ? saved.sessions : [];
+    merged.gameDirectory = Array.isArray(saved.gameDirectory) ? saved.gameDirectory : [];
+    merged.bankrollPools = Array.isArray(saved.bankrollPools) ? saved.bankrollPools : [];
+    merged.teamNotes = Array.isArray(saved.teamNotes) ? saved.teamNotes : [];
+    merged.toolUsage = { ...merged.toolUsage, ...(saved.toolUsage || {}) };
     merged.recent = Array.isArray(saved.recent) ? saved.recent.slice(0, 30) : [];
     Object.keys(merged.stats).forEach((key) => {
       merged.stats[key] = { ...merged.stats[key], ...((saved.stats || {})[key] || {}) };
@@ -517,6 +536,10 @@ function updateAllStats() {
   setText("[data-true-accuracy]", `${accuracy(state.stats.trueCount)}%`);
   setText("[data-deck-best]", state.stats.deckEstimation.bestStreak);
   setText("[data-deck-accuracy]", `${accuracy(state.stats.deckEstimation)}%`);
+  setText("[data-basic-best]", state.stats.basicStrategy.bestStreak);
+  setText("[data-basic-accuracy]", `${accuracy(state.stats.basicStrategy)}%`);
+  setText("[data-deviation-best]", state.stats.deviations.bestStreak);
+  setText("[data-deviation-accuracy]", `${accuracy(state.stats.deviations)}%`);
   document.querySelectorAll("[data-level-progress]").forEach((element) => {
     element.style.width = `${(currentXp / 250) * 100}%`;
   });
@@ -526,6 +549,7 @@ function updateAllStats() {
   updateHistory();
   updateSkillBars();
   updateRecommendation();
+  updateCareer();
 }
 
 function renderLessons() {
@@ -569,7 +593,7 @@ function openLesson(id) {
 }
 
 function setRoute(route) {
-  const allowed = ["dashboard", "play", "learn", "practice", "reference", "stats"];
+  const allowed = ["dashboard", "play", "learn", "practice", "reference", "toolbox", "stats"];
   const target = allowed.includes(route) ? route : "dashboard";
   document.querySelectorAll("[data-screen]").forEach((screen) => screen.classList.toggle("active", screen.dataset.screen === target));
   document.querySelectorAll("[data-route]").forEach((link) => link.classList.toggle("active", link.dataset.route === target));
@@ -582,6 +606,13 @@ function openDrill(drill) {
   location.hash = "practice";
   document.querySelectorAll("[data-drill]").forEach((button) => button.classList.toggle("active", button.dataset.drill === drill));
   document.querySelectorAll("[data-drill-view]").forEach((view) => view.classList.toggle("active", view.dataset.drillView === drill));
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function openTool(tool) {
+  location.hash = "toolbox";
+  document.querySelectorAll("[data-tool]").forEach((button) => button.classList.toggle("active", button.dataset.tool === tool));
+  document.querySelectorAll("[data-tool-view]").forEach((view) => view.classList.toggle("active", view.dataset.toolView === tool));
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -1541,6 +1572,611 @@ function initializeBlackjackGame() {
   updateGameUi();
 }
 
+const deviationSet = [
+  { hand: "Insurance", dealer: "A", index: 3, baseAction: "no-insurance", deviationAction: "insurance", note: "Insurance ab True Count +3." },
+  { hand: "16", dealer: "10", index: 0, baseAction: "hit", deviationAction: "stand", note: "16 gegen 10 ab TC 0 stehen." },
+  { hand: "15", dealer: "10", index: 4, baseAction: "hit", deviationAction: "stand", note: "Ohne Surrender: 15 gegen 10 ab TC +4 stehen." },
+  { hand: "10", dealer: "10", index: 4, baseAction: "hit", deviationAction: "double", note: "10 gegen 10 ab TC +4 verdoppeln." },
+  { hand: "10", dealer: "A", index: 4, baseAction: "hit", deviationAction: "double", note: "10 gegen Ass ab TC +4 verdoppeln." },
+  { hand: "9", dealer: "2", index: 1, baseAction: "hit", deviationAction: "double", note: "9 gegen 2 ab TC +1 verdoppeln." },
+  { hand: "9", dealer: "7", index: 3, baseAction: "hit", deviationAction: "double", note: "9 gegen 7 ab TC +3 verdoppeln." },
+  { hand: "8", dealer: "6", index: 2, baseAction: "hit", deviationAction: "double", note: "8 gegen 6 ab TC +2 verdoppeln." },
+  { hand: "8", dealer: "5", index: 4, baseAction: "hit", deviationAction: "double", note: "8 gegen 5 ab TC +4 verdoppeln." },
+  { hand: "12", dealer: "3", index: 2, baseAction: "hit", deviationAction: "stand", note: "12 gegen 3 ab TC +2 stehen." },
+  { hand: "12", dealer: "2", index: 3, baseAction: "hit", deviationAction: "stand", note: "12 gegen 2 ab TC +3 stehen." },
+  { hand: "13", dealer: "2", index: -1, baseAction: "hit", deviationAction: "stand", note: "13 gegen 2 ab TC −1 stehen." },
+  { hand: "12", dealer: "4", index: 0, baseAction: "hit", deviationAction: "stand", note: "12 gegen 4 ab TC 0 stehen." },
+  { hand: "12", dealer: "5", index: -2, baseAction: "hit", deviationAction: "stand", note: "12 gegen 5 ab TC −2 stehen." },
+  { hand: "12", dealer: "6", index: -1, baseAction: "hit", deviationAction: "stand", note: "12 gegen 6 ab TC −1 stehen." },
+  { hand: "13", dealer: "3", index: -2, baseAction: "hit", deviationAction: "stand", note: "13 gegen 3 ab TC −2 stehen." },
+  { hand: "15", dealer: "9", index: 2, baseAction: "hit", deviationAction: "stand", note: "15 gegen 9 ab TC +2 stehen." },
+  { hand: "11", dealer: "A", index: 1, baseAction: "hit", deviationAction: "double", note: "11 gegen Ass ab TC +1 verdoppeln." }
+];
+
+let basicQuestion = null;
+let basicLocked = false;
+let deviationQuestion = null;
+let deviationLocked = false;
+
+function randomTrainingCard() {
+  return {
+    rank: ranks[Math.floor(Math.random() * ranks.length)],
+    suit: suits[Math.floor(Math.random() * suits.length)],
+    counted: true
+  };
+}
+
+function basicStrategyAnswer(cards, dealerCard, hitsSoft17, surrenderAllowed) {
+  const dealer = cardPointValue(dealerCard.rank);
+  const value = handValue(cards);
+  const total = value.total;
+  const pair = sameSplitValue(cards) ? cardPointValue(cards[0].rank) : null;
+  if (surrenderAllowed) {
+    if (total === 17 && dealer === 11 && hitsSoft17) return { action: "surrender", reason: "Hard 17 gegen Ass wird im H17-Spiel aufgegeben." };
+    if (pair === 8 && dealer === 11 && hitsSoft17) return { action: "surrender", reason: "8,8 gegen Ass wird im H17-Spiel aufgegeben." };
+    if (total === 16 && pair !== 8 && [9, 10, 11].includes(dealer)) return { action: "surrender", reason: "Hard 16 gegen 9, 10 oder Ass aufgeben." };
+    if (total === 15 && dealer === 10) return { action: "surrender", reason: "Hard 15 gegen 10 aufgeben." };
+  }
+  if (pair !== null) {
+    if (pair === 11) return { action: "split", reason: "Asse immer teilen." };
+    if (pair === 10) return { action: "stand", reason: "Zehnerpaare als 20 zusammenlassen." };
+    if (pair === 9) return { action: [2, 3, 4, 5, 6, 8, 9].includes(dealer) ? "split" : "stand", reason: "9,9 gegen 2–6, 8 und 9 teilen." };
+    if (pair === 8) return { action: "split", reason: "Achter werden geteilt." };
+    if (pair === 7) return { action: dealer <= 7 ? "split" : "hit", reason: "7,7 gegen 2–7 teilen." };
+    if (pair === 6) return { action: dealer <= 6 ? "split" : "hit", reason: "6,6 mit DAS gegen 2–6 teilen." };
+    if (pair === 5) return { action: dealer <= 9 ? "double" : "hit", reason: "5,5 wie Hard 10 spielen." };
+    if (pair === 4) return { action: [5, 6].includes(dealer) ? "split" : "hit", reason: "4,4 mit DAS gegen 5 oder 6 teilen." };
+    if ([2, 3].includes(pair)) return { action: dealer <= 7 ? "split" : "hit", reason: "2,2 und 3,3 mit DAS gegen 2–7 teilen." };
+  }
+  if (value.soft) {
+    if (total >= 20) return { action: "stand", reason: `Soft ${total} halten.` };
+    if (total === 19) return { action: dealer === 6 && hitsSoft17 ? "double" : "stand", reason: hitsSoft17 ? "Soft 19 im H17-Spiel gegen 6 verdoppeln, sonst stehen." : "Soft 19 halten." };
+    if (total === 18) {
+      const doubles = hitsSoft17 ? [2, 3, 4, 5, 6] : [3, 4, 5, 6];
+      if (doubles.includes(dealer)) return { action: "double", reason: `Soft 18 gegen ${dealer} verdoppeln.` };
+      if ([2, 7, 8].includes(dealer)) return { action: "stand", reason: `Soft 18 gegen ${dealer} halten.` };
+      return { action: "hit", reason: "Soft 18 gegen 9, 10 oder Ass ziehen." };
+    }
+    if (total === 17 && [3, 4, 5, 6].includes(dealer)) return { action: "double", reason: "Soft 17 gegen 3–6 verdoppeln." };
+    if ([15, 16].includes(total) && [4, 5, 6].includes(dealer)) return { action: "double", reason: `Soft ${total} gegen 4–6 verdoppeln.` };
+    if ([13, 14].includes(total) && [5, 6].includes(dealer)) return { action: "double", reason: `Soft ${total} gegen 5–6 verdoppeln.` };
+    return { action: "hit", reason: `Soft ${total} ziehen.` };
+  }
+  if (total >= 17) return { action: "stand", reason: `Hard ${total} halten.` };
+  if (total >= 13) return { action: dealer <= 6 ? "stand" : "hit", reason: `Hard ${total}: gegen 2–6 stehen, sonst ziehen.` };
+  if (total === 12) return { action: [4, 5, 6].includes(dealer) ? "stand" : "hit", reason: "Hard 12 steht gegen 4–6." };
+  if (total === 11) return { action: "double", reason: "Hard 11 verdoppeln." };
+  if (total === 10) return { action: dealer <= 9 ? "double" : "hit", reason: "Hard 10 gegen 2–9 verdoppeln." };
+  if (total === 9) return { action: [3, 4, 5, 6].includes(dealer) ? "double" : "hit", reason: "Hard 9 gegen 3–6 verdoppeln." };
+  return { action: "hit", reason: `Hard ${total} ziehen.` };
+}
+
+function generateBasicQuestion() {
+  const cards = [randomTrainingCard(), randomTrainingCard()];
+  const dealer = randomTrainingCard();
+  const hitsSoft17 = document.getElementById("basicRule").value === "h17";
+  const surrenderAllowed = document.getElementById("basicSurrender").checked;
+  const answer = basicStrategyAnswer(cards, dealer, hitsSoft17, surrenderAllowed);
+  basicQuestion = { cards, dealer, answer };
+  basicLocked = false;
+  document.getElementById("basicDealerCard").innerHTML = gameCardMarkup(dealer, false, 0);
+  document.getElementById("basicPlayerHand").innerHTML = cards.map((card, index) => gameCardMarkup(card, false, index)).join("");
+  const value = handValue(cards);
+  document.getElementById("basicHandTotal").textContent = `${value.soft ? "Soft " : ""}${value.total}`;
+  document.querySelectorAll("[data-basic-action]").forEach((button) => {
+    button.disabled = false;
+    button.classList.remove("correct", "wrong");
+  });
+  const feedback = document.getElementById("basicFeedback");
+  feedback.className = "feedback-line";
+  feedback.textContent = "Wähle die optimale Aktion.";
+}
+
+function answerBasicStrategy(button) {
+  if (basicLocked) return;
+  basicLocked = true;
+  const action = button.dataset.basicAction;
+  const correct = action === basicQuestion.answer.action;
+  button.classList.add(correct ? "correct" : "wrong");
+  document.querySelector(`[data-basic-action="${basicQuestion.answer.action}"]`).classList.add("correct");
+  document.querySelectorAll("[data-basic-action]").forEach((item) => { item.disabled = true; });
+  const feedback = document.getElementById("basicFeedback");
+  feedback.className = `feedback-line ${correct ? "success" : "error"}`;
+  feedback.textContent = `${gameActionLabels[basicQuestion.answer.action]} · ${basicQuestion.answer.reason}`;
+  recordResult("basicStrategy", correct, `${handValue(basicQuestion.cards).total} vs ${dealerUpLabel(basicQuestion.dealer)} · ${gameActionLabels[basicQuestion.answer.action]}`);
+  setTimeout(generateBasicQuestion, 1300);
+}
+
+function dealerUpLabel(card) {
+  return card.rank === "A" ? "A" : cardPointValue(card.rank);
+}
+
+function generateDeviationQuestion() {
+  const entry = deviationSet[Math.floor(Math.random() * deviationSet.length)];
+  const trueCount = entry.index + Math.floor(Math.random() * 5) - 2;
+  const answer = trueCount >= entry.index ? entry.deviationAction : entry.baseAction;
+  const optionSet = new Set([entry.baseAction, entry.deviationAction]);
+  const extras = shuffle(["hit", "stand", "double", "split", "surrender", "insurance", "no-insurance"]);
+  extras.forEach((action) => {
+    if (optionSet.size < 4) optionSet.add(action);
+  });
+  deviationQuestion = { entry, trueCount, answer, options: shuffle([...optionSet]) };
+  deviationLocked = false;
+  document.getElementById("deviationHand").textContent = entry.hand;
+  document.getElementById("deviationDealer").textContent = entry.dealer;
+  document.getElementById("deviationTrueCount").textContent = formatSigned(trueCount);
+  document.getElementById("deviationActions").innerHTML = deviationQuestion.options.map((action) => `<button data-deviation-action="${action}"><span>${action === "double" ? "×2" : action === "stand" ? "■" : action === "hit" ? "＋" : action === "split" ? "Ⅱ" : action === "surrender" ? "½" : action === "insurance" ? "2:1" : "×"}</span>${gameActionLabels[action]}</button>`).join("");
+  document.getElementById("deviationExplanation").classList.add("hidden");
+  document.getElementById("nextDeviation").classList.add("hidden");
+}
+
+function answerDeviation(button) {
+  if (deviationLocked) return;
+  deviationLocked = true;
+  const action = button.dataset.deviationAction;
+  const correct = action === deviationQuestion.answer;
+  button.classList.add(correct ? "correct" : "wrong");
+  document.querySelector(`[data-deviation-action="${deviationQuestion.answer}"]`).classList.add("correct");
+  document.querySelectorAll("[data-deviation-action]").forEach((item) => { item.disabled = true; });
+  const explanation = document.getElementById("deviationExplanation");
+  explanation.textContent = `${deviationQuestion.entry.note} Bei TC ${formatSigned(deviationQuestion.trueCount)} ist ${gameActionLabels[deviationQuestion.answer]} korrekt.`;
+  explanation.classList.remove("hidden");
+  document.getElementById("nextDeviation").classList.remove("hidden");
+  recordResult("deviations", correct, `${deviationQuestion.entry.hand} vs ${deviationQuestion.entry.dealer} · TC ${formatSigned(deviationQuestion.trueCount)}`);
+}
+
+function formatMetric(value, digits = 1) {
+  return new Intl.NumberFormat("de-DE", { maximumFractionDigits: digits }).format(value);
+}
+
+function sessionTotals() {
+  const sorted = [...state.sessions].sort((a, b) => String(a.date).localeCompare(String(b.date)) || a.createdAt - b.createdAt);
+  let cumulative = 0;
+  let peak = 0;
+  let maxDrawdown = 0;
+  let totalHours = 0;
+  let totalEv = 0;
+  sorted.forEach((session) => {
+    cumulative += Number(session.result) || 0;
+    totalHours += Number(session.hours) || 0;
+    totalEv += Number(session.ev) || 0;
+    peak = Math.max(peak, cumulative);
+    maxDrawdown = Math.max(maxDrawdown, peak - cumulative);
+  });
+  return {
+    sorted,
+    result: cumulative,
+    hours: totalHours,
+    ev: totalEv,
+    hourly: totalHours ? cumulative / totalHours : 0,
+    maxDrawdown
+  };
+}
+
+function lineChartSvg(values, options = {}) {
+  const width = 900;
+  const height = 260;
+  const padding = 22;
+  const data = values.length === 1 ? [0, values[0]] : values;
+  const min = Math.min(0, ...data);
+  const max = Math.max(0, ...data);
+  const range = Math.max(1, max - min);
+  const points = data.map((value, index) => {
+    const x = padding + (index / Math.max(1, data.length - 1)) * (width - padding * 2);
+    const y = height - padding - ((value - min) / range) * (height - padding * 2);
+    return [x, y];
+  });
+  const line = points.map((point, index) => `${index ? "L" : "M"}${point[0].toFixed(1)},${point[1].toFixed(1)}`).join(" ");
+  const area = `${line} L${points[points.length - 1][0].toFixed(1)},${height - padding} L${points[0][0].toFixed(1)},${height - padding} Z`;
+  const zeroY = height - padding - ((0 - min) / range) * (height - padding * 2);
+  return `<svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" role="img" aria-label="${escapeHtml(options.label || "Verlauf")}"><defs><linearGradient id="trackerArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c6f36b" stop-opacity="0.24"/><stop offset="1" stop-color="#c6f36b" stop-opacity="0"/></linearGradient></defs><line x1="${padding}" y1="${zeroY.toFixed(1)}" x2="${width - padding}" y2="${zeroY.toFixed(1)}" stroke="rgba(255,255,255,.13)" stroke-dasharray="5 6"/><path d="${area}" fill="url(#trackerArea)"/><path d="${line}" fill="none" stroke="#c6f36b" stroke-width="3" vector-effect="non-scaling-stroke"/><circle cx="${points[points.length - 1][0].toFixed(1)}" cy="${points[points.length - 1][1].toFixed(1)}" r="5" fill="#c6f36b" vector-effect="non-scaling-stroke"/></svg>`;
+}
+
+function renderTracker() {
+  const totals = sessionTotals();
+  document.getElementById("trackerTotalResult").textContent = `${totals.result > 0 ? "+" : ""}${formatMetric(totals.result)}`;
+  document.getElementById("trackerTotalHours").textContent = formatMetric(totals.hours);
+  document.getElementById("trackerHourlyRate").textContent = `${totals.hourly > 0 ? "+" : ""}${formatMetric(totals.hourly)}`;
+  document.getElementById("trackerDrawdown").textContent = formatMetric(totals.maxDrawdown);
+  const chart = document.getElementById("trackerChart");
+  if (!totals.sorted.length) {
+    chart.innerHTML = '<div class="empty-chart">Noch keine Sessions erfasst</div>';
+  } else {
+    let cumulative = 0;
+    const values = [0, ...totals.sorted.map((session) => {
+      cumulative += Number(session.result) || 0;
+      return cumulative;
+    })];
+    chart.innerHTML = lineChartSvg(values, { label: "Bankroll-Verlauf aus Sessions" });
+  }
+  document.getElementById("sessionCount").textContent = state.sessions.length;
+  document.getElementById("sessionVsEv").textContent = `${totals.result - totals.ev > 0 ? "+" : ""}${formatMetric(totals.result - totals.ev)}`;
+  const best = state.sessions.length ? Math.max(...state.sessions.map((session) => Number(session.result) || 0)) : 0;
+  document.getElementById("sessionBest").textContent = `${best > 0 ? "+" : ""}${formatMetric(best)}`;
+  const title = !state.sessions.length ? "Noch keine Daten" : totals.result >= totals.ev ? "Über dem erfassten EV" : "Unter dem erfassten EV";
+  const copy = !state.sessions.length
+    ? "Erfasse deine erste Session, um Ergebnis, EV-Abweichung und Stundenrate zu sehen."
+    : `${state.sessions.length} Sessions und ${formatMetric(totals.hours)} Stunden ergeben ${formatMetric(totals.hourly)} Einheiten pro Stunde. Kurzfristige Abweichungen vom EV sind normal.`;
+  document.getElementById("sessionInsightTitle").textContent = title;
+  document.getElementById("sessionInsightCopy").textContent = copy;
+  document.getElementById("sessionTableBody").innerHTML = [...state.sessions].sort((a, b) => String(b.date).localeCompare(String(a.date))).map((session) => `
+    <tr>
+      <td>${escapeHtml(session.date)}</td>
+      <td><b>${escapeHtml(session.venue)}</b><br><small>${escapeHtml(session.notes || "")}</small></td>
+      <td>${escapeHtml(session.game)}</td>
+      <td>${formatMetric(session.hours)}</td>
+      <td class="${session.result > 0 ? "positive-value" : session.result < 0 ? "negative-value" : ""}">${session.result > 0 ? "+" : ""}${formatMetric(session.result)}</td>
+      <td>${session.ev === "" || session.ev === null ? "–" : `${session.ev > 0 ? "+" : ""}${formatMetric(session.ev)}`}</td>
+      <td><button class="delete-row" data-delete-session="${session.id}" aria-label="Session löschen">×</button></td>
+    </tr>
+  `).join("") || '<tr><td colspan="7">Noch keine Sessions.</td></tr>';
+}
+
+function addSession(event) {
+  event.preventDefault();
+  const session = {
+    id: `session-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    date: document.getElementById("sessionDate").value,
+    venue: document.getElementById("sessionVenue").value.trim(),
+    game: document.getElementById("sessionGame").value,
+    hours: Number(document.getElementById("sessionHours").value),
+    result: Number(document.getElementById("sessionResult").value),
+    ev: document.getElementById("sessionEv").value === "" ? "" : Number(document.getElementById("sessionEv").value),
+    notes: document.getElementById("sessionNotes").value.trim(),
+    createdAt: Date.now()
+  };
+  state.sessions.push(session);
+  saveState();
+  event.currentTarget.reset();
+  document.getElementById("sessionDate").value = getDateKey();
+  document.getElementById("sessionHours").value = 2;
+  renderTracker();
+  updateCareer();
+  showToast("Session gespeichert.");
+}
+
+function csvEscape(value) {
+  const text = String(value ?? "");
+  return /[",\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+}
+
+function exportSessionsCsv() {
+  const headers = ["date", "venue", "game", "hours", "result", "ev", "notes"];
+  const rows = state.sessions.map((session) => headers.map((header) => csvEscape(session[header])).join(","));
+  const blob = new Blob([[headers.join(","), ...rows].join("\n")], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `count-lab-sessions-${getDateKey()}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function parseCsv(text) {
+  const rows = [];
+  let row = [];
+  let field = "";
+  let quoted = false;
+  for (let index = 0; index < text.length; index += 1) {
+    const char = text[index];
+    if (quoted && char === '"' && text[index + 1] === '"') {
+      field += '"';
+      index += 1;
+    } else if (char === '"') {
+      quoted = !quoted;
+    } else if (char === "," && !quoted) {
+      row.push(field);
+      field = "";
+    } else if ((char === "\n" || char === "\r") && !quoted) {
+      if (char === "\r" && text[index + 1] === "\n") index += 1;
+      row.push(field);
+      if (row.some((item) => item !== "")) rows.push(row);
+      row = [];
+      field = "";
+    } else {
+      field += char;
+    }
+  }
+  row.push(field);
+  if (row.some((item) => item !== "")) rows.push(row);
+  return rows;
+}
+
+async function importSessionsCsv(file) {
+  const rows = parseCsv(await file.text());
+  if (rows.length < 2) throw new Error("empty csv");
+  const headers = rows[0].map((header) => header.trim().toLowerCase());
+  const required = ["date", "venue", "game", "hours", "result"];
+  if (!required.every((header) => headers.includes(header))) throw new Error("missing headers");
+  const imported = rows.slice(1).map((row, index) => {
+    const get = (name) => row[headers.indexOf(name)] ?? "";
+    return {
+      id: `import-${Date.now()}-${index}`,
+      date: get("date"),
+      venue: get("venue"),
+      game: get("game") || "Blackjack",
+      hours: Number(get("hours")) || 0,
+      result: Number(get("result")) || 0,
+      ev: get("ev") === "" ? "" : Number(get("ev")) || 0,
+      notes: get("notes"),
+      createdAt: Date.now() + index
+    };
+  }).filter((session) => session.date && session.venue && session.hours > 0);
+  state.sessions.push(...imported);
+  saveState();
+  renderTracker();
+  updateCareer();
+  showToast(`${imported.length} Sessions importiert.`);
+}
+
+function erf(value) {
+  const sign = value < 0 ? -1 : 1;
+  const x = Math.abs(value);
+  const a1 = 0.254829592;
+  const a2 = -0.284496736;
+  const a3 = 1.421413741;
+  const a4 = -1.453152027;
+  const a5 = 1.061405429;
+  const p = 0.3275911;
+  const t = 1 / (1 + p * x);
+  const y = 1 - (((((a5 * t + a4) * t + a3) * t + a2) * t + a1) * t) * Math.exp(-x * x);
+  return sign * y;
+}
+
+function normalCdf(value) {
+  return 0.5 * (1 + erf(value / Math.sqrt(2)));
+}
+
+function calculateEvModel(trackUsage = false) {
+  const bankroll = Math.max(0, Number(document.getElementById("evBankroll").value));
+  const unit = Math.max(0, Number(document.getElementById("evUnit").value));
+  const handsHour = Math.max(1, Number(document.getElementById("evHandsHour").value));
+  const hours = Math.max(1, Number(document.getElementById("evHours").value));
+  const baseEdge = Number(document.getElementById("evBaseEdge").value) / 100;
+  const edgePerTc = Number(document.getElementById("evPerTc").value) / 100;
+  const tcValues = [-0.5, 1, 2, 3, 4.5];
+  const rawFrequencies = [0, 1, 2, 3, 4].map((index) => Math.max(0, Number(document.querySelector(`[data-spread-frequency="${index}"]`).value)));
+  const frequencyTotal = rawFrequencies.reduce((sum, value) => sum + value, 0) || 1;
+  const frequencies = rawFrequencies.map((value) => value / frequencyTotal);
+  const bets = [0, 1, 2, 3, 4].map((index) => Math.max(0, Number(document.querySelector(`[data-spread-bet="${index}"]`).value)) * unit);
+  const edges = tcValues.map((tc) => baseEdge + tc * edgePerTc);
+  const averageBet = bets.reduce((sum, bet, index) => sum + bet * frequencies[index], 0);
+  const evHand = bets.reduce((sum, bet, index) => sum + bet * edges[index] * frequencies[index], 0);
+  const secondMoment = bets.reduce((sum, bet, index) => sum + Math.pow(1.15 * bet, 2) * frequencies[index], 0);
+  const varianceHand = Math.max(0.0001, secondMoment - evHand * evHand);
+  const hourlyEv = evHand * handsHour;
+  const totalHands = handsHour * hours;
+  const totalEv = evHand * totalHands;
+  const hourlySd = Math.sqrt(varianceHand * handsHour);
+  const tripSd = Math.sqrt(varianceHand * totalHands);
+  const riskRuin = evHand > 0 ? Math.min(1, Math.exp((-2 * bankroll * evHand) / varianceHand)) : 1;
+  const nZero = evHand > 0 ? varianceHand / (evHand * evHand) : Infinity;
+  const tripLoss = tripSd ? normalCdf(-totalEv / tripSd) : totalEv < 0 ? 1 : 0;
+  document.getElementById("evHourlyResult").textContent = `${hourlyEv > 0 ? "+" : ""}${formatMetric(hourlyEv, 2)}`;
+  document.getElementById("evTotalResult").textContent = `${totalEv > 0 ? "+" : ""}${formatMetric(totalEv)}`;
+  document.getElementById("evAverageBet").textContent = formatMetric(averageBet);
+  document.getElementById("evHourlySd").textContent = formatMetric(hourlySd);
+  document.getElementById("evRiskRuin").textContent = `${formatMetric(riskRuin * 100, 2)}%`;
+  document.getElementById("evNZero").textContent = Number.isFinite(nZero) ? `${formatMetric(nZero / 1000)}k Hände` : "–";
+  document.getElementById("evTripLoss").textContent = `${formatMetric(tripLoss * 100, 1)}%`;
+  document.getElementById("evHourlyResult").style.color = hourlyEv > 0 ? "var(--lime)" : hourlyEv < 0 ? "#ef9999" : "var(--text)";
+  if (trackUsage) {
+    state.toolUsage.evCalculations += 1;
+    saveState();
+    updateCareer();
+  }
+  return { evHand, varianceHand, hourlyEv, hourlySd };
+}
+
+function randomNormal() {
+  let first = 0;
+  let second = 0;
+  while (first === 0) first = Math.random();
+  while (second === 0) second = Math.random();
+  return Math.sqrt(-2 * Math.log(first)) * Math.cos(2 * Math.PI * second);
+}
+
+function percentile(values, ratio) {
+  const sorted = [...values].sort((a, b) => a - b);
+  const position = (sorted.length - 1) * ratio;
+  const lower = Math.floor(position);
+  const upper = Math.ceil(position);
+  if (lower === upper) return sorted[lower];
+  return sorted[lower] + (sorted[upper] - sorted[lower]) * (position - lower);
+}
+
+function monteCarloSvg(p10, p50, p90) {
+  const width = 900;
+  const height = 260;
+  const padding = 20;
+  const all = [...p10, ...p90];
+  const min = Math.min(...all);
+  const max = Math.max(...all);
+  const range = Math.max(1, max - min);
+  const point = (value, index, length) => [padding + (index / Math.max(1, length - 1)) * (width - padding * 2), height - padding - ((value - min) / range) * (height - padding * 2)];
+  const linePath = (values) => values.map((value, index) => {
+    const [x, y] = point(value, index, values.length);
+    return `${index ? "L" : "M"}${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(" ");
+  const upper = p90.map((value, index) => point(value, index, p90.length));
+  const lower = p10.map((value, index) => point(value, index, p10.length)).reverse();
+  const band = [...upper, ...lower].map((item, index) => `${index ? "L" : "M"}${item[0].toFixed(1)},${item[1].toFixed(1)}`).join(" ") + " Z";
+  return `<svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" role="img" aria-label="Monte-Carlo-Perzentile"><path d="${band}" fill="rgba(198,243,107,.14)"/><path d="${linePath(p10)}" fill="none" stroke="rgba(198,243,107,.32)" stroke-width="1.5" vector-effect="non-scaling-stroke"/><path d="${linePath(p90)}" fill="none" stroke="rgba(198,243,107,.32)" stroke-width="1.5" vector-effect="non-scaling-stroke"/><path d="${linePath(p50)}" fill="none" stroke="#c6f36b" stroke-width="3" vector-effect="non-scaling-stroke"/></svg>`;
+}
+
+function runMonteCarlo() {
+  const bankroll = Math.max(1, Number(document.getElementById("mcBankroll").value));
+  const hands = Math.max(100, Math.min(1000000, Number(document.getElementById("mcHands").value)));
+  const averageBet = Math.max(1, Number(document.getElementById("mcAverageBet").value));
+  const edge = Number(document.getElementById("mcEdge").value) / 100;
+  const sdUnits = Math.max(0.1, Number(document.getElementById("mcSd").value));
+  const trials = Math.max(100, Math.min(5000, Number(document.getElementById("mcTrials").value)));
+  const steps = 61;
+  const handsPerStep = hands / (steps - 1);
+  const paths = [];
+  let drawdownCount = 0;
+  for (let trial = 0; trial < trials; trial += 1) {
+    const path = [bankroll];
+    let value = bankroll;
+    let hitDrawdown = false;
+    for (let step = 1; step < steps; step += 1) {
+      const mean = handsPerStep * averageBet * edge;
+      const sd = Math.sqrt(handsPerStep) * averageBet * sdUnits;
+      value += mean + randomNormal() * sd;
+      path.push(value);
+      if (value <= bankroll * 0.8) hitDrawdown = true;
+    }
+    if (hitDrawdown) drawdownCount += 1;
+    paths.push(path);
+  }
+  const p10 = [];
+  const p50 = [];
+  const p90 = [];
+  for (let step = 0; step < steps; step += 1) {
+    const column = paths.map((path) => path[step]);
+    p10.push(percentile(column, 0.1));
+    p50.push(percentile(column, 0.5));
+    p90.push(percentile(column, 0.9));
+  }
+  const finals = paths.map((path) => path[path.length - 1]);
+  const profitChance = finals.filter((value) => value > bankroll).length / trials;
+  document.getElementById("mcMedian").textContent = formatMetric(percentile(finals, 0.5));
+  document.getElementById("mcProfitChance").textContent = `${formatMetric(profitChance * 100, 1)}%`;
+  document.getElementById("mcDrawdownChance").textContent = `${formatMetric((drawdownCount / trials) * 100, 1)}%`;
+  document.getElementById("mcChart").innerHTML = monteCarloSvg(p10, p50, p90);
+  state.toolUsage.simulations += 1;
+  saveState();
+  updateCareer();
+}
+
+function directoryScore(entry) {
+  const penetrationScore = Math.max(0, Math.min(40, ((entry.penetration - 45) / 40) * 40));
+  const ruleScore = (entry.rules.includes("S17") ? 12 : 6) + (entry.rules.includes("DAS") ? 8 : 0) + (entry.rules.includes("LS") ? 5 : 0);
+  const limitScore = Math.max(2, 20 - Math.max(0, entry.minBet - 5) * 0.35);
+  const ratingScore = entry.rating * 3;
+  return Math.round(Math.min(100, penetrationScore + ruleScore + limitScore + ratingScore));
+}
+
+function renderDirectory() {
+  const query = document.getElementById("directorySearch").value.trim().toLowerCase();
+  const entries = [...state.gameDirectory]
+    .filter((entry) => `${entry.venue} ${entry.city}`.toLowerCase().includes(query))
+    .sort((a, b) => directoryScore(b) - directoryScore(a));
+  document.getElementById("directoryList").innerHTML = entries.map((entry) => `
+    <div class="directory-entry">
+      <div><b>${escapeHtml(entry.venue)}</b><small>${escapeHtml(entry.city)} · ${escapeHtml(entry.notes || "Keine Notiz")}</small></div>
+      <span>${entry.decks} Decks · ${escapeHtml(entry.rules)}</span>
+      <span>${entry.penetration}% Pen.</span>
+      <span>Min. ${formatMetric(entry.minBet, 0)}</span>
+      <span class="game-score">${directoryScore(entry)}</span>
+      <button class="delete-row" data-delete-directory="${entry.id}" aria-label="Spiel löschen">×</button>
+    </div>
+  `).join("") || '<div class="empty-activity">Noch keine passenden Spiele gespeichert.</div>';
+}
+
+function addDirectoryEntry(event) {
+  event.preventDefault();
+  state.gameDirectory.push({
+    id: `game-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    venue: document.getElementById("directoryVenue").value.trim(),
+    city: document.getElementById("directoryCity").value.trim(),
+    decks: Number(document.getElementById("directoryDecks").value),
+    minBet: Number(document.getElementById("directoryMinBet").value),
+    penetration: Number(document.getElementById("directoryPenetration").value),
+    rules: document.getElementById("directoryRules").value,
+    rating: Number(document.getElementById("directoryRating").value),
+    notes: document.getElementById("directoryNotes").value.trim(),
+    createdAt: Date.now()
+  });
+  saveState();
+  event.currentTarget.reset();
+  document.getElementById("directoryDecks").value = "6";
+  document.getElementById("directoryMinBet").value = "10";
+  document.getElementById("directoryPenetration").value = "75";
+  document.getElementById("directoryRating").value = "3";
+  renderDirectory();
+  updateCareer();
+  showToast("Spiel im Directory gespeichert.");
+}
+
+function renderPoolsAndNotes() {
+  const ownedTotal = state.bankrollPools.reduce((sum, pool) => sum + pool.balance * (pool.share / 100), 0);
+  document.getElementById("poolOwnedTotal").textContent = formatMetric(ownedTotal);
+  document.getElementById("poolList").innerHTML = state.bankrollPools.map((pool) => `
+    <div class="pool-entry"><div><b>${escapeHtml(pool.name)}</b><small>${escapeHtml(pool.owner)} · ${pool.share}% Anteil</small></div><span>${formatMetric(pool.balance)}</span><button class="delete-row" data-delete-pool="${pool.id}" aria-label="Pool löschen">×</button></div>
+  `).join("") || '<div class="empty-activity">Noch keine Bankroll-Pools.</div>';
+  document.getElementById("teamNotes").innerHTML = [...state.teamNotes].reverse().map((note) => `
+    <article class="team-note"><header><b>${escapeHtml(note.author)}</b><span>${new Date(note.createdAt).toLocaleDateString("de-DE")}</span></header><p>${escapeHtml(note.message)}</p></article>
+  `).join("");
+}
+
+function addBankrollPool(event) {
+  event.preventDefault();
+  state.bankrollPools.push({
+    id: `pool-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    name: document.getElementById("poolName").value.trim(),
+    owner: document.getElementById("poolOwner").value.trim(),
+    balance: Number(document.getElementById("poolBalance").value),
+    share: Number(document.getElementById("poolShare").value)
+  });
+  saveState();
+  event.currentTarget.reset();
+  document.getElementById("poolShare").value = "100";
+  renderPoolsAndNotes();
+}
+
+function addTeamNote(event) {
+  event.preventDefault();
+  state.teamNotes.push({
+    id: `note-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    author: document.getElementById("teamNoteAuthor").value.trim(),
+    message: document.getElementById("teamNoteMessage").value.trim(),
+    createdAt: Date.now()
+  });
+  state.teamNotes = state.teamNotes.slice(-30);
+  saveState();
+  document.getElementById("teamNoteMessage").value = "";
+  renderPoolsAndNotes();
+}
+
+function careerMissionData() {
+  const blackjackAccuracy = state.blackjack.decisions ? Math.round((state.blackjack.correctDecisions / state.blackjack.decisions) * 100) : 0;
+  return [
+    { title: "Lernpfad abschließen", detail: `${state.completedLessons.length}/8 Module`, complete: state.completedLessons.length >= 8 },
+    { title: "Kartenwerte meistern", detail: `${state.stats.cardValues.attempts}/100 · ${accuracy(state.stats.cardValues)}%`, complete: state.stats.cardValues.attempts >= 100 && accuracy(state.stats.cardValues) >= 90 },
+    { title: "Running Count stabilisieren", detail: `${state.stats.runningCount.attempts}/20 · ${accuracy(state.stats.runningCount)}%`, complete: state.stats.runningCount.attempts >= 20 && accuracy(state.stats.runningCount) >= 90 },
+    { title: "True Count beherrschen", detail: `${state.stats.trueCount.attempts}/20 · ${accuracy(state.stats.trueCount)}%`, complete: state.stats.trueCount.attempts >= 20 && accuracy(state.stats.trueCount) >= 90 },
+    { title: "Basic Strategy perfektionieren", detail: `${state.stats.basicStrategy.attempts}/50 · ${accuracy(state.stats.basicStrategy)}%`, complete: state.stats.basicStrategy.attempts >= 50 && accuracy(state.stats.basicStrategy) >= 90 },
+    { title: "Indizes automatisieren", detail: `${state.stats.deviations.attempts}/30 · ${accuracy(state.stats.deviations)}%`, complete: state.stats.deviations.attempts >= 30 && accuracy(state.stats.deviations) >= 85 },
+    { title: "100 Hände spielen", detail: `${state.blackjack.handsPlayed}/100 · ${blackjackAccuracy}% Strategie`, complete: state.blackjack.handsPlayed >= 100 && blackjackAccuracy >= 95 },
+    { title: "Sessions dokumentieren", detail: `${state.sessions.length}/10 Sessions`, complete: state.sessions.length >= 10 },
+    { title: "Risiko modellieren", detail: `${state.toolUsage.evCalculations}/1 EV · ${state.toolUsage.simulations}/1 MC`, complete: state.toolUsage.evCalculations >= 1 && state.toolUsage.simulations >= 1 },
+    { title: "Games katalogisieren", detail: `${state.gameDirectory.length}/3 Spiele`, complete: state.gameDirectory.length >= 3 }
+  ];
+}
+
+function updateCareer() {
+  const missions = careerMissionData();
+  const complete = missions.filter((mission) => mission.complete).length;
+  const percent = Math.round((complete / missions.length) * 100);
+  const rank = complete >= 10 ? "Count Lab Pro" : complete >= 8 ? "Road Tested" : complete >= 6 ? "Advantage Player" : complete >= 4 ? "Table Ready" : complete >= 2 ? "Counter in Training" : "Rookie";
+  document.getElementById("careerPercent").textContent = `${percent}%`;
+  document.getElementById("careerRing").style.background = `conic-gradient(var(--lime) ${percent * 3.6}deg, rgba(255, 255, 255, 0.08) 0deg)`;
+  document.getElementById("careerRank").textContent = rank;
+  document.getElementById("careerNext").textContent = complete === missions.length ? "Alle Missionen abgeschlossen." : `Noch ${missions.length - complete} Missionen bis zum vollständigen Karrierepfad.`;
+  document.getElementById("careerMissions").innerHTML = missions.map((mission, index) => `
+    <div class="career-mission ${mission.complete ? "complete" : ""}"><span>${mission.complete ? "✓" : String(index + 1).padStart(2, "0")}</span><div><b>${mission.title}</b><small>${mission.detail}</small></div><i>${mission.complete ? "FERTIG" : "OFFEN"}</i></div>
+  `).join("");
+}
+
+function updateToolbox() {
+  renderTracker();
+  renderDirectory();
+  renderPoolsAndNotes();
+  updateCareer();
+  calculateEvModel(false);
+}
+
 function initializeEvents() {
   window.addEventListener("hashchange", () => setRoute(location.hash.slice(1)));
   document.getElementById("menuToggle").addEventListener("click", () => {
@@ -1553,6 +2189,12 @@ function initializeEvents() {
   });
   document.querySelectorAll("[data-drill]").forEach((button) => {
     button.addEventListener("click", () => openDrill(button.dataset.drill));
+  });
+  document.querySelectorAll("[data-tool]").forEach((button) => {
+    button.addEventListener("click", () => openTool(button.dataset.tool));
+  });
+  document.querySelectorAll("[data-open-tool]").forEach((button) => {
+    button.addEventListener("click", () => openTool(button.dataset.openTool));
   });
   document.getElementById("recommendationButton").addEventListener("click", (event) => openDrill(event.currentTarget.dataset.targetDrill));
   document.getElementById("continueLearning").addEventListener("click", (event) => openLesson(Number(event.currentTarget.dataset.lessonId)));
@@ -1667,6 +2309,65 @@ function initializeEvents() {
   document.getElementById("dealOne").addEventListener("click", dealSimulatorCard);
   document.getElementById("dealRound").addEventListener("click", dealSimulatorRound);
   document.getElementById("simCheckForm").addEventListener("submit", checkSimulatorCount);
+  document.getElementById("basicActions").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-basic-action]");
+    if (button) answerBasicStrategy(button);
+  });
+  document.getElementById("basicRule").addEventListener("change", generateBasicQuestion);
+  document.getElementById("basicSurrender").addEventListener("change", generateBasicQuestion);
+  document.getElementById("deviationActions").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-deviation-action]");
+    if (button) answerDeviation(button);
+  });
+  document.getElementById("nextDeviation").addEventListener("click", generateDeviationQuestion);
+  document.getElementById("sessionForm").addEventListener("submit", addSession);
+  document.getElementById("sessionTableBody").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-delete-session]");
+    if (!button) return;
+    state.sessions = state.sessions.filter((session) => session.id !== button.dataset.deleteSession);
+    saveState();
+    renderTracker();
+    updateCareer();
+  });
+  document.getElementById("exportSessions").addEventListener("click", exportSessionsCsv);
+  document.getElementById("importSessionsButton").addEventListener("click", () => document.getElementById("importSessionsFile").click());
+  document.getElementById("importSessionsFile").addEventListener("change", async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    try {
+      await importSessionsCsv(file);
+    } catch {
+      showToast("CSV konnte nicht importiert werden.");
+    }
+    event.target.value = "";
+  });
+  document.getElementById("evForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    calculateEvModel(true);
+  });
+  document.getElementById("monteCarloForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    runMonteCarlo();
+  });
+  document.getElementById("directoryForm").addEventListener("submit", addDirectoryEntry);
+  document.getElementById("directorySearch").addEventListener("input", renderDirectory);
+  document.getElementById("directoryList").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-delete-directory]");
+    if (!button) return;
+    state.gameDirectory = state.gameDirectory.filter((entry) => entry.id !== button.dataset.deleteDirectory);
+    saveState();
+    renderDirectory();
+    updateCareer();
+  });
+  document.getElementById("bankrollPoolForm").addEventListener("submit", addBankrollPool);
+  document.getElementById("poolList").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-delete-pool]");
+    if (!button) return;
+    state.bankrollPools = state.bankrollPools.filter((pool) => pool.id !== button.dataset.deletePool);
+    saveState();
+    renderPoolsAndNotes();
+  });
+  document.getElementById("teamNoteForm").addEventListener("submit", addTeamNote);
   document.getElementById("printReference").addEventListener("click", () => window.print());
   const resetDialog = document.getElementById("resetDialog");
   document.getElementById("resetProgress").addEventListener("click", () => resetDialog.showModal());
@@ -1677,6 +2378,10 @@ function initializeEvents() {
     ensureDailyState();
     renderLessons();
     initializeBlackjackGame();
+    generateBasicQuestion();
+    generateDeviationQuestion();
+    document.getElementById("sessionDate").value = getDateKey();
+    updateToolbox();
     updateAllStats();
     resetDialog.close();
     showToast("Fortschritt wurde zurückgesetzt.");
@@ -1693,6 +2398,10 @@ function initialize() {
   generateDeckEstimate();
   startQuiz();
   shuffleSimulator();
+  generateBasicQuestion();
+  generateDeviationQuestion();
+  document.getElementById("sessionDate").value = getDateKey();
+  updateToolbox();
   updateAllStats();
   setRoute(location.hash.slice(1) || "dashboard");
 }
